@@ -1,0 +1,10 @@
+MAS discharge_truck 
+{
+	environment: environments.DischargeEnv(gui)
+
+	agents:
+		manager beliefBaseClass reputationAndImage.model.TimeBB; 
+		
+	aslSourcePath:
+		"src/asl/agents";
+}

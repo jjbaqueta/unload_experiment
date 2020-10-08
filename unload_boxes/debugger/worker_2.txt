@@ -1,0 +1,61 @@
+TIME(1602102847006),MESSAGE("ADD TEAM: 215"):
+- HelperTeam [id=215, isReady=false, teamSize=0, team={}] 
+
+TIME(1602102849023),MESSAGE("UPDATE TEAM: 215"):
+- HelperTeam [id=215, isReady=false, teamSize=2, team={helper_3(hired: false);helper_4(hired: false)}] 
+
+TIME(1602102849035),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=215, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: false)}] 
+
+TIME(1602102849038),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=215, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102849043),MESSAGE("TEAM READY: 215"):
+- HelperTeam [id=215, isReady=true, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102872295),MESSAGE("DELETE TEAM: 215"):
+
+TIME(1602102872490),MESSAGE("[TASK COMPLETED]"):
+
+TIME(1602102874504),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 26"):
+
+TIME(1602102891959),MESSAGE("ADD TEAM: 235"):
+- HelperTeam [id=235, isReady=false, teamSize=0, team={}] 
+
+TIME(1602102893973),MESSAGE("UPDATE TEAM: 235"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: false);helper_4(hired: false)}] 
+
+TIME(1602102893979),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: false)}] 
+
+TIME(1602102893980),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102893980),MESSAGE("TEAM READY: 235"):
+- HelperTeam [id=235, isReady=true, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102898541),MESSAGE("DELETE TEAM: 235"):
+
+TIME(1602102898546),MESSAGE("[TASK COMPLETED]"):
+
+TIME(1602102900562),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 46"):
+
+TIME(1602102917965),MESSAGE("ADD TEAM: 255"):
+- HelperTeam [id=255, isReady=false, teamSize=0, team={}] 
+
+TIME(1602102919972),MESSAGE("UPDATE TEAM: 255"):
+- HelperTeam [id=255, isReady=false, teamSize=2, team={helper_3(hired: false);helper_4(hired: false)}] 
+
+TIME(1602102919978),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=255, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: false)}] 
+
+TIME(1602102919979),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=255, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102919979),MESSAGE("TEAM READY: 255"):
+- HelperTeam [id=255, isReady=true, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1602102933344),MESSAGE("DELETE TEAM: 255"):
+
+TIME(1602102933361),MESSAGE("[TASK COMPLETED]"):
+
