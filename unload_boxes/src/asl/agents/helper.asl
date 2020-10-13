@@ -17,6 +17,8 @@
 		?battery(Battery_default);
 		+current_safety(Safety_default);
 		+current_battery(Battery_default);
+		+taken_boxes(0);
+		+delivered_boxes(0);
 .
 
 /* BEHAVIOR  **********************/
@@ -169,7 +171,8 @@
 +cfp(CNPId, task(Truck, Depot, Cargo_type))[source(Worker)]
 	:	provider(Worker, "requester_worker") & 
 		getMyName(Me) &
-		busy(false)
+		busy(false) &
+		not client(_,_)[source(_)]
 		
 	<-	actions.helper.proposeOffer(Me, Offer);
 		+proposal(CNPId, task(Truck, Depot, Cargo_type), Offer);
@@ -199,10 +202,11 @@
 +accept_proposal(CNPId)[source(Worker)]
 	:	provider(Worker, "requester_worker") & 
 		proposal(CNPId, _, _) & 
-		busy(false)
+		busy(false) &
+		not client(_,_)[source(_)]
 		
-	<-	.print("My proposal was accepted by worker: ", Worker);
-		-+busy(true);
+	<-	-+busy(true);
+		.print("My proposal was accepted by worker: ", Worker);
 		.send(Worker, tell, service(CNPId, accepted));
 .
 
@@ -210,11 +214,12 @@
  * The agent won the CNP, but he is already busy and must reject the service.
  * @param CNPId: id of required service.
  */
- @h_cnp2 [atomic]
 +accept_proposal(CNPId)[source(Worker)]: busy(true)
-<-	.print("My proposal was accepted by ", Worker ,", but I'm already busy.");
-	.send(Worker, tell, service(CNPId, aborted));
-	!end_call(CNPId);
+	<-	.print("My proposal was accepted by ", Worker ,", but I'm already busy.");
+		.send(Worker, tell, service(CNPId, aborted));
+		-proposal(CNPId,_,_);
+		-cfp(CNPId,_)[source(Worker)];
+		-accept_proposal(CNPId)[source(Worker)];
 .
 
 /**
@@ -224,7 +229,9 @@
  @h_cnp3 [atomic]
 +reject_proposal(CNPId)[source(Worker)]
    <-	.print("I lost CNP ", CNPId, ".");
-   		!end_call(CNPId);
+		-proposal(CNPId,_,_);
+		-cfp(CNPId,_)[source(Worker)];
+		-reject_proposal(CNPId)[source(Worker)];
  .
 
 /**
@@ -244,9 +251,12 @@
  * @param service_status: the current status of service.
  */ 
  @h_cnp4 [atomic]
-+service(CNPId, canceled)
-	<-	!end_call(CNPId);
++service(CNPId, canceled)[source(Worker)]
+	<-	-proposal(CNPId,_,_);
+		-cfp(CNPId,_)[source(Worker)];
+		-accept_proposal(CNPId)[source(Worker)];
 		-+busy(false);
+		-service(CNPId, _)[source(Worker)];
 .
 
 /**
@@ -258,8 +268,8 @@
 		+depot(Depot);
 		+empty_truck(false);
 		+cargo_type(Cargo_type);
-		+taken_boxes(0);
-		+delivered_boxes(0);
+		-+taken_boxes(0);
+		-+delivered_boxes(0);
 		actions.generic.getTime(Time);
 		+task_time(Time);
 		!goToTruck;
@@ -282,26 +292,17 @@
 		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
 		.print("Time taken to do the task: ", Time);
 		.send(Client, tell, report(CNPId, results(Delivered_boxes, Taken_boxes, Time)));			
-		!end_call(CNPId);
-		-+busy(false);
-.
-
-/*
- * The helper cleans his memory about data from last call
- */
-+!end_call(CNPId): true
-	<-	-truck(_);
+		-truck(_);
 		-depot(_);
 		-empty_truck(_);
 		-cargo_type(_);
-		-taken_boxes(_);
-		-delivered_boxes(_);
+		-+taken_boxes(0);
+		-+delivered_boxes(0);
 		-task_time(_);
-		-service(CNPId, _);
 		-client(CNPId,_);
 		-execute(CNPId)[source(_)];
 		-accept_proposal(CNPId)[source(_)];
-		-reject_proposal(CNPId)[source(_)];
 		-proposal(CNPId,_,_);
 		-cfp(CNPId,_)[source(_)];
+		-+busy(false);
 .

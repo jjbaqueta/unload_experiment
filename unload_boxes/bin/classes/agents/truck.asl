@@ -161,14 +161,12 @@ count(0).
 			!evaluateProvider(Worker, "FRAGILE_SPECIALIZATION", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);			
 			!spread_image(Worker, "FRAGILE_SPECIALIZATION", Truckers);
 			!computeTrust(Worker, "FRAGILE_SPECIALIZATION");
-			!getBestCandidate("FRAGILE_SPECIALIZATION");
 		}
 		else
 		{
 			!evaluateProvider(Worker, "COMMON_SPECIALIZATION", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);
 			!spread_image(Worker, "COMMON_SPECIALIZATION", Truckers);
 			!computeTrust(Worker, "COMMON_SPECIALIZATION");
-			!getBestCandidate("COMMON_SPECIALIZATION");
 		}
 		
 		!end_call(CNPId);

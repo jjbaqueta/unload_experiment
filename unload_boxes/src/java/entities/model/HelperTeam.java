@@ -42,14 +42,11 @@ public class HelperTeam
 	/**
 	 * Remove a helper from team.
 	 * @param helper: Helper to be removed.
-	 * @return true, if the helper was removed from the team, otherwise, false.
 	 */
-	public boolean removeHelper(Helper helper)
+	public void removeHelper(Helper helper)
 	{
 		if(team.containsKey(helper))
-			return team.remove(helper) != null;
-		else
-			throw new IllegalAccessError("Helper not found: " + helper.getName());
+			team.remove(helper);
 	}
 	
 	/**

@@ -31,7 +31,10 @@ public class initialize extends DefaultInternalAction
     	
     	ts.getAg().addBel(Literal.parseLiteral("id(" + t.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("visible(" + t.isVisible() + ")"));
-    	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + t.getQtdThings() + ")"));
+    	
+//    	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + t.getQtdThings() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + 5 + ")"));
+    	
 		ts.getAg().addBel(Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("cargo_type(" + t.getCargoType().name().toLowerCase() + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("unload_time(" + t.getUnloadTime() + ")"));

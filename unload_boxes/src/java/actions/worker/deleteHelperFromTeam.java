@@ -34,7 +34,7 @@ public class deleteHelperFromTeam extends DefaultInternalAction
 		Worker worker = workerMap.get(Integer.parseInt(args[1].toString().split("_")[1]));
 		Helper helper = helperMap.get(Integer.parseInt(args[2].toString().split("_")[1]));
 		
-		// Removing helper from team		
+		// Removing helper from team
 		worker.removeHelperFromTeam((int) teamId.solve(), helper);
         return true;
     }

@@ -125,12 +125,7 @@ public class Worker extends SimpleElement
 	public void removeHelperFromTeam(int teamId, Helper helper) throws Exception
 	{
 		if(teams.containsKey(teamId))
-		{
-			HelperTeam team = teams.get(teamId);
-			
-			if(!team.removeHelper(helper))
-				throw new Exception("It was not possible to remove the helper: " + helper.getName());
-		}
+			teams.get(teamId).removeHelper(helper);
 		else
 			throw new IllegalAccessException("It wasn't possible to remove the helper. There is no a team with this id: " + teamId);
 	}
