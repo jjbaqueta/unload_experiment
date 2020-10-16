@@ -174,7 +174,7 @@
 		busy(false) &
 		not client(_,_)[source(_)]
 		
-	<-	actions.helper.proposeOffer(Me, Offer);
+	<-	actions.helper.proposeOffer(Me, Truck, Depot, Offer);
 		+proposal(CNPId, task(Truck, Depot, Cargo_type), Offer);
       	.send(Worker, tell, proposal(CNPId, Offer));
       	

@@ -175,7 +175,7 @@ invites_received(TeamId, NI)
 		
 	<- 	if(Offers \== [])
       	{	
-	 		!update_team(TeamId, Offers, Nb_boxes, Unload_Time, NotReadyMembers);
+	 		!update_team(TeamId, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers);
 	 		!invite_team(TeamId, NotReadyMembers);
 	 		!wait_answers(TeamId);
 	 		!update_helpers_status(TeamId);
@@ -602,8 +602,8 @@ invites_received(TeamId, NI)
  * @return Team: not ready members (status not hire). 
  */
  @w_cnp9 [atomic]
-+!update_team(TeamId, Offers, Nb_boxes, Unload_Time, NotReadyMembers): getMyName(Me)
-	<-	actions.worker.updateTeam(TeamId, Me, Offers, Nb_boxes, Unload_Time, NotReadyMembers);
++!update_team(TeamId, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers): getMyName(Me)
+	<-	actions.worker.updateTeam(TeamId, Me, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers);
 	   	.concat("UPDATE TEAM: ", TeamId, Message)
 	   	actions.worker.saveLog(Me, Message);
 .
