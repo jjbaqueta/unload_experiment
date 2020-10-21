@@ -35,6 +35,80 @@ invites_received(TeamId, NI)
 .
 
 /**
+ * Get the possible skill for a helper
+ */
++!getHelperSkills(Cargo_type, Skill)
+	<- 	if(Cargo_type == fragile)
+		{
+			Skill = "FRAGILE_LOADER";
+		}
+		else
+		{
+			Skill = "COMMON_LOADER";
+		}
+.
+
+/**
+ * Get the possible skill for a worker
+ */
++!getMySkills(Cargo_type, Skill)
+	<-	if(Cargo_type == fragile)
+		{
+			Skill = "FRAGILE_SPECIALIZATION";		
+		}
+		else
+		{
+			Skill = "COMMON_SPECIALIZATION";	
+		}
+.
+
+/**
+ * When worker receives a proposal or a refuse from a helper, the worker adds this helper as a friend.
+ * A friend is a helper with who the worker interacted at least once.
+ */
++proposal(TeamId,_)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type)
+	<-	if(not friend(Helper))
+		{
+			+friend(Helper);
+		}
+		
+		!getHelperSkills(Cargo_type, Skill);
+		
+		if(not availability(Helper, Skill,_,_))
+		{
+			+availability(Helper, Skill, 1, 1);		
+		}
+.
+
++refuse(TeamId)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type)
+	<-	if(not friend(Helper))
+		{
+			+friend(Helper);
+		}
+		
+		!getHelperSkills(Cargo_type, Skill);
+		
+		if(not availability(Helper, Skill,_,_))
+		{
+			+availability(Helper, Skill, 1, 1);		
+		}
+.
+
+/**
+ *	When a helper is invited to join a team (make a service), he may either accept or reject the invite.
+ */
++service(TeamId, Status)[source(Helper)]: team(CNPId, TeamId, _, _) & task(CNPId,_,_, Cargo_type)
+	<-	-proposal(TeamId,_)[source(Helper)];
+		.print("Helper: ", Helper, " answered: ", Status, " teamID: ", TeamId);
+		!getHelperSkills(Cargo_type, Skill);
+     
+		if(Status == accepted)
+		{
+			!inc_help(Helper, Skill);
+		}
+.
+
+/**
  * Answering the call for proposal.
  * @param CNPId: id of the call.
  * @param task(Type): type of cargo.
@@ -100,7 +174,7 @@ invites_received(TeamId, NI)
 		getMyName(Me)
 		
 	<-	actions.worker.getHelpersNearby(Me, Nearby_Helpers);
-		.findall(Helper, friend(Helper,_,_), Friends);
+		.findall(Helper, friend(Helper), Friends);
 		actions.worker.concatToSet(Friends, Nearby_Helpers, Participants);
 		.print("participants: ", Participants, " CNPId: ", CNPId);
 		
@@ -139,29 +213,19 @@ invites_received(TeamId, NI)
 .
 
 /**
- * When worker receives a proposal or a refuse from a helper, the worker adds this helper as a friend.
- * A friend is a helper with who the worker interacted at least once.
+ * Update trust value for each helper that sent a offer to worker.
+ * @param Cargo_type: type of cargo.
+ * @param Offers: list of received offers.
  */
-+proposal(_,_)[source(Helper)]: not friend(Helper,_,_)
-	<-	+friend(Helper, 0, 0);
++!update_trust(Cargo_type, [offer(_, Helper)|T])
+	<-	!getHelperSkills(Cargo_type, Skill);
+		!computeAvailability(Helper, Skill, Availability);
+      	.print(Helper,"'s availability: ", Availability); 
+		!check_trust(Helper, Skill, Availability);
+		!update_trust(Cargo_type, T);
 .
 
-+refuse(_)[source(Helper)]:  not friend(Helper,_,_)
-	<-	+friend(Helper, 0, 0);
-.
-
-/**
- *	When a helper is invited to join a team (make a service), he may either accept or reject the invite.
- */
-+service(TeamId, Status)[source(Helper)]
-	<-	-proposal(TeamId,_)[source(Helper)];
-		.print("Helper: ", Helper, " answer: ", Status, " teamID: ", TeamId);
-     
-		if(Status == accepted)
-		{
-			!inc_help(Helper);
-		}
-.
++!update_trust(Cargo_type, []).
 
 /**
  * The worker try to hire helpers for the task.
@@ -174,9 +238,11 @@ invites_received(TeamId, NI)
 		getMyName(Me)
 		
 	<- 	if(Offers \== [])
-      	{	
+      	{	      		
+      		!update_trust(Cargo_type, Offers);
 	 		!update_team(TeamId, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers);
-	 		!invite_team(TeamId, NotReadyMembers);
+	 		!getHelperSkills(Cargo_type, Skill)
+	 		!invite_team(TeamId, Skill, NotReadyMembers);
 	 		!wait_answers(TeamId);
 	 		!update_helpers_status(TeamId);
 	 		!check_team(TeamId);
@@ -222,8 +288,10 @@ invites_received(TeamId, NI)
 	<-	if(actions.worker.teamIsReady(TeamId, Me, Offers) & actions.worker.getTeam(TeamId, Me, Team) & Team \== [])
 		{
 			// check risk profile.
+			actions.worker.proposeOffer(TeamId, Me, Truck, Offer);
+			actions.worker.removeWorkloadZero(TeamId, Me, RemovedHelpers);
+			!remove_zero(TeamId, RemovedHelpers);
 			!team_ready(TeamId);
-			actions.worker.proposeOffer(TeamId, Me, Offer);
 			.send(Truck, tell, proposal(CNPId, Offer));
 			!send_resume(Truck, Cargo_type);			
 			+my_proposal(CNPId, Offer);
@@ -243,19 +311,26 @@ invites_received(TeamId, NI)
 .
 
 /**
+ * Break off the contracts done with helpers.
+ * @param TeamId: id of team.
+ * @param Rejected_helpers: list of helpers not selected to job.
+ */
++!remove_zero(TeamId, [Helper|T])
+	<-	.send(Helper, tell, service(TeamId, canceled));
+		!fire_helper(TeamId, Helper);
+		!remove_zero(TeamId, T);
+.
+
++!remove_zero(_,[]).
+
+/**
  * Send a knowhow information to client
  * @param Client: who requested the service
  * @param Cargo_type: type of cargo (fragile or common).
  */
 +!send_resume(Client, Cargo_type)
-	<-	if(Cargo_type == fragile)
-		{
-			!sendMyknowHow("FRAGILE_SPECIALIZATION", Client);		
-		}
-		else
-		{
-			!sendMyknowHow("COMMON_SPECIALIZATION", Client);	
-		}	
+	<-	!getMySkills(Cargo_type, My_skill);
+		!sendMyknowHow(Skill, Client);
 .
 
 /**
@@ -263,52 +338,15 @@ invites_received(TeamId, NI)
  * @param TeamId: id of team that will be hired to perform the task (it is a exclusive id).
  * @param Helpers: list of helpers from current team.
  */
-+!invite_team(TeamId, [Helper|T]) 
++!invite_team(TeamId, Skill, [Helper|T])
 	<-	.send(Helper, tell, accept_proposal(TeamId));
 		+invitation(TeamId, Helper);
-      	.print("invite sent for: ", Helper, " TeamId: ", TeamId);
-      	
-      	!computeAvailability(Helper, Availability)
-		.print(" ---------------- Availability: ", Availability);
-      	
- 		!inc_askForHelping(Helper);     	
-      	!invite_team(TeamId, T);
+      	.print("invite sent for: ", Helper, " TeamId: ", TeamId);      	
+ 		!inc_askForHelping(Helper, Skill);
+      	!invite_team(TeamId, Skill, T);
 .
       
-+!invite_team(_,[]).
-
-/**
- * Increase the number of ask for helping by one unit.
- * @param Helper: helper for who the help was asked. 
- */
-@w_inc1 [atomic]
-+!inc_askForHelping(Helper): friend(Helper, N_askForHelping, N_Help)
-	<-	-friend(Helper,_,_);
-		+friend(Helper, N_askForHelping + 1, N_Help); 
-.
-
-+!inc_askForHelping(Helper): not friend(Helper,_,_).
-
-/**
- * Increase by one unit the helping counter of a helper.
- * @param Helper: helper who helped. 
- */
-@w_inc2 [atomic]
-+!inc_help(Helper): friend(Helper, N_askForHelping, N_Help)
-	<-	-friend(Helper,_,_);
-		+friend(Helper, N_askForHelping, N_Help + 1);
-.
-
-+!inc_help(Helper): not friend(Helper,_,_).
-
-/**
- * Compute the availability of a Helper
- * @param Helper: helper for who the availability will be computed. 
- * @return the availability value
- */
-+!computeAvailability(Helper, Availability): friend(Helper, N_askForHelping, N_Help)
-	<-	Availability = N_Help / N_askForHelping;
-.
++!invite_team(_,_,[]).
 
 /**
  * Wait for answers of guests (helpers that makes part of a team)
@@ -496,22 +534,19 @@ invites_received(TeamId, NI)
 		client(CNPId, Truck) & 
 		getMyName(Me)		
 	
-	<-	// action: evaluation process - give notes by service
+	<-	actions.worker.getHelperEstimatedLoad(TeamId, Me, Helper, EstimatedLoad);
+		actions.worker.getHelperEstimatedTime(TeamId, Me, Helper, EstimatedTime);
+		
+		.print("REPORT - ", Helper ,": Estimated taken boxes: ", EstimatedLoad, "; taken boxes: ", Taken_boxes);
+		.print("REPORT - ", Helper ,": Estimated unload time: ", EstimatedTime, "; unload time: ", Task_time);
+		
+		actions.generic.evaluation(EstimatedLoad, Taken_boxes, LoadRating);
+		actions.generic.evaluation(EstimatedTime, Task_time, TimeRating);
 		
 		actions.worker.getNeighborhood(Me, Workers);
-			
-		if(Cargo_type == fragile)
-		{
-			!evaluateProvider(Helper, "FRAGILE_LOADER", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);
-			!spread_image(Helper, "FRAGILE_LOADER", Workers);
-			!computeTrust(Helper, "FRAGILE_LOADER");
-		}
-		else
-		{
-			!evaluateProvider(Helper, "COMMON_LOADER", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);
-			!spread_image(Helper, "COMMON_LOADER", Workers);
-			!computeTrust(Helper, "COMMON_LOADER");
-		}
+		!getHelperSkills(Cargo_type, Skill);
+		!evaluateProvider(Helper, Skill, ["EXPERTISE", "TIME"], [LoadRating, TimeRating]);
+		!spread_image(Helper, Skill, Workers);
 		
 		?unloadedBoxes(CNPId, Boxes);
 		?number_reports(TeamId, N_reports)
@@ -603,7 +638,7 @@ invites_received(TeamId, NI)
  */
  @w_cnp9 [atomic]
 +!update_team(TeamId, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers): getMyName(Me)
-	<-	actions.worker.updateTeam(TeamId, Me, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers);
+	<-	actions.worker.updateTeam(TeamId, Me, Offers, Cargo_type, NotReadyMembers);
 	   	.concat("UPDATE TEAM: ", TeamId, Message)
 	   	actions.worker.saveLog(Me, Message);
 .

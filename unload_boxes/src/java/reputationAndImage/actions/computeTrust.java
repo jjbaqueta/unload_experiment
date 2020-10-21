@@ -14,6 +14,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.StringTermImpl;
@@ -39,6 +40,7 @@ public class computeTrust extends DefaultInternalAction
 	 * args[3]: target's image.
 	 * args[4]: target's reputation.
 	 * args[5]: target's references.
+	 * args[6]: target's availability
 	 */
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
@@ -52,6 +54,7 @@ public class computeTrust extends DefaultInternalAction
 		ListTerm image = (ListTerm)args[3];
 		ListTerm reputation = (ListTerm)args[4];
 		ListTerm reference = (ListTerm)args[5];
+		NumberTerm availability = (NumberTerm) args[6];
 		
 		// Loading the image to the trust tree
 		addInputNodes(inputs, trustTree, trustTree.getFuzzyMap().getNodesByName(Mnemonic.IMAGE.name()).get(0), 
@@ -64,6 +67,10 @@ public class computeTrust extends DefaultInternalAction
 		// Loading references to the trust tree
 		addInputNodes(inputs, trustTree, trustTree.getFuzzyMap().getNodesByName(Mnemonic.KNOWHOW.name()).get(0), 
 				reference.isEmpty() ? null : (Structure) reference.get(0));
+		
+		// Loading availability value
+		trustTree.getFuzzyMap().getNodesByName("availability").get(0).setValue(availability.solve());
+		
 		
 		// Computing trust value
 		PropagateInputsVisitor propagateVisitor = new PropagateInputsVisitor(inputs);

@@ -18,6 +18,77 @@ count(0).
 .
 
 /**
+ * Get the possible skill for a worker
+ */
++!getWorkerSkills(Task_type, Skill)
+	<-	if(Task_type == fragile)
+		{
+			Skill = "FRAGILE_SPECIALIZATION";		
+		}
+		else
+		{
+			Skill = "COMMON_SPECIALIZATION";	
+		}
+.
+
+/**
+ * When worker receives a proposal or a refuse from a helper, the worker adds this helper as a friend.
+ * A friend is a helper with who the worker interacted at least once.
+ */
++proposal(CNPId,_)[source(Worker)]: task(CNPId, task(Task_type,_,_))
+	<-	if(not friend(Worker))
+		{
+			+friend(Worker);
+		}
+		
+		!getWorkerSkills(Task_type, Skill);
+		
+		if(not availability(Worker, Skill,_,_))
+		{
+			+availability(Worker, Skill, 1, 1);	
+		}
+		
+.
+
++refuse(CNPId)[source(Worker)]: task(CNPId, task(Task_type,_,_))
+	<-	if(not friend(Worker))
+		{
+			+friend(Worker);
+		}
+		
+		!getWorkerSkills(Task_type, Skill);
+		
+		if(not availability(Worker, Skill,_,_))
+		{
+			+availability(Worker, Skill, 1, 1);	
+		}
+.
+
+/**
+ * The worker cannot start the service because he is busy.
+ * @param CNPId: CNPId of the call
+ * @param status: service aborted, the worker is already doing another service for someone.
+ */
++service(CNPId, aborted)[source(Worker)]
+	<-	-worker(CNPId, Worker,_,_);
+		!contract(CNPId);
+.
+
+/**
+ * The worker started the service.
+ * The trucker informs to others workers that he's just hired someone.
+ * @param CNPId: CNPId of the call
+ * @param status: service started, the worker hired some helpers and started the unload process.
+ */
++service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers) & task(CNPId, task(Task_type,_,_))
+	<-	.print("Worker: ", Worker, " answered: started, CNPId: ", CNPId);
+		-+cnp_state(CNPId, contract);
+		!getWorkerSkills(Task_type, Skill);
+		!inc_help(Worker, Skill);
+		!reject_offers(CNPId, Worker, Offers);
+.
+
+/**
  * Define when a truck can star the unload process.
  */
 +!unload: getMyName(Me) & visible(true)
@@ -63,14 +134,16 @@ count(0).
 +!contract(CNPId)
 	:	getMyName(Me) & 
 		cnp_state(CNPId, propose) & 
-		getReceivedOffers(CNPId, Offers)
+		getReceivedOffers(CNPId, Offers) &
+		task(CNPId, task(Task_type,_,_))
 		
 	<-	if(Offers \== [])	// try to hire a worker
       	{
-      		.length(Offers, N_offers);
-      		.print("Number of offers received: ", N_offers);
-      		actions.trucker.chooseBestOffer(Me, Offers, Winner);
-      		!invite_worker(CNPId, Winner, Offers);
+      		?cargo_type(Task_type);
+      		!update_trust(Task_type, Offers);
+      		actions.trucker.chooseBestOffer(Offers, Task_type, Winner);
+      		!getWorkerSkills(Task_type, Skill)
+      		!invite_worker(CNPId, Skill, Winner, Offers);
       	}
       	else	// end the call
       	{
@@ -80,44 +153,41 @@ count(0).
 .
 
 /**
+ * Update trust value for each worker that sent a offer to truck.
+ * @param Task_type: type of cargo.
+ * @param Offers: list of received offers.
+ */
++!update_trust(Task_type, [offer(_, Worker)|T])
+	<- 	!getWorkerSkills(Task_type, Skill);
+		!computeAvailability(Worker, Skill, Availability);
+		.print(Worker,"'s availability: ", Availability);
+		!check_trust(Worker, Skill, Availability);
+		!update_trust(Task_type, T);
+.
+
++!update_trust(Task_type, []).
+
+/**
  * Inform to worker that his offer was accepted.
  * @param CNPId: CNPId of the call
  * @param Winner: the worker that wins the call.
  * @param Offers: list of received offers.
  */
-+!invite_worker(CNPId, Winner, [offer(_, Worker)|T]) 
++!invite_worker(CNPId, Skill, Winner, [offer(_, Worker)|T]) 
 	<-	if(Worker == Winner)
 		{
 			.send(Worker, tell, accept_proposal(CNPId));
-			-proposal(CNPId, _)[source(Worker)];
+			-proposal(CNPId, team(TeamSize, UnloadTime))[source(Worker)];
+			+worker(CNPId, Worker, TeamSize, UnloadTime);
+ 			!inc_askForHelping(Worker, Skill);   	
 		}
 		else
 		{
-      		!invite_worker(CNPId, Winner, T);
+      		!invite_worker(CNPId, Skill, Winner, T);
       	}
 .
       
-+!invite_team(_, _,[]).
-
-/**
- * The worker cannot start the service because he is busy.
- * @param CNPId: CNPId of the call
- * @param status: service aborted, the worker is already doing another service for someone.
- */
-+service(CNPId, aborted)[source(Worker)]
-	<-	!contract(CNPId);
-.
-
-/**
- * The worker started the service.
- * The trucker informs to others workers that he's just hired someone.
- * @param CNPId: CNPId of the call
- * @param status: service started, the worker hired some helpers and started the unload process.
- */
-+service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers)
-	<-	-+cnp_state(CNPId, contract);
-		!reject_offers(CNPId, Worker, Offers);
-.
++!invite_team(_,_,_,[]).
 
 /**
  * Inform the rejection to workers that weren't selected for job.
@@ -142,33 +212,29 @@ count(0).
  * @param CNPId: CNPId of the call
  * @param results: performance data about the service execution.
  */
-+report(CNPId, results(Unload_Boxes, Time))[source(Worker)] 
-	<-	.print("The worker has just finished the service ");
-		.print("number of unload boxes: ", Unload_Boxes);
-		.print("unload time: ", Time);
++report(CNPId, results(Unload_Boxes, Time))[source(Worker)]: worker(CNPId, Worker, TeamSize, UnloadTime) 
+	<-	?qtd_things(Number_of_boxes);
+		.print("The worker has just finished the service ");		
+		.print("REPORT - ", Worker , ": team size: ", TeamSize);
+		.print("REPORT - ", Worker ,": number boxes - INITIAL: ", Number_of_boxes, "; number boxes - REAL: ", Unload_Boxes);
+		.print("REPORT - ", Worker ,": unload time - ESTIMATED: ", UnloadTime, "; unload time - REAL: ", Time);
+		
+		actions.generic.evaluation(Number_of_boxes, Unload_Boxes, Total_boxes);
+		actions.generic.evaluation(UnloadTime, Time, Total_Time);
+		
 		?count(C);
 		K = C + 1;
 		-count(C);
 		+count(K);
 		
-		// evaluation process - generating an impression about a work
 		actions.trucker.getVisibleTruckers(Truckers);
 		.print("visible truckers: ", Truckers);
 		?cargo_type(Task_type);
+		!getWorkerSkills(Task_type, Skill);
+		!evaluateProvider(Worker, Skill, ["EXPERTISE", "TIME"], [Total_boxes, Total_Time]);			
+		!spread_image(Worker, Skill, Truckers);
 		
-		if(Task_type == fragile)
-		{
-			!evaluateProvider(Worker, "FRAGILE_SPECIALIZATION", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);			
-			!spread_image(Worker, "FRAGILE_SPECIALIZATION", Truckers);
-			!computeTrust(Worker, "FRAGILE_SPECIALIZATION");
-		}
-		else
-		{
-			!evaluateProvider(Worker, "COMMON_SPECIALIZATION", ["EXPERTISE", "TIME" ,"RISK"], [-0.1, 0.5, 0.4]);
-			!spread_image(Worker, "COMMON_SPECIALIZATION", Truckers);
-			!computeTrust(Worker, "COMMON_SPECIALIZATION");
-		}
-		
+		-worker(CNPId, Worker,_,_);
 		!end_call(CNPId);
 .
 

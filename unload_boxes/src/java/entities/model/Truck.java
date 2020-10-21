@@ -34,7 +34,7 @@ public class Truck extends SimpleElement
 		{
 			this.cargoType = CargoType.FRAGILE;
 		}
-		setQtdThings(rand.nextInt(15));
+		setQtdThings(1 + rand.nextInt(15));
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class Truck extends SimpleElement
 		{
 			this.cargoType = CargoType.FRAGILE;
 		}
-		setQtdThings(rand.nextInt(15));
+		setQtdThings(1 + rand.nextInt(15));
 	}
 
 	public Integer getQtdThings() 

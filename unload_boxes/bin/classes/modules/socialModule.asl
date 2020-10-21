@@ -113,15 +113,28 @@ getCandidatesFor(Skill, Candidates)
 .
 
 /** 
+ * Check if there is a trust belief for a agent.
+ * If there is no a trust belief a new trust belief is created with value 0.5 
+ */
++!check_trust(Agent, Skill, Availability): trust(Agent,Skill,_)
+	<-	-trust(Agent, Skill,_);
+		!computeTrust(Agent, Skill, Availability);
+.
+
++!check_trust(Agent, Skill,_): not trust(Agent,Skill,_)
+	<-	+trust(Agent, Skill, 0.5);
+.
+
+/** 
  * Compute a trust measure about a provider using image, reputation and know-how.
  * The trust value is computed considering the context (Skill) 
  */
-+!computeTrust(Provider, Skill)
++!computeTrust(Provider, Skill, Availability)
 	:	getMyImageAbout(Image, Provider, Skill) &
 		getReputationOf(Reputation, Provider, Skill) &
 		getReferencesOf(Reference, Provider, Skill)
 	<-	.my_name(Requester);
-		reputationAndImage.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference).
+		reputationAndImage.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability).
 
 /** 
  * Find the most trustworthy candidate for a given task. 

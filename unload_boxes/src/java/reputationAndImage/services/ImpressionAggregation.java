@@ -28,8 +28,7 @@ public class ImpressionAggregation
 		double ti, aggrValue;
 		List<Double> data;
 		
-		Impression resultImp = new Impression(requesterName, providerName,
-				aggrTime, skill);
+		Impression resultImp = new Impression(requesterName, providerName, aggrTime, skill);
 		
 		for(String criterion : criteria)
 		{
@@ -43,7 +42,27 @@ public class ImpressionAggregation
 				
 				data.add(imp.getValue(criterion));
 			}
-			resultImp.insertRating(criterion, aggrValue * computeVariation(data));
+			Double value = aggrValue * computeVariation(data);
+			
+			if(value > 0 && value.isInfinite())
+			{
+				resultImp.insertRating(criterion, 1.0);
+				System.out.println("WARNING: +infinity");
+			}
+			else if (value < 0 && value.isInfinite())
+			{
+				resultImp.insertRating(criterion, -1.0);
+				System.out.println("WARNING: -infinity");
+			}
+			else if (value.isNaN())
+			{
+				resultImp.insertRating(criterion, -1.0);
+				System.out.println("WARNING: -NaN");
+			}
+			else
+			{
+				resultImp.insertRating(criterion, value);
+			}
 		}
 		return resultImp;
 	}

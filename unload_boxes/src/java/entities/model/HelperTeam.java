@@ -16,6 +16,8 @@ public class HelperTeam
 	private Boolean ready;
 	private Integer teamSize;
 	private Map<Helper, Boolean> team;
+	private Map<Helper, Long> estimatedTime;
+	private Map<Helper, Integer> estimatedLoad;
 	
 	public HelperTeam(int id, int teamSize)
 	{
@@ -23,6 +25,8 @@ public class HelperTeam
 		this.ready = false;
 		this.teamSize = teamSize;
 		this.team = new HashMap<Helper, Boolean>();
+		this.estimatedTime = new HashMap<Helper, Long>();
+		this.estimatedLoad = new HashMap<Helper, Integer>();
 	}
 
 	/**
@@ -35,7 +39,7 @@ public class HelperTeam
 		if (team.size() == teamSize)
 			return false;
 		else
-			team.put(helper, false);	
+			team.put(helper, false);
 		return true;
 	}
 	
@@ -46,7 +50,11 @@ public class HelperTeam
 	public void removeHelper(Helper helper)
 	{
 		if(team.containsKey(helper))
+		{
 			team.remove(helper);
+			estimatedTime.remove(helper);
+			estimatedLoad.remove(helper);
+		}
 	}
 	
 	/**
@@ -125,6 +133,57 @@ public class HelperTeam
 		return members;
 	}
 	
+	/**
+	 * Compute the workload for each helper based on the capabilities of each one
+	 * @param numbBoxes: total of boxes that will be loaded.
+	 */
+	public void computeWorkload(int numbBoxes)
+	{
+		Map<Helper, Double> proportion = new HashMap<Helper, Double>();
+		long maxTime = 0;
+		
+		for(Helper helper : team.keySet()) 
+		{
+			long myTime = estimatedTime.get(helper);
+			
+			if(myTime > maxTime)
+			{
+				maxTime = myTime;
+			}
+		}
+		
+		// computing the proportional estimated time for each member of team
+		double sum = 0.0;
+		for(Helper helper : team.keySet())
+		{
+			double value = estimatedTime.get(helper) / (double) maxTime;
+			proportion.put(helper, value);
+			sum  += value;
+		}
+		
+		// computing number of carried boxes by each member of team
+		double x = numbBoxes / sum;
+		int boxes = 0;
+		
+		for(Helper helper : team.keySet())
+		{
+			int carriedBoxes = (int) Math.round(proportion.get(helper) * x);
+			boxes += carriedBoxes;
+			
+			if(numbBoxes - boxes >= 0)
+			{
+				estimatedLoad.put(helper, carriedBoxes);
+				estimatedTime.put(helper, (carriedBoxes * estimatedTime.get(helper)) / numbBoxes);
+			}
+			else
+			{
+				carriedBoxes -= boxes - numbBoxes;
+				estimatedLoad.put(helper, carriedBoxes);
+				estimatedTime.put(helper, (carriedBoxes * estimatedTime.get(helper)) / numbBoxes);
+			}
+		}
+	}
+	
 	public void showTeam()
 	{
 		System.out.println(this);
@@ -153,6 +212,26 @@ public class HelperTeam
 	public void setTeamSize(Integer teamSize) 
 	{
 		this.teamSize = teamSize;
+	}
+	
+	public void setEstimatedTime(Helper helper, Long time)
+	{
+		estimatedTime.put(helper, time);
+	}
+	
+	public Long getEstimatedTime(Helper helper)
+	{
+		return estimatedTime.get(helper);
+	}
+	
+	public void setEstimatedLoad(Helper helper, Integer load)
+	{
+		estimatedLoad.put(helper, load);
+	}
+	
+	public Integer getEstimatedLoad(Helper helper)
+	{
+		return estimatedLoad.get(helper);
 	}
 
 	@Override
@@ -191,11 +270,15 @@ public class HelperTeam
 			{
 				sb.append(h.getName());
 				sb.append("(hired: ").append(team.get(h)).append(");");
+				sb.append("(time: ").append(estimatedTime.get(h)).append(");");
+				sb.append("(load: ").append(estimatedLoad.get(h)).append(");");
 			}
 			else
 			{
 				sb.append(h.getName());
 				sb.append("(hired: ").append(team.get(h)).append(")");
+				sb.append("(time: ").append(estimatedTime.get(h)).append(")");
+				sb.append("(load: ").append(estimatedLoad.get(h)).append(")");
 			}
 		}
 		return "HelperTeam [id=" + id + ", isReady=" + ready + ", teamSize=" + teamSize + ", team={" + sb.toString() + "}]";

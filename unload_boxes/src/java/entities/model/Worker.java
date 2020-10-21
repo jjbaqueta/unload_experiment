@@ -103,8 +103,9 @@ public class Worker extends SimpleElement
 	 * Add a helper to a team.
 	 * @param teamId: identifier of team which the helper will be added.
 	 * @param helper: the helper to be added.
+	 * @param time: the estimated time defined by helper for making the task
 	 */
-	public void addHelperToTeam(int teamId, Helper helper) throws Exception
+	public void addHelperToTeam(int teamId, Helper helper, Long time) throws Exception
 	{
 		if(teams.containsKey(teamId))
 		{
@@ -112,6 +113,11 @@ public class Worker extends SimpleElement
 			
 			if(!team.addHelper(helper))
 				throw new Exception("It is not possible to add the helper to team, the team is full.");
+			else
+			{
+				team.setEstimatedTime(helper, time);
+				team.setEstimatedLoad(helper, 0);
+			}
 		}
 		else
 			throw new IllegalAccessException("It wasn't possible add the helper. There is no a team with this id: " + teamId);
@@ -128,6 +134,32 @@ public class Worker extends SimpleElement
 			teams.get(teamId).removeHelper(helper);
 		else
 			throw new IllegalAccessException("It wasn't possible to remove the helper. There is no a team with this id: " + teamId);
+	}
+	
+	/**
+	 * get the estimated time for a helper to perform a task.
+	 * @param teamId: id of team.
+	 * @param helper: the helper.
+	 */
+	public long getEstimatedTime(int teamId, Helper helper) throws Exception
+	{
+		if(teams.containsKey(teamId))
+			return teams.get(teamId).getEstimatedTime(helper);
+		else
+			throw new IllegalAccessException("It wasn't possible hire the helper. There is no a team with this id: " + teamId);
+	}
+	
+	/**
+	 * get the estimated load for a helper.
+	 * @param teamId: id of team.
+	 * @param helper: the helper.
+	 */
+	public long getEstimatedLoad(int teamId, Helper helper) throws Exception
+	{
+		if(teams.containsKey(teamId))
+			return teams.get(teamId).getEstimatedLoad(helper);
+		else
+			throw new IllegalAccessException("It wasn't possible hire the helper. There is no a team with this id: " + teamId);
 	}
 	
 	/**
@@ -153,6 +185,17 @@ public class Worker extends SimpleElement
 	{
 		if(teams.containsKey(teamId))
 			return teams.get(teamId).teamIsReady();
+		else
+			throw new IllegalAccessException("Operation {teamIsReady} failed. There is not a team with this id: " + teamId);
+	}
+	
+	/**
+	 * Compute the workload for each helper based on number of boxes that will be loaded. 
+	 */
+	public void computeWorkload(int teamId, int numbBoxes) throws IllegalAccessException
+	{
+		if(teams.containsKey(teamId))
+			teams.get(teamId).computeWorkload(numbBoxes);
 		else
 			throw new IllegalAccessException("Operation {teamIsReady} failed. There is not a team with this id: " + teamId);
 	}

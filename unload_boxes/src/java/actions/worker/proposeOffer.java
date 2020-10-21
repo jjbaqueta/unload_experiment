@@ -1,9 +1,9 @@
 package actions.worker;
 
-import java.util.Collection;
 import java.util.Map;
 
 import entities.model.Helper;
+import entities.model.Truck;
 import entities.model.Worker;
 import environments.DischargeEnv;
 import jason.asSemantics.DefaultInternalAction;
@@ -22,12 +22,14 @@ public class proposeOffer extends DefaultInternalAction
 {
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, Worker> workerMap = DischargeEnv.model.getWorld().getWorkerMap();
+	private Map<Integer, Truck> truckMap = DischargeEnv.model.getWorld().getTruckMap();
 
 	/**
 	 * Arguments (come from parameter args):
 	 * @param args[0]: teamId
 	 * @param args[1]: worker's name
-	 * @return args[2]: an offer
+	 * @param args[2]: truck's name
+	 * @return args[3]: an offer
 	 */
 	@Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception
@@ -35,31 +37,38 @@ public class proposeOffer extends DefaultInternalAction
 		// Getting the input parameters
 		NumberTerm teamId = (NumberTerm) args[0]; 
 		Worker worker = workerMap.get(Integer.parseInt(args[1].toString().split("_")[1]));
+		Truck trucker = truckMap.get(Integer.parseInt(args[2].toString().split("_")[1]));
 	
-		// Returning an offer
-		return un.unifies(generateOffer(worker.getTeamMembers((int) teamId.solve())), args[2]);
+		// Returning an offer		
+		return un.unifies(generateOffer(worker, (int) teamId.solve(), trucker.getQtdThings()), args[3]);
     }
 	
 	/**
 	 * Compute the offer based on the attributes of team members
 	 * @param teamMembers: member of a team
+	 * @param truck: a trucker
 	 * @return an offer.
+	 * @throws Exception 
 	 */
-	private Structure generateOffer(Collection<Helper> teamMembers)
+	private Structure generateOffer(Worker worker, int id, int numbBoxes) throws Exception
 	{
-		double score = 0;
-		long time = 0l;
+		worker.computeWorkload(id, numbBoxes);
 		
-		for(Helper helper: teamMembers)
+		int members = 0;
+		long time = 0;
+		
+		for(Helper helper : worker.getTeamMembers(id))
 		{
-			score += (helper.getCapacity() * helper.getVelocity())/ helper.getEnergyCost();
-			time += helper.getCapacity() * helper.getVelocity();
+			if(worker.getEstimatedLoad(id, helper) > 0)
+			{
+				time += worker.getEstimatedTime(id, helper);
+				members++;
+			}
 		}
 		
-		Structure offer = new Structure("attributes");
-		offer.addTerm(new NumberTermImpl(score));
+		Structure offer = new Structure("team");
+		offer.addTerm(new NumberTermImpl(members));
 		offer.addTerm(new NumberTermImpl(time));
-		
 		return offer;
 	}
 }
