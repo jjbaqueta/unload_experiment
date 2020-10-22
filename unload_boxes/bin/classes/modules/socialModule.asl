@@ -116,12 +116,18 @@ getCandidatesFor(Skill, Candidates)
  * Check if there is a trust belief for a agent.
  * If there is no a trust belief a new trust belief is created with value 0.5 
  */
-+!check_trust(Agent, Skill, Availability): trust(Agent,Skill,_)
++!check_trust(Agent, Skill, Availability, Urgency, Num_boxes, Self_confident)
+	:	trust(Agent, Skill,_) &
+		getMyImpressionsAbout(Impressions, Agent, Skill) &
+		getThirdPartImages(Images, Agent, Skill)
 	<-	-trust(Agent, Skill,_);
-		!computeTrust(Agent, Skill, Availability);
+		.length(Impressions, Own_imps);
+		.length(Images, Other_imps);
+		actions.generic.getFuzzyVariables(Urgency, Num_boxes, Own_imps, Other_imps, Self_confident, EdgesValues);
+		!computeTrust(Agent, Skill, Availability, EdgesValues);
 .
 
-+!check_trust(Agent, Skill,_): not trust(Agent,Skill,_)
++!check_trust(Agent, Skill,_,_,_,_): not trust(Agent,Skill,_)
 	<-	+trust(Agent, Skill, 0.5);
 .
 
@@ -129,12 +135,12 @@ getCandidatesFor(Skill, Candidates)
  * Compute a trust measure about a provider using image, reputation and know-how.
  * The trust value is computed considering the context (Skill) 
  */
-+!computeTrust(Provider, Skill, Availability)
++!computeTrust(Provider, Skill, Availability, EdgesValues)
 	:	getMyImageAbout(Image, Provider, Skill) &
 		getReputationOf(Reputation, Provider, Skill) &
 		getReferencesOf(Reference, Provider, Skill)
 	<-	.my_name(Requester);
-		reputationAndImage.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability).
+		reputationAndImage.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues).
 
 /** 
  * Find the most trustworthy candidate for a given task. 

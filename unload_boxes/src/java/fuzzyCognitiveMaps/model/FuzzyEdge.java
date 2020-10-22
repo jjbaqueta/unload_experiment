@@ -34,6 +34,11 @@ public class FuzzyEdge implements Comparable<FuzzyEdge>
 	{
 		return value;
 	}
+	
+	public void setValue(double value) 
+	{
+		this.value = value;
+	}
 
 	public Integer getSource() 
 	{

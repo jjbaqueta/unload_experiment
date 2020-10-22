@@ -35,7 +35,7 @@ count(0).
  * When worker receives a proposal or a refuse from a helper, the worker adds this helper as a friend.
  * A friend is a helper with who the worker interacted at least once.
  */
-+proposal(CNPId,_)[source(Worker)]: task(CNPId, task(Task_type,_,_))
++proposal(CNPId,_)[source(Worker)]: task(CNPId, task(Task_type,_,_,_))
 	<-	if(not friend(Worker))
 		{
 			+friend(Worker);
@@ -46,11 +46,10 @@ count(0).
 		if(not availability(Worker, Skill,_,_))
 		{
 			+availability(Worker, Skill, 1, 1);	
-		}
-		
+		}	
 .
 
-+refuse(CNPId)[source(Worker)]: task(CNPId, task(Task_type,_,_))
++refuse(CNPId)[source(Worker)]: task(CNPId, task(Task_type,_,_,_))
 	<-	if(not friend(Worker))
 		{
 			+friend(Worker);
@@ -80,7 +79,7 @@ count(0).
  * @param CNPId: CNPId of the call
  * @param status: service started, the worker hired some helpers and started the unload process.
  */
-+service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers) & task(CNPId, task(Task_type,_,_))
++service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers) & task(CNPId, task(Task_type,_,_,_))
 	<-	.print("Worker: ", Worker, " answered: started, CNPId: ", CNPId);
 		-+cnp_state(CNPId, contract);
 		!getWorkerSkills(Task_type, Skill);
@@ -96,7 +95,8 @@ count(0).
 		?cargo_type(Task_type);
 		?qtd_things(Number_of_boxes);
 		?unload_time(Unload_time);
-		!start_cnp("provider_worker", task(Task_type, Number_of_boxes, Unload_time));
+		actions.trucker.getUrgency(Me, Urgency);
+		!start_cnp("provider_worker", task(Task_type, Number_of_boxes, Unload_time, Urgency));
 .
 
 +!unload: getMyName(Me) & visible(false).
@@ -135,7 +135,7 @@ count(0).
 	:	getMyName(Me) & 
 		cnp_state(CNPId, propose) & 
 		getReceivedOffers(CNPId, Offers) &
-		task(CNPId, task(Task_type,_,_))
+		task(CNPId, task(Task_type,_,_,_))
 		
 	<-	if(Offers \== [])	// try to hire a worker
       	{
@@ -157,11 +157,13 @@ count(0).
  * @param Task_type: type of cargo.
  * @param Offers: list of received offers.
  */
-+!update_trust(Task_type, [offer(_, Worker)|T])
++!update_trust(Task_type, [offer(_, Worker)|T]): getMyName(Me)
 	<- 	!getWorkerSkills(Task_type, Skill);
 		!computeAvailability(Worker, Skill, Availability);
-		.print(Worker,"'s availability: ", Availability);
-		!check_trust(Worker, Skill, Availability);
+		?qtd_things(Num_boxes);
+		actions.trucker.getUrgency(Me, Urgency);
+		actions.generic.getSelfConfident(Me, Self_confident);
+		!check_trust(Worker, Skill, Availability, Urgency, Num_boxes, Self_confident);
 		!update_trust(Task_type, T);
 .
 

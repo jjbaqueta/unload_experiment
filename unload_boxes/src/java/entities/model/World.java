@@ -168,6 +168,18 @@ public class World
 	{
 		return truckersOrder;
 	}
+	
+	// Intimate level of interactions (ITM) - limit to define the importance level of impressions
+	public int getItmForWorkers()
+	{
+		return workerMap.keySet().size() * helperMap.keySet().size();
+	}
+	
+	// Intimate level of interactions (ITM) - limit to define the importance level of impressions
+	public int getItmForTruckers()
+	{
+		return truckMap.keySet().size() * workerMap.keySet().size();
+	}
 
 	@Override
 	public String toString() 

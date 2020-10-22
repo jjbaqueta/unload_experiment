@@ -52,7 +52,8 @@ all_proposals_received(CNPId, NP)
  * @return Plist (list of participants of calling) 
  */
 +!bid(CNPId, Plist)
-	<-	.wait(all_proposals_received(CNPId, .length(Plist)));
+	<-	.length(Plist, Size);
+		.wait(all_proposals_received(CNPId, Size));
 		.print("Participants: ", Plist).
 
 /**

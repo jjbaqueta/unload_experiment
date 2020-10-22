@@ -9,6 +9,7 @@ import entities.model.SimpleElement;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
+import fuzzyClassifier.FuzzySystem;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
@@ -44,6 +45,12 @@ public class DischargeEnv extends Environment
 		}
 
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
+		
+		Config.createFuzzyFile(model.getWorld().getTruckMap().keySet().size(), 
+				model.getWorld().getWorkerMap().keySet().size(), 
+				model.getWorld().getHelperMap().keySet().size());
+		
+		FuzzySystem.fis = FuzzySystem.loadFuzzyBlocks();
 		
 		startPercepts();
 	}

@@ -9,7 +9,8 @@ public class Truck extends SimpleElement
 	private Integer qtdThings;		// Amount of boxes inside of the truck
 	private Boolean discharged;		// Informs when the truck is discharge
 	private CargoType cargoType;	// Defines the type of cargo transported by the truck
-	private Long unloadTime;		// The unloading time. How much time can be spend to unload the truck. 
+	private Long unloadTime;		// The unloading time. How much time can be spend to unload the truck.
+	private Double urgency;		// Urgency of the truck to unload
 	
 	public Truck(Integer posX, Integer posY, Integer qtdThings, CargoType cargoType, Long unloadTime) 
 	{
@@ -19,22 +20,14 @@ public class Truck extends SimpleElement
 		this.cargoType = cargoType;
 		this.discharged = qtdThings <= 0;
 		this.unloadTime = unloadTime;
+		this.urgency = -1.0;
 	}
 	
 	public Truck(Integer posX, Integer posY) 
 	{	
 		super(posX, posY);
 		this.setName("truck_" + id);
-		visible = false;
-		unloadTime = 100000l;
-		cargoType = CargoType.COMMON;
-		
-		Random rand = new Random();		
-		if(rand.nextBoolean())
-		{
-			this.cargoType = CargoType.FRAGILE;
-		}
-		setQtdThings(1 + rand.nextInt(15));
+		setProperties();
 	}
 	
 	@Override
@@ -50,6 +43,24 @@ public class Truck extends SimpleElement
 			this.cargoType = CargoType.FRAGILE;
 		}
 		setQtdThings(1 + rand.nextInt(15));
+		
+		switch (rand.nextInt(5)) 
+		{
+			case 0:
+				urgency = -1.0;
+				break;
+			case 1:
+				urgency = -0.5;
+				break;
+			case 2:
+				urgency = 0.0;
+				break;
+			case 3:
+				urgency = 0.5;
+				break;
+			default:
+				urgency = 1.0;
+		}
 	}
 
 	public Integer getQtdThings() 
@@ -86,6 +97,16 @@ public class Truck extends SimpleElement
 	public void setUnloadTime(Long unloadTime) 
 	{
 		this.unloadTime = unloadTime;
+	}
+	
+	public Double getUrgency() 
+	{
+		return urgency;
+	}
+
+	public void setUrgency(Double urgency) 
+	{
+		this.urgency = urgency;
 	}
 
 	@Override

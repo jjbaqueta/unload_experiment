@@ -66,7 +66,7 @@ invites_received(TeamId, NI)
  * When worker receives a proposal or a refuse from a helper, the worker adds this helper as a friend.
  * A friend is a helper with who the worker interacted at least once.
  */
-+proposal(TeamId,_)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type)
++proposal(TeamId,_)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type,_)
 	<-	if(not friend(Helper))
 		{
 			+friend(Helper);
@@ -80,7 +80,7 @@ invites_received(TeamId, NI)
 		}
 .
 
-+refuse(TeamId)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type)
++refuse(TeamId)[source(Helper)]: team(CNPId, TeamId,_,_) & task(CNPId,_,_, Cargo_type,_)
 	<-	if(not friend(Helper))
 		{
 			+friend(Helper);
@@ -97,7 +97,7 @@ invites_received(TeamId, NI)
 /**
  *	When a helper is invited to join a team (make a service), he may either accept or reject the invite.
  */
-+service(TeamId, Status)[source(Helper)]: team(CNPId, TeamId, _, _) & task(CNPId,_,_, Cargo_type)
++service(TeamId, Status)[source(Helper)]: team(CNPId, TeamId, _, _) & task(CNPId,_,_, Cargo_type,_)
 	<-	-proposal(TeamId,_)[source(Helper)];
 		.print("Helper: ", Helper, " answered: ", Status, " teamID: ", TeamId);
 		!getHelperSkills(Cargo_type, Skill);
@@ -115,19 +115,19 @@ invites_received(TeamId, NI)
  * @param task(Nb_boxes): number of boxes inside the truck.
  * @param task(Unload_Time): time to perform the task. 
  */
-+cfp(CNPId, task(Type, Nb_boxes, Unload_Time))[source(Truck)]
++cfp(CNPId, task(Type, Nb_boxes, Unload_Time, Urgency))[source(Truck)]
 	:	provider(Truck, "requester_trucker") & 
 		specialization(My_specialty) &
 		busy(false)
 		
 	<-	if(Type == fragile & (My_specialty == fragile_specialization | My_specialty == dual_specialization))
 		{
-			!make_offer(CNPId, fragile, Nb_boxes, Unload_Time, Truck);
+			!make_offer(CNPId, fragile, Nb_boxes, Unload_Time, Urgency, Truck);
 			
 		}
 		elif(Type == common & (My_specialty == common_specialization | My_specialty == dual_specialization))
 		{
-			!make_offer(CNPId, common, Nb_boxes, Unload_Time, Truck);
+			!make_offer(CNPId, common, Nb_boxes, Unload_Time, Urgency, Truck);
 		}
 		else
 		{
@@ -139,7 +139,7 @@ invites_received(TeamId, NI)
 		}
 .
 
-+cfp(CNPId, task(Type, Nb_boxes, Unload_Time))[source(Truck)]: provider(Truck, "requester_trucker") & busy(true)
++cfp(CNPId, task(Type, Nb_boxes, Unload_Time, Urgency))[source(Truck)]: provider(Truck, "requester_trucker") & busy(true)
 	<-	.send(Truck, tell, refuse(CNPId));
 		-cfp(CNPId,_)[source(Truck)];
 .
@@ -153,13 +153,13 @@ invites_received(TeamId, NI)
  * @param Unload_Time: time to perform the task. 
  * @param Truck: name of trucker that requested the service.
  */
-+!make_offer(CNPId, Cargo_type, Nb_boxes, Unload_Time, Truck): getMyName(Me)
++!make_offer(CNPId, Cargo_type, Nb_boxes, Unload_Time, Urgency, Truck): getMyName(Me)
 	<-	actions.worker.getTeamID(Me, CNPId, TeamId);
 		actions.generic.getTargetPosition(Truck, pos(X, Y));
 		.findall(depot(Name), depot(Name), Depots);
 		!getTheNearestTarget(Depots, pos(X, Y), Depot);
 		+team(CNPId, TeamId, Truck, Depot);
-		+task(CNPId, Nb_boxes, Unload_Time, Cargo_type);
+		+task(CNPId, Nb_boxes, Unload_Time, Cargo_type, Urgency);
 		!create_team(TeamId);
 		!start_cnp(CNPId);
 .
@@ -170,7 +170,7 @@ invites_received(TeamId, NI)
  */
 +!start_cnp(CNPId)
 	: 	team(CNPId, TeamId, Truck, Depot) &
-		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) &
+		task(CNPId, Nb_boxes, Unload_Time, Cargo_type, Urgency) &
 		getMyName(Me)
 		
 	<-	actions.worker.getHelpersNearby(Me, Nearby_Helpers);
@@ -189,7 +189,7 @@ invites_received(TeamId, NI)
 		{
 			.send(Truck, tell, refuse(CNPId));
 			-team(CNPId,_,_,_);
-			-task(CNPId,_,_,_);
+			-task(CNPId,_,_,_,_);
 			-cfp(CNPId,_)[source(_)];
 			!remove_team(TeamId);
 			.concat("[TASK CANCELED - NO PARTICIPANTS] - CNPId: ", CNPId, Message);
@@ -217,15 +217,15 @@ invites_received(TeamId, NI)
  * @param Cargo_type: type of cargo.
  * @param Offers: list of received offers.
  */
-+!update_trust(Cargo_type, [offer(_, Helper)|T])
++!update_trust(Cargo_type, Num_boxes, Urgency, [offer(_, Helper)|T]): getMyName(Me)
 	<-	!getHelperSkills(Cargo_type, Skill);
 		!computeAvailability(Helper, Skill, Availability);
-      	.print(Helper,"'s availability: ", Availability); 
-		!check_trust(Helper, Skill, Availability);
-		!update_trust(Cargo_type, T);
+		actions.generic.getSelfConfident(Me, Self_confident);
+		!check_trust(Helper, Skill, Availability, Urgency, Num_boxes, Self_confident);
+		!update_trust(Cargo_type, Num_boxes, Urgency, T);
 .
 
-+!update_trust(Cargo_type, []).
++!update_trust(Cargo_type, Num_boxes, Urgency, []).
 
 /**
  * The worker try to hire helpers for the task.
@@ -233,13 +233,13 @@ invites_received(TeamId, NI)
  */
 +!invite_helpers(CNPId)
 	:	team(CNPId, TeamId, Truck, Depot) &
-		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) & 	
+		task(CNPId, Nb_boxes, Unload_Time, Cargo_type, Urgency) & 	
 		getReceivedOffers(TeamId, Offers) & 		
 		getMyName(Me)
 		
 	<- 	if(Offers \== [])
       	{	      		
-      		!update_trust(Cargo_type, Offers);
+      		!update_trust(Cargo_type, Nb_boxes, Urgency, Offers);
 	 		!update_team(TeamId, Offers, Nb_boxes, Unload_Time, Cargo_type, NotReadyMembers);
 	 		!getHelperSkills(Cargo_type, Skill)
 	 		!invite_team(TeamId, Skill, NotReadyMembers);
@@ -256,7 +256,7 @@ invites_received(TeamId, NI)
 			{
 				.send(Truck, tell, refuse(CNPId));
 				-team(CNPId,_,_,_);
-				-task(CNPId,_,_,_);
+				-task(CNPId,_,_,_,_);
 				-cnp_state(CNPId,_);
 				-refuse(CNPId)[source(_)];
 				-cfp(CNPId,_)[source(_)];
@@ -281,7 +281,7 @@ invites_received(TeamId, NI)
  
 +!check_team(TeamId)
 	: 	team(CNPId, TeamId, Truck, Depot) &
-		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) & 
+		task(CNPId, Nb_boxes, Unload_Time, Cargo_type, Urgency) & 
 		getReceivedOffers(TeamId, Offers) &
 		getMyName(Me)
 		
@@ -356,7 +356,8 @@ invites_received(TeamId, NI)
 +!wait_answers(TeamId): getMyName(Me) 
 	<-	.findall(guest(Helper), invitation(TeamId, Helper), Guest_list);
 		.print("Guest list: ", Guest_list, " TeamId: ", TeamId);
-		.wait(invites_received(TeamId, .length(Guest_list)));
+		.length(Guest_list, Size)
+		.wait(invites_received(TeamId, Size));
 		.print("All guests answered the invite for .", TeamId);
 .
 
@@ -530,7 +531,7 @@ invites_received(TeamId, NI)
 @w_cnp5 [atomic]
 +report(TeamId, results(Delivered_boxes, Taken_boxes, Task_time))[source(Helper)]
 	: 	team(CNPId, TeamId, _, _) &
-		task(CNPId, _,_, Cargo_type) &
+		task(CNPId, _,_, Cargo_type,_) &
 		client(CNPId, Truck) & 
 		getMyName(Me)		
 	
@@ -599,7 +600,7 @@ invites_received(TeamId, NI)
 		-refuse(CNPId)[source(_)];
 		-cnp_state(CNPId,_);
 		-team(CNPId, TeamId,_,_,_);
-		-task(CNPId,_,_,_);
+		-task(CNPId,_,_,_,_);
 		-cfp(CNPId,_)[source(_)];
 .
 

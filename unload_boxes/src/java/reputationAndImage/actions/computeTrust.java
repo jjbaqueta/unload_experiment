@@ -41,6 +41,7 @@ public class computeTrust extends DefaultInternalAction
 	 * args[4]: target's reputation.
 	 * args[5]: target's references.
 	 * args[6]: target's availability
+	 * args[7]: values for edges
 	 */
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
@@ -55,6 +56,7 @@ public class computeTrust extends DefaultInternalAction
 		ListTerm reputation = (ListTerm)args[4];
 		ListTerm reference = (ListTerm)args[5];
 		NumberTerm availability = (NumberTerm) args[6];
+		ListTerm edgeValues = (ListTerm) args[7];
 		
 		// Loading the image to the trust tree
 		addInputNodes(inputs, trustTree, trustTree.getFuzzyMap().getNodesByName(Mnemonic.IMAGE.name()).get(0), 
@@ -71,6 +73,32 @@ public class computeTrust extends DefaultInternalAction
 		// Loading availability value
 		trustTree.getFuzzyMap().getNodesByName("availability").get(0).setValue(availability.solve());
 		
+		for(int i = 0; i < edgeValues.size(); i++)
+		{
+			NumberTerm value = (NumberTerm) edgeValues.get(i);
+			
+			switch (i) 
+			{
+				case 0:
+					trustTree.getFuzzyMap().getEdgesByName("ability_effect").get(0).setValue(value.solve());
+					break;
+				case 1:
+					trustTree.getFuzzyMap().getEdgesByName("availability_effect").get(0).setValue(value.solve());
+					break;
+				case 2:
+					trustTree.getFuzzyMap().getEdgesByName("knowhow_effect").get(0).setValue(value.solve());
+					break;
+				case 3:
+					trustTree.getFuzzyMap().getEdgesByName("ir_effect").get(0).setValue(value.solve());
+					break;
+				case 4:
+					trustTree.getFuzzyMap().getEdgesByName("rep_effect").get(0).setValue(value.solve());
+					break;
+				default:
+					trustTree.getFuzzyMap().getEdgesByName("img_effect").get(0).setValue(value.solve());
+					break;
+			}
+		}
 		
 		// Computing trust value
 		PropagateInputsVisitor propagateVisitor = new PropagateInputsVisitor(inputs);

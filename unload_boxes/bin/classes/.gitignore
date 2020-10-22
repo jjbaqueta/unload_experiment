@@ -1,4 +1,7 @@
-/agents/
+/entities/
+/environments/
+/fuzzyClassifier/
 /actions/
+/agents/
 /reputationAndImage/
 /modules/

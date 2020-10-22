@@ -32,12 +32,12 @@ public class TrustTree
 		fuzzyMap.insertNode(new FuzzyNode(idNode++, "externalFactors", 0.0));
 		fuzzyMap.insertNode(new FuzzyNode(idNode++, "Trustfulness", 0.0));
 		
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 1.0, 0, 3));		//img -> i/r		
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.5, 1, 3));		//rep -> i/r
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 1.0, 3, 4));		//i/r -> ability
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.4, 2, 4));		//ref -> ability
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 1.0, 4, 6));		//ability -> internal factors
-		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.2, 5, 6));		//availability -> internal factors
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "img_effect", 1.0, 0, 3));				//img -> i/r		
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "rep_effect", 0.5, 1, 3));				//rep -> i/r
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ir_effect", 1.0, 3, 4));				//i/r -> ability
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "knowhow_effect", 0.4, 2, 4));			//ref -> ability
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ability_effect", 1.0, 4, 6));			//ability -> internal factors
+		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "availability_effect", 0.2, 5, 6));		//availability -> internal factors
 		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.5, 6, 10));		//internal factors -> trustfulness
 		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.5, 7, 9));		//risk -> external factors
 		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "e", 0.2, 8, 9));		//opportunity -> external factors 

@@ -1,5 +1,6 @@
 package entities.model;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import jason.environment.grid.Location;
 
@@ -17,6 +18,7 @@ public abstract class SimpleElement
 	protected String name;
 	protected Location pos;
 	protected Boolean visible;
+	protected Boolean selfConfident;
 	
 	public SimpleElement(Integer posX, Integer posY) 
 	{
@@ -24,6 +26,9 @@ public abstract class SimpleElement
 		this.pos = new Location(posX, posY);
 		this.name = null;
 		this.visible = false;
+		
+		Random rand = new Random();
+		selfConfident = rand.nextBoolean();
 	}
 	
 	public abstract void setProperties();
@@ -63,6 +68,16 @@ public abstract class SimpleElement
 		this.visible = visible;
 	}
 
+	public Boolean getSelfConfident() 
+	{
+		return selfConfident;
+	}
+
+	public void setSelfConfident(Boolean selfConfident) 
+	{
+		this.selfConfident = selfConfident;
+	}
+
 	@Override
 	public int hashCode() 
 	{
@@ -95,6 +110,6 @@ public abstract class SimpleElement
 	public String toString() 
 	{
 		return "id=" + id + ", name=" + name + ", visible=" + visible
-				+ ", posX=" + pos.x + "posX=" + pos.y;
+				+ ", posX=" + pos.x + "posX=" + pos.y + ", self confident=" + selfConfident;
 	}	
 }
