@@ -70,6 +70,74 @@ getCandidatesFor(Skill, Candidates)
 	reputationAndImage.actions.knowhowAnalysis(Requester, S, List);
 	-ref(_)[source(S)]. 
 
+/**
+ * Begins the availability level of an agent.
+ * @param Agent: an agent..
+ * @param Skill: the role played by this agent.
+ */
++!initializeAvailability(Agent, Skill): not availability(Agent, Skill,_,_) 
+    <-  +availability(Agent, Skill, 1, 1);
+.
+
+/**
+ * Increase the number of ask for helping by one unit.
+ * @param Agent: agent for who the help was asked. 
+ */
+@b_inc1 [atomic]
++!requestHelp(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
+	<-	-availability(Agent, Skill,_,_);
+		+availability(Agent, Skill, N_askForHelping + 1, N_Help); 
+.
+
++!requestHelp(Agent, Skill): not availability(Agent, Skill,_,_).
+
+/**
+ * Increase by one unit the helping counter of a helper.
+ * @param Agent: agent who helped. 
+ */
+@b_inc2 [atomic]
++!helping(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
+	<-	-availability(Agent, Skill,_,_);
+		+availability(Agent, Skill, N_askForHelping, N_Help + 1);
+.
+
++!helping(Agent, Skill): not availability(Agent, Skill,_,_).
+
+/**
+ * Compute the availability of a Helper
+ * @param Agent: agent for who the availability will be computed. 
+ * @return the availability value
+ */
++!computeAvailability(Agent, Skill, Availability): availability(Agent, Skill, N_askForHelping, N_Help)
+	<-	if(N_askForHelping == 0)
+		{
+			Availability = -1;
+		}
+		else
+		{
+			Value = N_Help / N_askForHelping;
+			
+			if(Value <= 0)
+			{
+				Availability = -1;
+			}
+			elif (Value >= 1)
+			{
+				Availability = 1;
+			}
+			else
+			{
+				Availability = 2 * Value - 1;
+			}
+		}
+.
+
++!computeAvailability(Agent, Skill, Availability): not availability(Agent, Skill,_,_)
+	<- .print("------------ AVAILABILITY NOT FOUND FOR AGENT: ", Agent, " AND SKILL: ", Skill, "; CREATING RECORD...");
+		+availability(Agent, Skill, 1, 1);
+		Availability = 1;
+.
+
 /** 
  * Evaluate the provider. 
  * The evaluation is stored by the requester agent and sent to the provider

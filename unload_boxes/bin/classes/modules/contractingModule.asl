@@ -53,7 +53,7 @@ all_proposals_received(CNPId, NP)
  */
 +!bid(CNPId, Plist)
 	<-	.length(Plist, Size);
-		.wait(all_proposals_received(CNPId, Size));
+		.wait(all_proposals_received(CNPId, Size), 4000,_);
 		.print("Participants: ", Plist).
 
 /**

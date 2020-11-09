@@ -51,6 +51,7 @@ public class DischargeEnv extends Environment
 				model.getWorld().getHelperMap().keySet().size());
 		
 		FuzzySystem.fis = FuzzySystem.loadFuzzyBlocks();
+//		FuzzySystem.showInputCharts(FuzzySystem.fis);
 		
 		startPercepts();
 	}

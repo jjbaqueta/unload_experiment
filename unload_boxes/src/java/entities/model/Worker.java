@@ -38,13 +38,22 @@ public class Worker extends SimpleElement
 		setProperties();
 	}
 	
+//	@Override
+//	public void setProperties() 
+//	{
+//		Random rand = new Random();
+//		this.seekRange = 5 + rand.nextInt(5);
+//		this.proximity = 1 + rand.nextInt(3);
+//		defineSpecialization();
+//		defineRiskProfile();
+//	}
+	
 	@Override
 	public void setProperties() 
 	{
-		Random rand = new Random();
-		this.seekRange = 5 + rand.nextInt(5);
-		this.proximity = 1 + rand.nextInt(3);
-		defineSpecialization();
+		this.seekRange = 8;
+		this.proximity = 3;
+		this.specialization = WorkerSpecialization.FRAGILE_SPECIALIZATION;
 		defineRiskProfile();
 	}
 	
@@ -279,11 +288,8 @@ public class Worker extends SimpleElement
 		{	
 			for(Helper helper : teams.get(teamId).getReadyMembers())
 				terms.add(new Atom(helper.getName()));
-			
-			return terms;
 		}
-		else
-			throw new IllegalAccessException("Operation {getReadyMembersAsTermList} failed. There is not a team with this id: " + teamId);
+		return terms;
 	}
 
 	/**

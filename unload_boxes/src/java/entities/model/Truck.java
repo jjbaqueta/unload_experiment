@@ -6,77 +6,60 @@ import entities.enums.CargoType;
 
 public class Truck extends SimpleElement
 {
-	private Integer qtdThings;		// Amount of boxes inside of the truck
-	private Boolean discharged;		// Informs when the truck is discharge
+	private Double urgency;			// Urgency to unload
+	private Integer cargoAmount;	// Amount of boxes inside of the truck
 	private CargoType cargoType;	// Defines the type of cargo transported by the truck
-	private Long unloadTime;		// The unloading time. How much time can be spend to unload the truck.
-	private Double urgency;		// Urgency of the truck to unload
+	private Boolean unloaded;		// Informs when the truck is unloaded
 	
-	public Truck(Integer posX, Integer posY, Integer qtdThings, CargoType cargoType, Long unloadTime) 
+	public Truck(Integer posX, Integer posY, Double urgency, Integer cargoAmount, CargoType cargoType) 
 	{
 		super(posX, posY);
-		this.qtdThings = qtdThings;
 		this.setName("truck_" + id);
+		this.urgency = urgency;
+		this.cargoAmount = cargoAmount;
 		this.cargoType = cargoType;
-		this.discharged = qtdThings <= 0;
-		this.unloadTime = unloadTime;
-		this.urgency = -1.0;
+		this.unloaded = cargoAmount <= 0;
 	}
 	
 	public Truck(Integer posX, Integer posY) 
 	{	
 		super(posX, posY);
 		this.setName("truck_" + id);
-		setProperties();
+		this.setProperties();
 	}
 	
 	@Override
 	public void setProperties() 
-	{
-		visible = false;
-		unloadTime = 100000l;
-		cargoType = CargoType.COMMON;
-		
+	{		
 		Random rand = new Random();		
-		if(rand.nextBoolean())
-		{
-			this.cargoType = CargoType.FRAGILE;
-		}
-		setQtdThings(1 + rand.nextInt(15));
 		
-		switch (rand.nextInt(5)) 
-		{
-			case 0:
-				urgency = -1.0;
-				break;
-			case 1:
-				urgency = -0.5;
-				break;
-			case 2:
-				urgency = 0.0;
-				break;
-			case 3:
-				urgency = 0.5;
-				break;
-			default:
-				urgency = 1.0;
-		}
+		this.urgency = rand.nextDouble();
+		this.cargoType = CargoType.COMMON;
+		this.minTrustBound = -0.2;
+		
+		if(rand.nextBoolean())
+			this.cargoType = CargoType.FRAGILE;
+		
+		if(rand.nextBoolean())
+			this.urgency = this.urgency * -1;
+		
+		this.setCargoAmount(1 + rand.nextInt(15));
 	}
 
-	public Integer getQtdThings() 
+	public Integer getCargoAmount() 
 	{
-		return qtdThings;
+		return cargoAmount;
 	}
 
-	public void setQtdThings(Integer qtdThings) 
+	public void setCargoAmount(Integer cargoAmount) 
 	{
-		this.qtdThings = qtdThings;
-		this.discharged = qtdThings <= 0;
+		this.cargoAmount = cargoAmount;
+		this.unloaded = cargoAmount <= 0;
 	}
 
-	public Boolean isDischarged() 
+	public Boolean isUnloaded() 
 	{
-		return discharged;
+		return unloaded;
 	}
 
 	public CargoType getCargoType() 
@@ -87,16 +70,6 @@ public class Truck extends SimpleElement
 	public void setCargoType(CargoType cargoType) 
 	{
 		this.cargoType = cargoType;
-	}
-
-	public Long getUnloadTime() 
-	{
-		return unloadTime;
-	}
-
-	public void setUnloadTime(Long unloadTime) 
-	{
-		this.unloadTime = unloadTime;
 	}
 	
 	public Double getUrgency() 
@@ -113,7 +86,7 @@ public class Truck extends SimpleElement
 	public String toString() 
 	{
 		return "Truck [" + super.toString() 
-		+ ", qtdThings=" + qtdThings + ", discharged=" + discharged 
-		+ ", cargoType=" + cargoType + ", unloadTime=" + unloadTime + "]";
+		+ ", cargoAmount=" + this.cargoAmount + ", unloaded=" + this.unloaded 
+		+ ", cargoType=" + this.cargoType + ", urgency=" + this.urgency + "]";
 	}
 }

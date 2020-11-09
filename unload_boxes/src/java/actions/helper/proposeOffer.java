@@ -38,9 +38,9 @@ public class proposeOffer extends DefaultInternalAction
 		Truck truck = truckMap.get(Integer.parseInt(args[1].toString().split("_")[1]));
 		Artifact depot = depotMap.get(Integer.parseInt(args[2].toString().split("_")[1]));
 		
-		int meToTruck = (int) (1.8 * Math.abs(helper.getPos().x - truck.getPos().x) + Math.abs(helper.getPos().y - truck.getPos().y));
-		int truckToDepot = (int) (1.8 * Math.abs(depot.getPos().x - truck.getPos().x) + Math.abs(depot.getPos().y - truck.getPos().y));		
-		double trips = 2 * ((double) truck.getQtdThings() / helper.getCapacity());
+		int meToTruck = (int) (2.2 * Math.abs(helper.getPos().x - truck.getPos().x) + Math.abs(helper.getPos().y - truck.getPos().y));
+		int truckToDepot = (int) (2.2 * Math.abs(depot.getPos().x - truck.getPos().x) + Math.abs(depot.getPos().y - truck.getPos().y));		
+		double trips = 2 * ((double) truck.getCargoAmount() / helper.getCapacity());
 		int stopTime = (int) ((trips / (helper.getBattery() / helper.getEnergyCost())) * (2000 / helper.getVelocity()));
 		long estimation = (long) ((meToTruck + (truckToDepot * trips)) * helper.getVelocity()) + stopTime;
 		

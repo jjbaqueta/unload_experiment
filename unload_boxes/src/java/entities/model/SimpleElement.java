@@ -18,19 +18,26 @@ public abstract class SimpleElement
 	protected String name;
 	protected Location pos;
 	protected Boolean visible;
-	protected Boolean selfConfident;
+	protected Double selfConfident;
+	protected Double minTrustBound;
 	
 	public SimpleElement(Integer posX, Integer posY) 
 	{
+		Random rand = new Random();
 		this.id = seqId.getAndIncrement() + 1;
 		this.pos = new Location(posX, posY);
 		this.name = null;
-		this.visible = false;
+		this.visible = false;		
+		this.selfConfident = rand.nextDouble();
+		this.minTrustBound = -1.0;
 		
-		Random rand = new Random();
-		selfConfident = rand.nextBoolean();
+		if(rand.nextBoolean())
+			this.selfConfident = this.selfConfident * -1;
 	}
 	
+	/*
+	 * This method is used to define some specific properties for each inherited class.
+	 */
 	public abstract void setProperties();
 
 	public Integer getId() 
@@ -68,14 +75,24 @@ public abstract class SimpleElement
 		this.visible = visible;
 	}
 
-	public Boolean getSelfConfident() 
+	public Double getSelfConfident() 
 	{
 		return selfConfident;
 	}
 
-	public void setSelfConfident(Boolean selfConfident) 
+	public void setSelfConfident(Double selfConfident) 
 	{
 		this.selfConfident = selfConfident;
+	}
+
+	public Double getMinTrustBound() 
+	{
+		return minTrustBound;
+	}
+
+	public void setMinTrustBound(Double minTrustBound) 
+	{
+		this.minTrustBound = minTrustBound;
 	}
 
 	@Override
@@ -110,6 +127,7 @@ public abstract class SimpleElement
 	public String toString() 
 	{
 		return "id=" + id + ", name=" + name + ", visible=" + visible
-				+ ", posX=" + pos.x + "posX=" + pos.y + ", self confident=" + selfConfident;
+				+ ", posX=" + pos.x + "posX=" + pos.y + ", self confident=" + selfConfident + 
+				", min trust bound =" + minTrustBound;
 	}	
 }

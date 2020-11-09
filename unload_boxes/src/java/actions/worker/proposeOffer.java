@@ -40,7 +40,7 @@ public class proposeOffer extends DefaultInternalAction
 		Truck trucker = truckMap.get(Integer.parseInt(args[2].toString().split("_")[1]));
 	
 		// Returning an offer		
-		return un.unifies(generateOffer(worker, (int) teamId.solve(), trucker.getQtdThings()), args[3]);
+		return un.unifies(generateOffer(worker, (int) teamId.solve(), trucker.getCargoAmount()), args[3]);
     }
 	
 	/**

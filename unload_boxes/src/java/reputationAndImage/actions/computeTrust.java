@@ -73,6 +73,11 @@ public class computeTrust extends DefaultInternalAction
 		// Loading availability value
 		trustTree.getFuzzyMap().getNodesByName("availability").get(0).setValue(availability.solve());
 		
+		boolean flag = true;
+		
+		if(flag == true)
+		{
+		
 		for(int i = 0; i < edgeValues.size(); i++)
 		{
 			NumberTerm value = (NumberTerm) edgeValues.get(i);
@@ -98,6 +103,7 @@ public class computeTrust extends DefaultInternalAction
 					trustTree.getFuzzyMap().getEdgesByName("img_effect").get(0).setValue(value.solve());
 					break;
 			}
+		}
 		}
 		
 		// Computing trust value

@@ -4,6 +4,7 @@
 { include("src/asl/modules/providingModule.asl") }	// rules and plans for providing a service
 { include("src/asl/modules/socialModule.asl") }				// rules and plans for social evaluations
 
+task_count(0).
 !start.
 
 /*
@@ -285,6 +286,8 @@
 		client(CNPId, Client)
 		
 	<-	?task_time(Stime);
+		?task_count(TC);
+		-+task_count(TC + 1);
 		actions.generic.getTime(Ftime);
 		Time = Ftime - Stime;
 		.print("I finish my task! I'm going back to the depot.");

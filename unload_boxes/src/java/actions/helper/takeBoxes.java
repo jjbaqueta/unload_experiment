@@ -32,19 +32,19 @@ public class takeBoxes extends DefaultInternalAction
     	
     	ts.getAg().delBel(Literal.parseLiteral("carrying(_)"));
     	
-    	if(!t.isDischarged())
+    	if(!t.isUnloaded())
     	{
-	    	int rest = t.getQtdThings() - h.getCapacity();
+	    	int rest = t.getCargoAmount() - h.getCapacity();
 	    	
 	    	if(rest <= 0)	// The helper takes the rest of boxes from truck
 	    	{
-	    		ts.getAg().addBel(Literal.parseLiteral("carrying(" + t.getQtdThings() + ")"));	    		
-	    		t.setQtdThings(0);
+	    		ts.getAg().addBel(Literal.parseLiteral("carrying(" + t.getCargoAmount() + ")"));	  
+	    		t.setCargoAmount(0);
 	    	}
 	    	else	// The helper takes all possible boxes according with its capacity
 	    	{
 	    		ts.getAg().addBel(Literal.parseLiteral("carrying(" + h.getCapacity() + ")"));
-	    		t.setQtdThings(rest);
+	    		t.setCargoAmount(rest);
 	    	}
     	}
     	else

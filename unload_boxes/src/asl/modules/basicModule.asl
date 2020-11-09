@@ -14,6 +14,9 @@ getMyPosition(X, Y) :- pos(X, Y).
 // Get the number of offers received
 getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId, Offer)[source(Agent)], Offers).
 
+// Get friends
+getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
+
 /**
  * Move the agent from an initial position to a target position.
  * The agents moves step by step (a position at time). 
@@ -35,62 +38,11 @@ getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId
 .
 
 /**
- * Increase the number of ask for helping by one unit.
- * @param Agent: agent for who the help was asked. 
+ * Add an agent as a friend of other agent.
+ * @param Agent: the agent that will be added as a new friend.
  */
-@b_inc1 [atomic]
-+!inc_askForHelping(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
-	<-	-availability(Agent, Skill,_,_);
-		+availability(Agent, Skill, N_askForHelping + 1, N_Help); 
-.
-
-+!inc_askForHelping(Agent, Skill): not availability(Agent, Skill,_,_).
-
-/**
- * Increase by one unit the helping counter of a helper.
- * @param Agent: agent who helped. 
- */
-@b_inc2 [atomic]
-+!inc_help(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
-	<-	-availability(Agent, Skill,_,_);
-		+availability(Agent, Skill, N_askForHelping, N_Help + 1);
-.
-
-+!inc_help(Agent, Skill): not availability(Agent, Skill,_,_).
-
-/**
- * Compute the availability of a Helper
- * @param Agent: agent for who the availability will be computed. 
- * @return the availability value
- */
-+!computeAvailability(Agent, Skill, Availability): availability(Agent, Skill, N_askForHelping, N_Help)
-	<-	if(N_askForHelping == 0)
-		{
-			Availability = -1;
-		}
-		else
-		{
-			Value = N_Help / N_askForHelping;
-			
-			if(Value <= 0)
-			{
-				Availability = -1;
-			}
-			elif (Value >= 1)
-			{
-				Availability = 1;
-			}
-			else
-			{
-				Availability = 2 * Value - 1;
-			}
-		}
-.
-
-+!computeAvailability(Agent, Skill, Availability): not availability(Agent, Skill,_,_)
-	<- .print("------------ AVAILABILITY NOT FOUND FOR AGENT: ", Agent, " AND SKILL: ", Skill, "; CREATING RECORD...");
-		+availability(Agent, Skill, 1, 1);
-		Availability = 1;
++!addFriend(Agent): not friend(Agent) 
+    <-  +friend(Agent);
 .
 
 /**

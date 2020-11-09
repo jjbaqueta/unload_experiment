@@ -74,8 +74,16 @@ public class updateTeam extends DefaultInternalAction {
         	
         	// Getting trust value
         	Structure trust = (Structure) ts.getAg().findBel(Literal.parseLiteral(belief), un);
-        	NumberTerm value = (NumberTerm) trust.getTerm(2);
-        	trustMap.put(helper, value.solve());
+        	
+        	if(trust != null)
+        	{
+        		NumberTerm value = (NumberTerm) trust.getTerm(2);
+        		trustMap.put(helper, value.solve());
+        	}
+        	else
+        	{
+        		trustMap.put(helper, 0.5);
+        	}
     	}
    
     	if(worker.containsTeam(teamId))

@@ -33,6 +33,7 @@ public class initialize extends DefaultInternalAction
     	
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
     	ts.getAg().addBel(Literal.parseLiteral("visible(" + w.isVisible() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("self_confident(" + w.getSelfConfident() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("specialization(" + w.getSpecialization().name().toLowerCase() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("risk_profile(" + w.getRiskProfile() +")"));
     

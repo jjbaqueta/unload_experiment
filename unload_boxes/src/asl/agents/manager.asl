@@ -3,7 +3,14 @@
  * He creates and removes others agents from environment.
  */
 
+!start.
+
 //*** Plans
+
++!start
+	<- 	actions.generic.getTime(StartTime);
+		+startTime(StartTime);
+.
 
 /*
  * Create a new worker
@@ -31,6 +38,29 @@
 .
 
 @t_cont1[atomic]
++stop[source(Truck)] 
+	<-	!check_end;
+.
+
++!check_end
+	<- 	actions.generic.getTime(EndTime);
+		?startTime(StartTime);
+		.print("END ----------- Execution time (miliseconds): ", EndTime - StartTime);			
+		
+.
+
+//+!check_end
+//	<- 	.count(add_trucker(_), AT);
+//		.count(stop, CS);
+//		if(AT == CS)
+//		{
+//			actions.generic.getTime(EndTime);
+//		   ?startTime(StartTime);
+//		   .print("END ----------- Execution time (miliseconds): ", EndTime - StartTime);			
+//		}
+//.
+
+@t_cont2[atomic]
 +!quit[source(Truck)]
 	<-	actions.trucker.getNext(Next_trucker);	
 		actions.generic.resetProperties(Truck);
