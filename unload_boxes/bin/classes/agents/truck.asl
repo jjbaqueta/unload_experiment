@@ -71,14 +71,15 @@ max_requests(2).    // limit for the number of requesting that can be done.
 		actions.trucker.getVisibleTruckers(Truckers);
 		!getWorkerSkills(Task_type, Skill);
 		!evaluateProvider(Worker, Skill, ["EXPERTISE", "TIME"], [Total_boxes, Total_time]);			
-		!spread_image(Worker, Skill, Truckers);
+		!spreadImage(Worker, Skill, Truckers);
 		
         // Clear memory
         -+cnp_state(CNPId, finished);
-        -refuse(CNPId)[source(_)];
         -task(CNPId,_);
-        -report(CNPId,_);
-        !removeMyAttributes;
+        -report(CNPId,_)[source(Worker)];
+        !deleteAllPoposals(CNPId)
+        !deleteAllRefuses(CNPId);
+        !exit;
 .
 
 /**
@@ -167,7 +168,7 @@ max_requests(2).    // limit for the number of requesting that can be done.
       	{
       		!updateTrust(Task_type, Offers);
             actions.trucker.evaluateOffers(Me, Offers, Task_type, workers(Winners, Losers));
-            !rejectLosers(CNPId, Losers);
+            !rejectWorkers(CNPId, Losers);
             
             if(Winners \== [])
             {
@@ -191,28 +192,29 @@ max_requests(2).    // limit for the number of requesting that can be done.
                     !rejectWorkers(CNPId, Winners);
                     .print("No worker answered my invite, so I'm going out from the system.");            
                     -+cnp_state(CNPId, interrupted);
-                    -refuse(CNPId)[source(_)];
                     -task(CNPId,_);
-                    !removeMyAttributes;
+                    !deleteAllPoposals(CNPId)
+                    !deleteAllRefuses(CNPId);
+                    !exit;
                 }
             }
             else
             {
                 .print("It wasn't possible to find trustworthiness workers, so I'm going out from the system.");
                 -+cnp_state(CNPId, aborted);
-                -proposal(CNPId,_);
-                -refuse(CNPId)[source(_)];
                 -task(CNPId,_);
-                !removeMyAttributes;
+                !deleteAllPoposals(CNPId);
+                !deleteAllRefuses(CNPId);
+                !exit;
             }
       	}
       	else
       	{
       		.print("It wasn't possible to find available workers, so I'm going out from the system.");            
 		    -+cnp_state(CNPId, canceled);
-		    -refuse(CNPId)[source(_)];
 		    -task(CNPId,_);
-            !removeMyAttributes;
+			!deleteAllRefuses(CNPId);	    
+            !exit;
       	}
 .
 
@@ -226,7 +228,7 @@ max_requests(2).    // limit for the number of requesting that can be done.
 +!inviteWinners(CNPId, Skill, [Worker|T]) 
 	<-	.send(Worker, tell, can_start(CNPId));
         !requestHelp(Winner, Skill);
-  		!inviteWinners(CNPId, T);
+  		!inviteWinners(CNPId, Skill, T);
 .
 
 +!inviteWinners(CNPId,_,[]).
@@ -308,18 +310,11 @@ max_requests(2).    // limit for the number of requesting that can be done.
 +!rejectOthers(CNPId, Winner, []).
 
 /**
- * Delete the basic attributes of a trucker.
+ * Check the end of execution.
  */	
-+!removeMyAttributes
-    <-  -id(_);
-		-pos(_,_);
-		-cargo_type(_);
-		-cargo_amount(_);
-        -task_urgency(_);
-        -self_confident(_);
-		-visible(_);
-
-	    ?request_count(Current_Value);
++!exit: getMyName(Me)
+    <-  -+visible(false);
+    	?request_counter(Current_Value);
         ?max_requests(Max_value)
 
 	    if(Current_Value < Max_value)
@@ -329,9 +324,19 @@ max_requests(2).    // limit for the number of requesting that can be done.
 	    }
 	    else
 	    {
-		    .print("------------- end of execution -------------");
-		    .send(manager, tell, stop);
+		    .send(manager, tell, stop(Me));
+		    
+		    // Final report 
+		    .count(cnp_state(CNPId, interrupted), Interrupted);
+		    .count(cnp_state(CNPId, finished), Finished);
+		    .count(cnp_state(CNPId, aborted), Aborted);
+		    .count(cnp_state(CNPId, canceled), Canceled);
+		    
+		    .print("[FINAL REPORT] Number of tasks: ", Finished + Canceled + Aborted + Interrupted, 
+		    	", Finished tasks: ", Finished, 
+		    	", Canceled tasks: ", Canceled,
+		    	", Aborted tasks: ", Aborted,
+		    	", Interrupted tasks: ", Interrupted);
 	    }
-
-        -+request_count(Current_Value + 1);
+        -+request_counter(Current_Value + 1);
 .

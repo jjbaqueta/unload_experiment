@@ -99,7 +99,7 @@ public class WordViewer extends GridWorldView
         	}
         	else if(agent.getClass().equals(Truck.class))
         	{
-        		Truck t = (Truck) agent;
+        		Truck t = (Truck) agent;        	
         		
         		if(t.isVisible())
         		{

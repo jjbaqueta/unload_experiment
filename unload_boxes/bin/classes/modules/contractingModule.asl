@@ -91,17 +91,49 @@ all_proposals_received(CNPId, NP)
 +!result(_,[],_).
 
 /**
- * Spread your own image to others
- * @param Appraised: evaluated agent
- * @param Skill: skill to be evaluated
- * @param Targets: list of agents that will received the image
+ * Delete all refuses sent by an agent for a given CNPId
+ * @param CNPId: id of the call.
  */
-+!spread_image(Appraised, Skill, [Target|T]): getMyName(Me)
-	<-	if(Me \== Target)
-		{
-			!sendImage(Appraised, Target, Skill);
-		}
-		!spread_image(Appraised, Skill, T)
++!deleteAllRefuses(CNPId)
+	<-	.findall(Agent, refuse(CNPId)[source(Agent)], Agents);
+		!deleteRefuse(CNPId, Agents);
 .
 
-+!spread_image(_,_,[]).
++!deleteRefuse(CNPId, [Agent|T])
+	<-	-refuse(CNPId)[source(Agent)];
+		!deleteRefuse(CNPId, T);
+.
+
++!deleteRefuse(CNPId, []).
+
+/**
+ * Delete all proposes sent by an agent for a given CNPId
+ * @param CNPId: id of the call.
+ */
++!deleteAllPoposals(CNPId)
+	<-	.findall(Agent, proposal(CNPId,_)[source(Agent)], Agents);
+		!deleteProposal(CNPId, Agents);
+.
+
++!deleteProposal(CNPId, [Agent|T])
+	<-	-proposal(CNPId,_)[source(Agent)];
+		!deleteProposal(CNPId, T);
+.
+
++!deleteProposal(CNPId, []).
+
+/**
+ * Delete all service acknowledges sent by an agent for a given CNPId
+ * @param CNPId: id of the call.
+ */
++!deleteAllServices(CNPId)
+	<-	.findall(Agent, service(CNPId,_)[source(Agent)], Agents);
+		!deleteService(CNPId, Agents);	
+.
+
++!deleteService(CNPId, [Agent|T])
+	<-	-service(CNPId,_)[source(Agent)];
+		!deleteService(CNPId, T);
+.
+
++!deleteService(CNPId, []).

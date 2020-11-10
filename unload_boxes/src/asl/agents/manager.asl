@@ -1,27 +1,28 @@
-/*
+/**
  * This agent is responsible for initialization and management of environment.
- * He creates and removes others agents from environment.
+ * He creates and removes agents from the environment.
  */
 
+/* BEHAVIOR *************/
 !start.
-
-//*** Plans
 
 +!start
 	<- 	actions.generic.getTime(StartTime);
 		+startTime(StartTime);
 .
 
-/*
+/**
  * Create a new worker
+ * @param Name: name of worker.
  */ 
 +add_worker(Name)
 	<-	.create_agent(Name, "worker.asl");
 		.print("A new worker was created. Name: ", Name);
 .
 
-/*
+/**
  * Create a new worker
+ * @param Name: name of trucker.
  */ 
 +add_trucker(Name)
 	<-	.create_agent(Name, "truck.asl");
@@ -29,50 +30,59 @@
 		.send(Name, achieve, unload);
 .
 		
-/*
+/**
  * Create a new helper
+ * @param Name: name of helper.
  */ 
 +add_helper(Name)
 	<-	.create_agent(Name, "helper.asl");
 		.print("A new helper was created. Name: ", Name);
 .
 
-@t_cont1[atomic]
-+stop[source(Truck)] 
-	<-	!check_end;
+/**
+ * A trucker informs to manager that finished his current execution
+ * @param Truck: a trucker.
+ */ 
++stop(Truck) 
+	<-	actions.generic.resetProperties(Truck);
+		actions.trucker.getNext(Next_trucker);
+		!check_end(Next_trucker);
 .
 
-+!check_end
-	<- 	actions.generic.getTime(EndTime);
-		?startTime(StartTime);
-		.print("END ----------- Execution time (miliseconds): ", EndTime - StartTime);			
+/**
+ * Check if all truckers finished their executions.
+ * @param Next_trucker: the next trucker to be added to the system.
+ */ 
+@m_1[atomic]
++!check_end(Next_trucker)
+	<- 	?startTime(StartTime);
+	
+		if(Next_trucker \== none)
+		{
+			.send(Next_trucker, achieve, start);
+			.send(Next_trucker, achieve, unload);
+		}
 		
+		.count(add_trucker(_), Added);
+		.count(stop(_), Finished);
+		
+		if(Added == Finished)
+		{
+			actions.generic.getTime(EndTime);
+			.print("[END OF EXECUTION] - Time (miliseconds): ", EndTime - StartTime);		
+		}
+		update_screen;
 .
 
-//+!check_end
-//	<- 	.count(add_trucker(_), AT);
-//		.count(stop, CS);
-//		if(AT == CS)
-//		{
-//			actions.generic.getTime(EndTime);
-//		   ?startTime(StartTime);
-//		   .print("END ----------- Execution time (miliseconds): ", EndTime - StartTime);			
-//		}
-//.
-
-@t_cont2[atomic]
+/**
+ * The trucker informs to manager that he will go out from the system.
+ */ 
+@m_2[atomic]
 +!quit[source(Truck)]
-	<-	actions.trucker.getNext(Next_trucker);	
-		actions.generic.resetProperties(Truck);
+	<-	actions.generic.resetProperties(Truck);
 		actions.trucker.goToWaitingQueue(Truck);
+		actions.trucker.getNext(Next_trucker);
 		.send(Next_trucker, achieve, start);
 		.send(Next_trucker, achieve, unload);
+		update_screen;
 .
-
-///*
-// * Remove an agent (worker, helper, or trucker)
-// */ 
-//+remove(Id_agent)
-//	<-	actions.removeAgent(Id_worker, Name);
-//		.kill_agent(Name);
-//		-remove(Id_agent).

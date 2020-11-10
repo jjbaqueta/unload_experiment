@@ -44,6 +44,7 @@ public class Truck extends SimpleElement
 			this.urgency = this.urgency * -1;
 		
 		this.setCargoAmount(1 + rand.nextInt(15));
+		this.setVisible(false);
 	}
 
 	public Integer getCargoAmount() 

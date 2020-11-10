@@ -8,10 +8,11 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 /**
- * This actions gets the next trucker from the list of truckers
+ * This actions gets the next trucker to be inserted in the system.
  */
 public class getNext extends DefaultInternalAction 
 {
@@ -25,6 +26,10 @@ public class getNext extends DefaultInternalAction
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
 		Truck t = DischargeEnv.model.getWorld().getNextTruck();
-		return un.unifies(new Atom(t.getName()), args[0]);
+		
+		if(t != null)
+			return un.unifies(new Atom(t.getName()), args[0]);
+		else
+			return un.unifies(Literal.parseLiteral("none"), args[0]);
     }
 }

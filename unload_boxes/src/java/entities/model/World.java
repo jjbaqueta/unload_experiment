@@ -159,9 +159,14 @@ public class World
 	
 	public Truck getNextTruck() 
 	{
-		Truck t = truckersOrder.remove();
-		t.setVisible(true);
-		return t;
+		if(!truckersOrder.isEmpty())
+		{
+			Truck t = truckersOrder.remove();
+			t.setVisible(true);
+			return t;
+		}
+		return null;
+		
 	}
 	
 	public Queue<Truck> getTruckersOrder() 

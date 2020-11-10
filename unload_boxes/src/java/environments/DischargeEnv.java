@@ -156,6 +156,10 @@ public class DischargeEnv extends Environment
         	Worker worker = model.getWorld().getWorkerMap().get(Integer.parseInt(agName.split("_")[1]));
         	model.moveWorker(worker);
         }
+        if (action.getFunctor().equals("update_screen"))
+        {
+        	model.updateView();
+        }
         return true;
 	}
 

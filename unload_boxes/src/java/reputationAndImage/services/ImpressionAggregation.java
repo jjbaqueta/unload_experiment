@@ -1,9 +1,8 @@
 package reputationAndImage.services;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
+import environments.DischargeEnv;
 import reputationAndImage.model.Impression;
 import reputationAndImage.model.Skill;
 import reputationAndImage.model.TimeBB;
@@ -26,47 +25,121 @@ public class ImpressionAggregation
 		
 		double tj = fTj(impressions, aggrTime);
 		double ti, aggrValue;
-		List<Double> data;
 		
+		// Computing reputation
 		Impression resultImp = new Impression(requesterName, providerName, aggrTime, skill);
 		
 		for(String criterion : criteria)
 		{
 			aggrValue = 0;
-			data = new ArrayList<Double>();
 			
 			for(Impression imp : impressions)
 			{
 				ti = (((double) imp.getTime() / aggrTime) / tj);
 				aggrValue += imp.getValue(criterion) * ti;
-				
-				data.add(imp.getValue(criterion));
 			}
-			Double value = aggrValue * computeVariation(data);
+			double value = aggrValue;
 			
-			if(value > 0 && value.isInfinite())
-			{
-				resultImp.insertRating(criterion, 1.0);
-				System.out.println("WARNING: +infinity");
-			}
-			else if (value < 0 && value.isInfinite())
-			{
-				resultImp.insertRating(criterion, -1.0);
-				System.out.println("WARNING: -infinity");
-			}
-			else if (value.isNaN())
-			{
-				resultImp.insertRating(criterion, -1.0);
-				System.out.println("WARNING: -NaN");
-			}
-			else
-			{
-				resultImp.insertRating(criterion, value);
-			}
+			resultImp.insertRating(criterion, value);			
+		}
+		
+		// Computing reliability
+		Impression reliability = computeReliability(resultImp, aggrTime, impressions, requesterName, providerName, skill, criteria);
+		
+		for(String criterion : criteria)
+		{
+			double value = resultImp.getValue(criterion);
+			resultImp.changeValue(criterion, value * reliability.getValue(criterion));
 		}
 		return resultImp;
 	}
 
+	/*
+	 * This method computes the reliability of subjective reputation 
+	 * @param subjectiveRep Subjective reputation from criterion selected.
+	 * @param currentTime Time instant used during the computation of subjective reputation.
+	 * @param ratings List of impressions considered to compute the subjective reputation.
+	 * @return how much reliable is the subjective reputation for each evaluated criterion
+	 */
+	private static Impression computeReliability(Impression aggrImp, long aggrTime, 
+			Set<Impression> impressions, String requesterName, String providerName, 
+			Skill skill, Set<String> criteria)
+	{			
+		Impression resultImp = new Impression(requesterName, providerName, aggrTime, skill);
+		Impression deviations = computeDeviation(aggrImp, aggrTime, impressions, requesterName, providerName, skill, criteria);
+		double ni = computeNi(impressions);
+		double aggrValue;
+		
+		for(String criterion : criteria)
+		{
+			aggrValue = 0;
+			
+			for(Impression imp : impressions)
+			{
+				aggrValue += imp.getValue(criterion);
+			}
+			double value = aggrValue / impressions.size();
+			resultImp.insertRating(criterion, (1 - value) * ni + value * deviations.getValue(criterion));			
+		}
+		return resultImp;
+	}
+	
+	/*
+	 * This method computes the importance level of impressions list.
+	 * The intimate level of interactions (ITM) is adopted in order to minimize the effects from ratings with low occurrence levels.
+	 * @param impressions List of impressions considered to compute the subjective reputation.
+	 * @return how much expressive is the list of impressions
+	 */
+	private static double computeNi(Set<Impression> impressions)
+	{	
+		// Number of impressions used to calculate the reputation.
+		int cardinality = impressions.size();
+		double ITM = DischargeEnv.model.getWorld().getItmForTruckers() * DischargeEnv.model.getWorld().getItmForWorkers();
+	
+		/*
+		 * Computing Ni
+		 * If the rating cardinality is below the ITM, the importance of impressions is reduced (to a value less than 1).
+		 * Otherwise, the importance level is defined as 1. 
+		 */
+		if(cardinality <= ITM)
+			return Math.sin(Math.PI/(2 * ITM) * cardinality);
+		else
+			return 1;
+	}
+	
+	/*
+	 * This method computes the deviation of subjective reputation considering a given evaluation criterion (price, quality or delivery)
+	 * A deviation value near 0 indicates a high variability, in turn, close to 1 indicates a low variability (bigger reliability).
+	 * @param subjectiveRep Subjective reputation from criterion selected.
+	 * @param currentTime Time instant used during the computation of subjective reputation.
+	 * @param ratings List of impressions considered to compute the subjective reputation.
+	 * @return Deviation of subjective reputation.
+	 */
+	private static Impression computeDeviation(Impression aggrImp, long aggrTime, 
+			Set<Impression> impressions, String requesterName, String providerName, 
+			Skill skill, Set<String> criteria)
+	{		
+		double tj = fTj(impressions, aggrTime);
+		double ti, aggrValue;
+		
+		Impression deviationImp = new Impression(requesterName, providerName, aggrTime, skill);
+		
+		for(String criterion : criteria)
+		{
+			aggrValue = 0;
+			
+			for(Impression imp : impressions)
+			{
+				ti = (((double) imp.getTime() / aggrTime) / tj);
+				aggrValue += Math.abs((double) imp.getValue(criterion) - aggrImp.getValue(criterion)) * ti;
+			}
+			double value = aggrValue;
+			
+			deviationImp.insertRating(criterion, 1.0 - value);			
+		}
+		return deviationImp;
+	}
+	
 	/**
 	 * This method applies a time adjusting based on the time function f(t, tj). 
 	 * The idea is reducing the effects of older ratings on the image and reputation computing.
@@ -84,31 +157,4 @@ public class ImpressionAggregation
 		}
 		return tj;
 	}
-	
-	/**
-	 * This method computes the Pearson correlation coefficient.
-	 * In this case, a value near 1 indicates low variability (high credibility).
-	 * On the other hand, a value near 0 indicates low credibility.
-	 * @param values: the set of data.
-	 * @return the correlation coefficient value.
-	 */
-	private static double computeVariation(List<Double> values)
-	{
-		// Computing the mean
-		double x = 0, v = 0, sd;
-		
-		for(double value : values)
-			x += value;
-		
-		x /= values.size();
-		
-		// Computing the standard deviation
-		for(double value: values)
-			v += Math.pow(value - x, 2);
-		
-		v /= values.size();
-		sd = Math.sqrt(v);
-		
-		return 1 - (sd / x);
-	} 
 }

@@ -45,6 +45,8 @@ getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
     <-  +friend(Agent);
 .
 
++!addFriend(Agent): friend(Agent).
+
 /**
  * Get the most nearest target from agent considering a list of possible targets.
  * @param Target_list: list of possible targets.

@@ -79,6 +79,8 @@ getCandidatesFor(Skill, Candidates)
     <-  +availability(Agent, Skill, 1, 1);
 .
 
++!initializeAvailability(Agent, Skill): availability(Agent, Skill,_,_).
+
 /**
  * Increase the number of ask for helping by one unit.
  * @param Agent: agent for who the help was asked. 
@@ -184,7 +186,7 @@ getCandidatesFor(Skill, Candidates)
  * Check if there is a trust belief for a agent.
  * If there is no a trust belief a new trust belief is created with value 0.5 
  */
-+!check_trust(Agent, Skill, Availability, Urgency, Num_boxes, Self_confident)
++!checkTrust(Agent, Skill, Availability, Urgency, Num_boxes, Self_confident)
 	:	trust(Agent, Skill,_) &
 		getMyImpressionsAbout(Impressions, Agent, Skill) &
 		getThirdPartImages(Images, Agent, Skill)
@@ -195,7 +197,7 @@ getCandidatesFor(Skill, Candidates)
 		!computeTrust(Agent, Skill, Availability, EdgesValues);
 .
 
-+!check_trust(Agent, Skill,_,_,_,_): not trust(Agent,Skill,_)
++!checkTrust(Agent, Skill,_,_,_,_): not trust(Agent,Skill,_)
 	<-	+trust(Agent, Skill, 0.5);
 .
 
@@ -231,3 +233,18 @@ getCandidatesFor(Skill, Candidates)
 			MaxValue = Value;
 			BestProvider = Provider;
 		}.
+/**
+ * Spread your own image to others
+ * @param Appraised: evaluated agent
+ * @param Skill: skill to be evaluated
+ * @param Targets: list of agents that will received the image
+ */
++!spreadImage(Appraised, Skill, [Target|T]): getMyName(Me)
+	<-	if(Me \== Target)
+		{
+			!sendImage(Appraised, Target, Skill);
+		}
+		!spreadImage(Appraised, Skill, T)
+.
+
++!spreadImage(_,_,[]).

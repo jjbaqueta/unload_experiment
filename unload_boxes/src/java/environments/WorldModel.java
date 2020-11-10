@@ -268,7 +268,7 @@ public class WorldModel extends GridWorldModel
 	        agent.setPos(minPos);
 		}
        
-        if (view != null) 
+		if (view != null) 
         {
         	for(Truck t : world.getTruckMap().values())
         	{
@@ -298,6 +298,34 @@ public class WorldModel extends GridWorldModel
         		view.update(d.getPos().x, d.getPos().y);
         }
         return true;
+	}
+	
+	/*
+	 * Update the view when this approach is enable.
+	 */
+	public boolean updateView()
+	{
+		if (view != null) 
+        {
+        	for(Truck t : world.getTruckMap().values())
+        		setAgPos(getIdMapping().get(t.getId()), t.getPos());
+
+        	for(Worker w : world.getWorkerMap().values())
+        		setAgPos(getIdMapping().get(w.getId()), w.getPos());
+        	
+        	for(Helper h : world.getHelperMap().values())
+        		setAgPos(getIdMapping().get(h.getId()), h.getPos());
+        	
+        	for(Artifact g : world.getGarageMap().values())
+        		view.update(g.getPos().x, g.getPos().y);
+        	
+        	for(Artifact r : world.getRechargeMap().values())
+        		view.update(r.getPos().x, r.getPos().y);
+        	
+        	for(Artifact d : world.getDepotsMap().values())
+        		view.update(d.getPos().x, d.getPos().y);
+        }
+		return true;
 	}
 	
 	/**

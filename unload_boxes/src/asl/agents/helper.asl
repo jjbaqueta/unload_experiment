@@ -4,7 +4,7 @@
 { include("src/asl/modules/providingModule.asl") }	// rules and plans for providing a service
 { include("src/asl/modules/socialModule.asl") }				// rules and plans for social evaluations
 
-task_count(0).
+task_counter(0).
 !start.
 
 /*
@@ -176,7 +176,7 @@ task_count(0).
 		not client(_,_)[source(_)]
 		
 	<-	actions.helper.proposeOffer(Me, Truck, Depot, Offer);
-		+proposal(CNPId, task(Truck, Depot, Cargo_type), Offer);
+		+my_proposal(CNPId, task(Truck, Depot, Cargo_type), Offer);
       	.send(Worker, tell, proposal(CNPId, Offer));
       	
       	if(Cargo_type == fragile)
@@ -186,7 +186,8 @@ task_count(0).
 		else
 		{
 			!sendMyknowHow("COMMON_LOADER", Worker);	
-		}	
+		}
+		-cfp(CNPId,_)[source(Worker)];	
 .
 
 +cfp(CNPId, Task)[source(Worker)]: provider(Worker, "requester_worker") & busy(true)
@@ -202,13 +203,14 @@ task_count(0).
 @h_cnp1 [atomic]
 +accept_proposal(CNPId)[source(Worker)]
 	:	provider(Worker, "requester_worker") & 
-		proposal(CNPId, _, _) & 
+		my_proposal(CNPId, _, _) & 
 		busy(false) &
 		not client(_,_)[source(_)]
 		
 	<-	-+busy(true);
 		.print("My proposal was accepted by worker: ", Worker);
 		.send(Worker, tell, service(CNPId, accepted));
+		-accept_proposal(CNPId)[source(Worker)];
 .
 
 /**
@@ -218,8 +220,7 @@ task_count(0).
 +accept_proposal(CNPId)[source(Worker)]: busy(true)
 	<-	.print("My proposal was accepted by ", Worker ,", but I'm already busy.");
 		.send(Worker, tell, service(CNPId, aborted));
-		-proposal(CNPId,_,_);
-		-cfp(CNPId,_)[source(Worker)];
+		-my_proposal(CNPId,_,_);
 		-accept_proposal(CNPId)[source(Worker)];
 .
 
@@ -230,8 +231,7 @@ task_count(0).
  @h_cnp3 [atomic]
 +reject_proposal(CNPId)[source(Worker)]
    <-	.print("I lost CNP ", CNPId, ".");
-		-proposal(CNPId,_,_);
-		-cfp(CNPId,_)[source(Worker)];
+		-my_proposal(CNPId,_,_);
 		-reject_proposal(CNPId)[source(Worker)];
  .
 
@@ -242,6 +242,7 @@ task_count(0).
 +execute(CNPId)[source(Worker)]
 	<-	+client(CNPId, Worker);
 		!start_service(CNPId);
+		-execute(CNPId)[source(Worker)];
 .
 
 /**
@@ -253,9 +254,7 @@ task_count(0).
  */ 
  @h_cnp4 [atomic]
 +service(CNPId, canceled)[source(Worker)]
-	<-	-proposal(CNPId,_,_);
-		-cfp(CNPId,_)[source(Worker)];
-		-accept_proposal(CNPId)[source(Worker)];
+	<-	-my_proposal(CNPId,_,_);
 		-+busy(false);
 		-service(CNPId, _)[source(Worker)];
 .
@@ -264,7 +263,7 @@ task_count(0).
  * The helper stars the service.
  * @param CNPId: id of required service.
  */	
-+!start_service(CNPId):	proposal(CNPId, task(Truck, Depot, Cargo_type), _)
++!start_service(CNPId):	my_proposal(CNPId, task(Truck, Depot, Cargo_type), _)
 	<-	+truck(Truck);
 		+depot(Depot);
 		+empty_truck(false);
@@ -286,14 +285,16 @@ task_count(0).
 		client(CNPId, Client)
 		
 	<-	?task_time(Stime);
-		?task_count(TC);
-		-+task_count(TC + 1);
+		?task_counter(TC);
+		-+task_counter(TC + 1);
+		
 		actions.generic.getTime(Ftime);
 		Time = Ftime - Stime;
-		.print("I finish my task! I'm going back to the depot.");
-		.print("Amount of boxes taken from truck: ", Taken_boxes);
-		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
-		.print("Time taken to do the task: ", Time);
+		
+		.print("[REPORT]: Boxes taken: ", Taken_boxes, 
+			", Boxes delivered: ", Delivered_boxes, 
+			", Task Time: ", Time);
+			
 		.send(Client, tell, report(CNPId, results(Delivered_boxes, Taken_boxes, Time)));			
 		-truck(_);
 		-depot(_);
@@ -303,9 +304,6 @@ task_count(0).
 		-+delivered_boxes(0);
 		-task_time(_);
 		-client(CNPId,_);
-		-execute(CNPId)[source(_)];
-		-accept_proposal(CNPId)[source(_)];
-		-proposal(CNPId,_,_);
-		-cfp(CNPId,_)[source(_)];
+		-my_proposal(CNPId,_,_);
 		-+busy(false);
 .
