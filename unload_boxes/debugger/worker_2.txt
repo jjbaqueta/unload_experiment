@@ -1,98 +1,200 @@
-TIME(1605040980016),MESSAGE("ADD TEAM: 2112"):
+TIME(1605103116507),MESSAGE("ADD TEAM: 2112"):
 - HelperTeam [id=2112, isReady=false, teamSize=0, team={}] 
 
-TIME(1605040980031),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 211"):
+TIME(1605103116535),MESSAGE("ADD TEAM: 2211"):
 - HelperTeam [id=2112, isReady=false, teamSize=0, team={}] 
+- HelperTeam [id=2211, isReady=false, teamSize=0, team={}] 
 
-TIME(1605040982061),MESSAGE("ADD TEAM: 2313"):
-- HelperTeam [id=2112, isReady=false, teamSize=0, team={}] 
-- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
+TIME(1605103118800),MESSAGE("UPDATE TEAM: 2112"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: false);(time: 15420);(load: 0);helper_5(hired: false)(time: 15407)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=0, team={}] 
 
-TIME(1605040982093),MESSAGE("UPDATE TEAM: 2112"):
-- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_3(hired: false);(time: 39756);(load: 0);helper_8(hired: false)(time: 40021)(load: 0)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
+TIME(1605103118806),MESSAGE("UPDATE TEAM: 2211"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: false);(time: 15420);(load: 0);helper_5(hired: false)(time: 15407)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=2, team={helper_5(hired: false);(time: 49016);(load: 0);helper_6(hired: false)(time: 50216)(load: 0)}] 
 
-TIME(1605040982138),MESSAGE("HIRING HELPER: helper_3"):
-- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_3(hired: true);(time: 39756);(load: 0);helper_8(hired: false)(time: 40021)(load: 0)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
+TIME(1605103118849),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: true);(time: 15420);(load: 0);helper_5(hired: false)(time: 15407)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=2, team={helper_5(hired: false);(time: 49016);(load: 0);helper_6(hired: false)(time: 50216)(load: 0)}] 
 
-TIME(1605040982139),MESSAGE("HIRING HELPER: helper_8"):
-- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_3(hired: true);(time: 39756);(load: 0);helper_8(hired: true)(time: 40021)(load: 0)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
+TIME(1605103118854),MESSAGE("HIRING HELPER: helper_5"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: true);(time: 15420);(load: 0);helper_5(hired: false)(time: 15407)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=2, team={helper_5(hired: true);(time: 49016);(load: 0);helper_6(hired: false)(time: 50216)(load: 0)}] 
 
-TIME(1605040982142),MESSAGE("TEAM READY: 2112"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
+TIME(1605103118856),MESSAGE("FIRING HELPER: helper_5"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: true)(time: 15420)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=2, team={helper_5(hired: true);(time: 49016);(load: 0);helper_6(hired: false)(time: 50216)(load: 0)}] 
 
-TIME(1605040984156),MESSAGE("UPDATE TEAM: 2313"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_6(hired: false);(time: 14216);(load: 0);helper_7(hired: false)(time: 17216)(load: 0)}] 
+TIME(1605103118859),MESSAGE("HIRING HELPER: helper_6"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: true)(time: 15420)(load: 0)}] 
+- HelperTeam [id=2211, isReady=false, teamSize=2, team={helper_5(hired: true);(time: 49016);(load: 0);helper_6(hired: true)(time: 50216)(load: 0)}] 
 
-TIME(1605040984168),MESSAGE("HIRING HELPER: helper_6"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 14216);(load: 0);helper_7(hired: false)(time: 17216)(load: 0)}] 
+TIME(1605103118868),MESSAGE("TEAM READY: 2211"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_4(hired: true)(time: 15420)(load: 0)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 22280);(load: 5);helper_6(hired: true)(time: 27390)(load: 6)}] 
 
-TIME(1605040984169),MESSAGE("HIRING HELPER: helper_7"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 14216);(load: 0);helper_7(hired: true)(time: 17216)(load: 0)}] 
+TIME(1605103118935),MESSAGE("UPDATE TEAM: 2112"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_3(hired: false);(time: 14520);(load: 0);helper_4(hired: true)(time: 15420)(load: 0)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 22280);(load: 5);helper_6(hired: true)(time: 27390)(load: 6)}] 
 
-TIME(1605040984170),MESSAGE("TEAM READY: 2313"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=true, teamSize=2, team={helper_6(hired: true);(time: 6461);(load: 5);helper_7(hired: true)(time: 9390)(load: 6)}] 
+TIME(1605103118955),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=2112, isReady=false, teamSize=2, team={helper_3(hired: true);(time: 14520);(load: 0);helper_4(hired: true)(time: 15420)(load: 0)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 22280);(load: 5);helper_6(hired: true)(time: 27390)(load: 6)}] 
 
-TIME(1605040984283),MESSAGE("FIRING HELPER: helper_6"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=true, teamSize=2, team={helper_7(hired: true)(time: 9390)(load: 6)}] 
+TIME(1605103118959),MESSAGE("TEAM READY: 2112"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 5808);(load: 2);helper_4(hired: true)(time: 9252)(load: 3)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 22280);(load: 5);helper_6(hired: true)(time: 27390)(load: 6)}] 
 
-TIME(1605040984284),MESSAGE("FIRING HELPER: helper_7"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
-- HelperTeam [id=2313, isReady=true, teamSize=2, team={}] 
+TIME(1605103119110),MESSAGE("FIRING HELPER: helper_5"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 5808);(load: 2);helper_4(hired: true)(time: 9252)(load: 3)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={helper_6(hired: true)(time: 27390)(load: 6)}] 
 
-TIME(1605040984284),MESSAGE("DELETE TEAM: 2313"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
+TIME(1605103119111),MESSAGE("FIRING HELPER: helper_6"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 5808);(load: 2);helper_4(hired: true)(time: 9252)(load: 3)}] 
+- HelperTeam [id=2211, isReady=true, teamSize=2, team={}] 
 
-TIME(1605041010009),MESSAGE("[TASK COMPLETED]"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 19878);(load: 7);helper_8(hired: true)(time: 20010)(load: 7)}] 
+TIME(1605103119112),MESSAGE("DELETE TEAM: 2211"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 5808);(load: 2);helper_4(hired: true)(time: 9252)(load: 3)}] 
 
-TIME(1605041010015),MESSAGE("FIRING HELPER: helper_3"):
-- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_8(hired: true)(time: 20010)(load: 7)}] 
+TIME(1605103128851),MESSAGE("[TASK COMPLETED]"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 5808);(load: 2);helper_4(hired: true)(time: 9252)(load: 3)}] 
 
-TIME(1605041010017),MESSAGE("FIRING HELPER: helper_8"):
+TIME(1605103128855),MESSAGE("FIRING HELPER: helper_3"):
+- HelperTeam [id=2112, isReady=true, teamSize=2, team={helper_4(hired: true)(time: 9252)(load: 3)}] 
+
+TIME(1605103128856),MESSAGE("FIRING HELPER: helper_4"):
 - HelperTeam [id=2112, isReady=true, teamSize=2, team={}] 
 
-TIME(1605041010018),MESSAGE("DELETE TEAM: 2112"):
+TIME(1605103128856),MESSAGE("DELETE TEAM: 2112"):
 
-TIME(1605041012023),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 613"):
+TIME(1605103130865),MESSAGE("ADD TEAM: 2313"):
+- HelperTeam [id=2313, isReady=false, teamSize=0, team={}] 
 
-TIME(1605041014035),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 714"):
+TIME(1605103132907),MESSAGE("UPDATE TEAM: 2313"):
+- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_4(hired: false);(time: 8924);(load: 0);helper_5(hired: false)(time: 8209)(load: 0)}] 
 
-TIME(1605041016047),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 812"):
+TIME(1605103132913),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_4(hired: true);(time: 8924);(load: 0);helper_5(hired: false)(time: 8209)(load: 0)}] 
 
-TIME(1605041018062),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 913"):
+TIME(1605103132916),MESSAGE("HIRING HELPER: helper_5"):
+- HelperTeam [id=2313, isReady=false, teamSize=2, team={helper_4(hired: true);(time: 8924);(load: 0);helper_5(hired: true)(time: 8209)(load: 0)}] 
 
-TIME(1605041020074),MESSAGE("ADD TEAM: 21014"):
-- HelperTeam [id=21014, isReady=false, teamSize=0, team={}] 
+TIME(1605103132917),MESSAGE("TEAM READY: 2313"):
+- HelperTeam [id=2313, isReady=true, teamSize=2, team={helper_4(hired: true);(time: 4462);(load: 3);helper_5(hired: true)(time: 4104)(load: 3)}] 
 
-TIME(1605041022119),MESSAGE("UPDATE TEAM: 21014"):
-- HelperTeam [id=21014, isReady=false, teamSize=2, team={helper_3(hired: false);(time: 20556);(load: 0);helper_9(hired: false)(time: 22311)(load: 0)}] 
+TIME(1605103141818),MESSAGE("[TASK COMPLETED]"):
+- HelperTeam [id=2313, isReady=true, teamSize=2, team={helper_4(hired: true);(time: 4462);(load: 3);helper_5(hired: true)(time: 4104)(load: 3)}] 
 
-TIME(1605041022130),MESSAGE("HIRING HELPER: helper_3"):
-- HelperTeam [id=21014, isReady=false, teamSize=2, team={helper_3(hired: true);(time: 20556);(load: 0);helper_9(hired: false)(time: 22311)(load: 0)}] 
+TIME(1605103141822),MESSAGE("FIRING HELPER: helper_4"):
+- HelperTeam [id=2313, isReady=true, teamSize=2, team={helper_5(hired: true)(time: 4104)(load: 3)}] 
 
-TIME(1605041022133),MESSAGE("HIRING HELPER: helper_9"):
-- HelperTeam [id=21014, isReady=false, teamSize=2, team={helper_3(hired: true);(time: 20556);(load: 0);helper_9(hired: true)(time: 22311)(load: 0)}] 
+TIME(1605103141823),MESSAGE("FIRING HELPER: helper_5"):
+- HelperTeam [id=2313, isReady=true, teamSize=2, team={}] 
 
-TIME(1605041022134),MESSAGE("TEAM READY: 21014"):
-- HelperTeam [id=21014, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 10278);(load: 7);helper_9(hired: true)(time: 11155)(load: 7)}] 
+TIME(1605103141823),MESSAGE("DELETE TEAM: 2313"):
 
-TIME(1605041036071),MESSAGE("[TASK COMPLETED]"):
-- HelperTeam [id=21014, isReady=true, teamSize=2, team={helper_3(hired: true);(time: 10278);(load: 7);helper_9(hired: true)(time: 11155)(load: 7)}] 
+TIME(1605103143832),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 414"):
 
-TIME(1605041036081),MESSAGE("FIRING HELPER: helper_3"):
-- HelperTeam [id=21014, isReady=true, teamSize=2, team={helper_9(hired: true)(time: 11155)(load: 7)}] 
+TIME(1605103144559),MESSAGE("ADD TEAM: 2512"):
+- HelperTeam [id=2512, isReady=false, teamSize=0, team={}] 
 
-TIME(1605041036082),MESSAGE("FIRING HELPER: helper_9"):
-- HelperTeam [id=21014, isReady=true, teamSize=2, team={}] 
+TIME(1605103145850),MESSAGE("ADD TEAM: 2613"):
+- HelperTeam [id=2512, isReady=false, teamSize=0, team={}] 
+- HelperTeam [id=2613, isReady=false, teamSize=0, team={}] 
 
-TIME(1605041036082),MESSAGE("DELETE TEAM: 21014"):
+TIME(1605103146614),MESSAGE("UPDATE TEAM: 2512"):
+- HelperTeam [id=2512, isReady=false, teamSize=2, team={helper_5(hired: false);(time: 36018);(load: 0);helper_9(hired: false)(time: 37209)(load: 0)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=0, team={}] 
+
+TIME(1605103146623),MESSAGE("HIRING HELPER: helper_5"):
+- HelperTeam [id=2512, isReady=false, teamSize=2, team={helper_5(hired: true);(time: 36018);(load: 0);helper_9(hired: false)(time: 37209)(load: 0)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=0, team={}] 
+
+TIME(1605103146628),MESSAGE("HIRING HELPER: helper_9"):
+- HelperTeam [id=2512, isReady=false, teamSize=2, team={helper_5(hired: true);(time: 36018);(load: 0);helper_9(hired: true)(time: 37209)(load: 0)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=0, team={}] 
+
+TIME(1605103146629),MESSAGE("TEAM READY: 2512"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=0, team={}] 
+
+TIME(1605103147875),MESSAGE("UPDATE TEAM: 2613"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=2, team={helper_6(hired: false);(time: 7007);(load: 0);helper_8(hired: false)(time: 9407)(load: 0)}] 
+
+TIME(1605103147879),MESSAGE("HIRING HELPER: helper_6"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 7007);(load: 0);helper_8(hired: false)(time: 9407)(load: 0)}] 
+
+TIME(1605103147879),MESSAGE("HIRING HELPER: helper_8"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 7007);(load: 0);helper_8(hired: true)(time: 9407)(load: 0)}] 
+
+TIME(1605103147880),MESSAGE("TEAM READY: 2613"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=true, teamSize=2, team={helper_6(hired: true);(time: 2802);(load: 2);helper_8(hired: true)(time: 5644)(load: 3)}] 
+
+TIME(1605103147901),MESSAGE("FIRING HELPER: helper_6"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=true, teamSize=2, team={helper_8(hired: true)(time: 5644)(load: 3)}] 
+
+TIME(1605103147902),MESSAGE("FIRING HELPER: helper_8"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2613, isReady=true, teamSize=2, team={}] 
+
+TIME(1605103147902),MESSAGE("DELETE TEAM: 2613"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103147903),MESSAGE("[TASK CANCELED - OFFER WAS REJECTED] - CNPId: 613"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103149910),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 711"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103151919),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 814"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103153926),MESSAGE("ADD TEAM: 2913"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=false, teamSize=0, team={}] 
+
+TIME(1605103155947),MESSAGE("UPDATE TEAM: 2913"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=false, teamSize=2, team={helper_6(hired: false);(time: 8209);(load: 0);helper_8(hired: false)(time: 10609)(load: 0)}] 
+
+TIME(1605103155957),MESSAGE("HIRING HELPER: helper_6"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 8209);(load: 0);helper_8(hired: false)(time: 10609)(load: 0)}] 
+
+TIME(1605103155958),MESSAGE("HIRING HELPER: helper_8"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=false, teamSize=2, team={helper_6(hired: true);(time: 8209);(load: 0);helper_8(hired: true)(time: 10609)(load: 0)}] 
+
+TIME(1605103155959),MESSAGE("TEAM READY: 2913"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=true, teamSize=2, team={helper_6(hired: true);(time: 4104);(load: 3);helper_8(hired: true)(time: 5304)(load: 3)}] 
+
+TIME(1605103164914),MESSAGE("[TASK COMPLETED]"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=true, teamSize=2, team={helper_6(hired: true);(time: 4104);(load: 3);helper_8(hired: true)(time: 5304)(load: 3)}] 
+
+TIME(1605103164924),MESSAGE("FIRING HELPER: helper_6"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=true, teamSize=2, team={helper_8(hired: true)(time: 5304)(load: 3)}] 
+
+TIME(1605103164924),MESSAGE("FIRING HELPER: helper_8"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+- HelperTeam [id=2913, isReady=true, teamSize=2, team={}] 
+
+TIME(1605103164925),MESSAGE("DELETE TEAM: 2913"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103166918),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 1011"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103168922),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 1114"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
+
+TIME(1605103172972),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 1212"):
+- HelperTeam [id=2512, isReady=true, teamSize=2, team={helper_5(hired: true);(time: 18009);(load: 6);helper_9(hired: true)(time: 18604)(load: 6)}] 
 

@@ -67,7 +67,7 @@ getCandidatesFor(Skill, Candidates)
  */
 +ref(List)[source(S)]: true
 <-	.my_name(Requester);
-	reputationAndImage.actions.knowhowAnalysis(Requester, S, List);
+	trustModel.repAndImg.actions.knowhowAnalysis(Requester, S, List);
 	-ref(_)[source(S)]. 
 
 /**
@@ -146,7 +146,7 @@ getCandidatesFor(Skill, Candidates)
  */
 +!evaluateProvider(Provider, Skill, Criteria, Values):	true
 	<-	.my_name(Requester);
-		reputationAndImage.actions.addImpression(Requester, Provider, Skill, Criteria, Values, ImpReference);
+		trustModel.repAndImg.actions.addImpression(Requester, Provider, Skill, Criteria, Values, ImpReference);
 		.send(Provider, tell, ImpReference).
 
 /** 
@@ -156,7 +156,7 @@ getCandidatesFor(Skill, Candidates)
  */
 +!computeImage(Provider, Skill, Criteria): getMyImpressionsAbout(Impressions, Provider, Skill) 
 	<-	.my_name(Requester);
-		reputationAndImage.actions.computeImage(Impressions, Requester, Provider, Skill, Criteria).
+		trustModel.repAndImg.actions.computeImage(Impressions, Requester, Provider, Skill, Criteria).
 
 /** 
  * Send the agent's image about a provider for a target. 
@@ -170,7 +170,7 @@ getCandidatesFor(Skill, Candidates)
  */
 +!computeReputation(Provider, Skill, Criteria): getThirdPartImages(Images, Provider, Skill)
 	<-	.my_name(Requester);
-		reputationAndImage.actions.computeReputation(Images, Requester, Provider, Skill, Criteria).
+		trustModel.repAndImg.actions.computeReputation(Images, Requester, Provider, Skill, Criteria).
 
 /** 
  * Send a list of the provided services that agent has performed so far. 
@@ -193,7 +193,7 @@ getCandidatesFor(Skill, Candidates)
 	<-	-trust(Agent, Skill,_);
 		.length(Impressions, Own_imps);
 		.length(Images, Other_imps);
-		actions.generic.getFuzzyVariables(Urgency, Num_boxes, Own_imps, Other_imps, Self_confident, EdgesValues);
+        scenario_unloadBoxes.actions.generic.getFuzzyVariables(Urgency, Num_boxes, Own_imps, Other_imps, Self_confident, EdgesValues);
 		!computeTrust(Agent, Skill, Availability, EdgesValues);
 .
 
@@ -210,7 +210,7 @@ getCandidatesFor(Skill, Candidates)
 		getReputationOf(Reputation, Provider, Skill) &
 		getReferencesOf(Reference, Provider, Skill)
 	<-	.my_name(Requester);
-		reputationAndImage.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues).
+		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues).
 
 /** 
  * Find the most trustworthy candidate for a given task. 

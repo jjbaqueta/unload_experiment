@@ -1,10 +1,10 @@
 MAS discharge_truck 
 {
-	environment: environments.DischargeEnv(gui)
+	environment: scenario_unloadBoxes.environments.UnloadEnv(gui)
 
 	agents:
-		manager beliefBaseClass reputationAndImage.model.TimeBB; 
+		manager beliefBaseClass trustModel.repAndImg.model.TimeBB; 
 		
 	aslSourcePath:
-		"src/asl/agents";
+		"src/asl/agents/unload_boxes";
 }

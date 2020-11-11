@@ -24,7 +24,7 @@ getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
  * @param Target: the target position (where the agent wants to go)
  */
 +!at(Target): at(Target) & getMyName(Me) & velocity(Velocity)
-	<-	actions.generic.updateAgentPosition(Me);
+	<-	scenario_unloadBoxes.actions.generic.updateAgentPosition(Me);
 		.print("I arrived at the ", Target);
 		.wait(Velocity);
 .
@@ -32,7 +32,7 @@ getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
 //Take a step towards
 +!at(Target): not at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	move_towards(Target);
-		actions.generic.updateAgentPosition(Me);
+		scenario_unloadBoxes.actions.generic.updateAgentPosition(Me);
 		.wait(Velocity);
 		!at(Target);
 .
@@ -53,7 +53,7 @@ getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
  * @return Nearest_target: the nearest target from agent.
  */	
 +!getTheNearestFromMe(Target_list, Nearest_target): getMyPosition(X, Y) 
-	<-	actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
+	<-	scenario_unloadBoxes.actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
 		.print("The nearest target is: ", Nearest_target);
 .
 
@@ -64,6 +64,6 @@ getFriends(CNPId, Friends) :- .findall(Friend, friend(Friend), Friends).
  * @return Nearest_target: the nearest target from agent.
  */
  +!getTheNearestTarget(Target_list, pos(X, Y), Nearest_target)
-	<-	actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
+	<-	scenario_unloadBoxes.actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
 		.print("The nearest target is: ", Nearest_target);
 .
