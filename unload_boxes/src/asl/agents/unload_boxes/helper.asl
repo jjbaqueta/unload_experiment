@@ -2,7 +2,7 @@
 
 { include("src/asl/modules/basicModule.asl") }		// rules and plans for social protocols
 { include("src/asl/modules/providingModule.asl") }	// rules and plans for providing a service
-{ include("src/asl/modules/socialModule.asl") }				// rules and plans for social evaluations
+{ include("src/asl/modules/socialModule.asl") }		// rules and plans for social evaluations
 
 task_counter(0).
 !start.

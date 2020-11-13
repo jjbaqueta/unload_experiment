@@ -1,27 +1,17 @@
-/* Rules */
+/* MODULES *************/
 
-update_nb_offers(CNPId)
-	:- 	nb_participants(CNPId, NP) &				// Retrieves the number of participants for CNPId
-		.count(proposal(CNPId,_)[source(_)], NO) &	// Counts the number of proposals received until now 
-		NP = NO.									// Updates the amount participants considering only whose sent a proposal
+{ include("src/asl/modules/basicModule.asl") }		// rules and plans for social protocols
+{ include("src/asl/modules/contractingModule.asl") }	// rules and plans for contracting a service
+{ include("src/asl/modules/socialModule.asl") }			// rules and plans for social evaluations
 
-check_impressions(Ag, Impressions)
-	:-	.findall(imp(Buyer, Ag, Time, Rating), imp(Buyer, Ag, Time, Rating), Impressions).
-	
-//check_image(Ag, Impressions)
-//	:-	.findall(image(Buyer, Ag, Time, Rating), image(Ag, _, Time, Rating), Impressions).
+!start.
 
-/* Goals */
++!start: getMyName(Me)
+	<-	scenario_Marketplace.actions.buyer.initialize(Me);
+		!register(initiator);
+.
 
-!register.
-
-/* Plans ***************************************************/
-
-/*
- * The buyer is register as initiator 
- */
-+!register 
-	<- .df_register(initiator).
+/* BEHAVIOR  **********************/
 
 /*
  * The buyer ends his activities
@@ -29,186 +19,114 @@ check_impressions(Ag, Impressions)
 +buy(nothing).
 
 /*
- * The buyer starts the Contract Net Protocol (CNP)
+ * This plan is executed every time that a seller delivered a product.
+ * @param CNPId: id of the call
+ * @param New_offer: new contract with new terms.
  */
-+buy(Id, P_name)
-	<-	.print("PURCHASE REQUEST: ", Id, ", PRODUCT: ", P_name);	// Waiting 2 seconds for participants
-		.print("Waiting for participants ...");
-      	.wait(2000); 
-      
-      	.df_search("participant", Sellers);							// Loads a list of possible participants (Sellers)
-      	+nb_participants(Id, .length(Sellers));						// Retrieves the amount of participants
-      	+cnp_state(Id, propose); 									// Updates the status of the CNP (protocol's state)
-      	.send(Sellers, tell, cfp(Id, P_name));						// Sends a call for proposal (CFP)
-      	.print("Sending the calls for proposal to: ", Sellers);
-      	
-      	.wait(update_nb_offers(Id), 4000, _);						// Waiting 4 seconds for proposals
-      	!contract(Id, P_name).										// Entering in contract phase
-
-/*
- * This plan is executed every time that a seller delivery a given product
- */
-+delivered(CNPId, NewOffer)[source(Ag)]
-	:	cnp_state(CNPId, contract)
-	<-	!create_impression(CNPId, NewOffer, Ag);
-		-cnp_state(CNPId,_);
-		+cnp_state(CNPId, finished);
++delivered(CNPId, New_offer)[source(Seller)]
+	:	cnp_state(CNPId, contract) &
+		proposal(CNPId, offer(Old_offer, Seller)) &
+		task(CNPId, buy(Product)) &
+		getMyName(Me)
+		
+	<-	-+cnp_state(CNPId, finished);
+		.df_search(initiator, Buyers);
+		scenario_Marketplace.actions.buyer.evaluation(Old_offer, New_offer, rating(Price, Quality, Time));
+		scenario_Marketplace.actions.buyer.getOtherBuyers(Me, Buyers);
+		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "TIME"], [Price, Quality, Time]);			
+		!spreadImage(Seller, Product, Buyers);
 		purchase(finished);
 		purchase(completed);
-		!check_activities_status.
+		!checkActivitiesStatus;
+		-delivered(CNPId,_)[source(Seller)];
+.
 
 /*
- * The buyer evaluates all proposal received and chooses the best seller
- * This plan needs to be atomic to not accept proposals while contracting
+ * The contract net protocol (CNP) is started
+ * @param CNPId: id of the call.
+ * @param Product: product to be bought.
  */
-@cont1[atomic]
-+!contract(CNPId, P_name)
- 	:	cnp_state(CNPId, propose)									// Checks if the state of CNP is in propose
-	<-	-cnp_state(CNPId,_);										// Update the state of CNP, from propose to contract
-      	+cnp_state(CNPId, contract);
-      	
-      	// Retrieve all proposals sent and as well the reputation from sellers  
-      	.findall(offer(Offer, Ag), proposal(CNPId, Offer)[source(Ag)], Offers);
-      	.length(Offers, N_offers)
-      	.print("Number of offers received: ", N_offers); 
-      	
-      	Offers \== [];												// CONSTRAINT: If exist at least one offer, the plan continues
-      	
-      	// Update the reputation from sellers 
-      	!compute_reputation(Offers);
-      	
-      	.findall(rep(Ag, Time, Rprice, Rquality, Rdelivery, Lprice, Lquality, Ldelivery),
-      			 rep(Ag, Time, Rprice, Rquality, Rdelivery, Lprice, Lquality, Ldelivery), Reputations);
-      			 
-      	// Retrieve images of every seller with respect a given product (P_name)
-      	.findall(image(Seller, P_name, Time, Rating), image(Seller, P_name, Time, Rating), Images);
-      	
-      	/*
-      	 * TAKE DECISION:
-      	 * Find the best seller among those that send a proposal 
-      	 * The buyer's preferences and the seller's reputation are considered in this decision 
-      	 */  
-      	.my_name(N);
-      	actions.buyerFindBestOffer(N, Offers, Reputations, Images, Ag_winner);
-      	
-      	Ag_winner \== none;											// CONSTRAINT: If exist a winner, the plan continues
-      	
-      	.print("The best offer came from: ", Ag_winner);
-      	.print("Notifying participants about decision ...");
-		+winner(CNPId, Ag_winner);
-      	!announce_result(CNPId, Offers, Ag_winner).
++task(CNPId, buy(Product))
+	<-	.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product);
+		+cnp_state(CNPId, propose);
+		!call(CNPId, Task, participant, Sellers);
+		!bid(CNPId, Sellers);
+		!contract(CNPId);
+.
+
+/**
+ * Attempt of contracting a seller for a task.
+ * Case, there are not any sellers available, the buyer ends the call.
+ * @param CNPId: id of call.
+ */
+@b1[atomic]	
++!contract(CNPId)
+	:	getMyName(Me) & 
+		cnp_state(CNPId, propose) & 
+		getReceivedOffers(CNPId, Offers) &
+		task(CNPId, buy(Product))
+	
+	<-	if(Offers \== [])
+		{
+			!updateTrust(Offers);
+			scenario_Marketplace.actions.buyer.evaluateOffers(Me, Offers, Winner);
+			
+			if(Winner \== none)
+			{
+				.print("[PRODUCT: ", Product ,"] Best seller", Winner);
+				-+cnp_state(CNPId, contract);
+				!result(CNPId, Offers, Winner);
+			}
+			else
+			{
+				.print("[TRUSTLESS] It wasn't possible to find trustworthiness sellers, so I'm giving up the product: ", Product);
+				-+cnp_state(CNPId, aborted);
+				purchase(finished);
+				!checkActivitiesStatus;
+				!deleteAllPoposals(CNPId);
+				!deleteAllRefuses(CNPId);
+			}
+		}
+		else
+		{
+			.print("[NO OFFERS] It wasn't possible to find available workers, so I'm giving up the product: ", Product);
+			-+cnp_state(CNPId, canceled);
+			purchase(finished);
+			!checkActivitiesStatus;
+			!deleteAllRefuses(CNPId);
+		}
+.
+
+/**
+ * Update trust value for each seller that sent an offer to buyer.
+ * @param Offers: list of received offers.
+ */
++!updateTrust([offer(product(Product,_,_,_), Seller)|T]): getMyName(Me)
+	<- 	?task_urgency(Task_urgency);
+        ?self_confident(Confident_profile);
+		!computeAvailability(Seller, Product, Availability);
+		!checkTrust(Seller, Product, Availability, Task_urgency, Confident_profile);
+		!updateTrust(T);
+.
+
++!updateTrust([]).
 
 /*
- * Nothing to do, the current state of CNP is not 'propose'
+ * Check if all buyers finished their shopping, in this case, the application ends
  */
-@cont2 +!contract(_,_).
+@b2[atomic]
++!checkActivitiesStatus	<- status(end).
 
 /*
- * The execution of the contract (plan: @cont1) has failed
+ * The buyer shows his purchases data (the final report).
  */
-@cont3 -!contract(CNPId, P_name)
-	<-	.print("**** WARNING **** - CNP ",CNPId," has failed! - There were not proposals for the purchase request: ", CNPId);
-		-cnp_state(CNPId,_);
-		+cnp_state(CNPId, finished);									// Update the state of CNP to finished
-		purchase(aborted);												// Set the current purchase request as aborted
-		purchase(finished);												// End the current purchase request
-		!clear_memory(CNPId);											// Delete informations about the request from agent's memory
-		!check_activities_status.										// Check if there are more shopping to do
-
-/*
- * This plan compute the reputation of each agent that sent a offer
- * The computation is base on impressions that the buyer has about the seller
- * If the buyer has already a reputation stored about the seller, this reputation is updated
- * Every the a new reputation is computed, such a reputation is send to the respective seller
- */
-+!compute_reputation([offer(Offer, Ag)|T])
-	:	check_impressions(Ag, Impressions) & Impressions \== []
-	<-	actions.buyerCalculateReputation(Impressions, Reputation_profile);
-		.send(Ag, tell, Reputation_profile);
-		actions.sellerSaveReputation(Reputation_profile, R);
-		!update_reputation(Reputation_profile);
-		!compute_reputation(T).
-
-/*
- * There are not impressions about current seller, go to the next
- */
-@cmpR2 +!compute_reputation([offer(Offer, Ag)|T])
-	:	check_impressions(Ag, Impressions) & Impressions == []
-	<-	!compute_reputation(T).
-
-/*
- * Nothing to do, end of list of offers
- */
-@cmpR3 +!compute_reputation([]).
-
-/*
- * The reputation computation (plan: @cmpR1) has failed
- */
-@cmpR4 -!compute_reputation([offer(Offer, Ag)|T])
-	<- .print("**** ERROR **** - Inner operation has presented error to compute the reputation of the agent:", Ag).
-
-/*
- * Update the reputation of a seller
- */
-+!update_reputation(rep(Seller, Time, Rp, Rq, Rd, Lp, Lq, Ld))
-	<-	-rep(Seller,_,_,_,_,_,_,_);
-		+rep(Seller, Time, Rp, Rq, Rd, Lp, Lq, Ld).
-
-/*
- * Announce the winner to sellers: notifying the winner
- */
-@ann1 +!announce_result(CNPId,[offer(_, Ag)|T], Ag_winner)
-	:	Ag == Ag_winner
-	<-	.send(Ag, tell, accept_proposal(CNPId));
-		!announce_result(CNPId, T, Ag_winner).
-      
-/*
- * Announce the winner to sellers: notifying the losers
- */
-@ann2 +!announce_result(CNPId,[offer(_, Ag)|T], Ag_winner)
-	:	Ag \== Ag_winner
-	<-	.send(Ag, tell, reject_proposal(CNPId));
-		!announce_result(CNPId, T, Ag_winner).
-
-/*
- * Nothing to do, end of list of sellers
- */
-@ann3 +!announce_result(_,[],_).
-
-/*
- * Check if all buyers finish their shopping, in this case, the application ends
- */
-@a3[atomic]
-+!check_activities_status
-	<-	check_status(end).
-
-/*
- * In this plan the buyer evaluates the seller with respect to contract conditions (commitment with offer)
- * According to seller type, the conditions defined in an initial offer may be change. The seller may redefine the terms of contract
- * This way, the buyer produces an impression about the seller's behavior. This impression is associated to trust level from seller.
- * An impression may be spread on society besides to be stored by agent
- */
-+!create_impression(CNPId, NewOffer, Seller)
-	:	proposal(CNPId, Offer)[source(Seller)]
-	<-	.my_name(N);
-		actions.buyerGenerateImpression(N, Seller, Offer, NewOffer, Rating);
-		!update_image(Seller, NewOffer, Rating);
-		.df_search("initiator", Buyers);										// Find buyers of a specific group (in this case, initiators)
-      	.send(Buyers, tell, Rating);											// Spread the impression in the group of buyers 
-		!clear_memory(CNPId).
-
-/*
- * This plane updates the image of a given seller
- */	
-+!update_image(Seller, p(Name,_,_,_), imp(_,_, Time, Rating_list))
-	<- +image(Seller, Name, Time, Rating_list).
-
-/*
- * Remove all informations about a given purchase request
- */
-+!clear_memory(CNPId)
-	<-	-winner(CNPId,_);
-		-nb_participants(CNPId,_);
-		-cnp_state(CNPId,_);
-		-delivered(CNPId,_)[source(_)];
-		-proposal(CNPId,_)[source(_)].
++!showReport
+	<-	.count(cnp_state(CNPId, finished), Finished);
+		.count(cnp_state(CNPId, aborted), Aborted);
+		.count(cnp_state(CNPId, canceled), Canceled);
+		    
+		.print("[FINAL REPORT] Number of tasks: ", Finished + Canceled + Aborted, 
+		       ", Finished tasks: ", Finished, 
+		       ", Canceled tasks: ", Canceled,
+		       ", Aborted tasks: ", Aborted);
+.

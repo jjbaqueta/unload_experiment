@@ -202,11 +202,11 @@ public class Market extends Environment
 				buyer.setEndOfActivities();
 			}
 		}
-		else if(action.equals(Literal.parseLiteral("check_status(end)")))
+		else if(action.equals(Literal.parseLiteral("status(end)")))
 		{
 			if(Market.isMarketEnd())
 			{
-				showFinalReport();
+				addPercept("manager", Literal.parseLiteral("show_report"));
 			}
 		}
 		else if(action.equals(Literal.parseLiteral("purchase(completed)")))
@@ -237,30 +237,5 @@ public class Market extends Environment
 	public void stop() 
 	{
 		super.stop();
-	}
-	
-	/*
-	 * This method shows information about buyers and sellers after the end of the negotiations 
-	 */
-	public void showFinalReport() 
-	{	
-		System.out.println("\n---------------------- FINAL REPORT --------------------------");
-		System.out.println(" -> Number of purchase requests: " + (seqId.get() + 1) + "\n");
-		
-		System.out.println("Informations about sellers:");
-		
-		for(Seller seller : sellers.values())
-		{
-			System.out.println(" ->" + seller.getName() + " {sales made: " + seller.getMadeSales() 
-			+ "; sales lost: " + seller.getLostSales() + "}");
-		}
-		
-		System.out.println("\nInformations about buyers:");
-		
-		for(Buyer buyer : buyers.values())
-		{
-			System.out.println(" ->" + buyer.getName() + " {purchases completed: " 
-			+ buyer.getCompletedPurchases() + "; purchases aborted: " + buyer.getAbortedPurchases() + "}");
-		}
 	}
 }

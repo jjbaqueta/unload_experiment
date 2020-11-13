@@ -22,3 +22,18 @@
 	<-	.create_agent(Name, "seller.asl");
 		.print("A new seller was created. Name: ", Name);
 .
+
+/**
+ * Informs to buyers that they have to show their reports
+ */ 
++show_report
+	<-	.findall(Buyer, add_buyer(Buyer), Buyers);
+		!reports(Buyers);
+.
+
++!reports([Buyer|T])
+	<-	.send(Buyer, achieve, showReport);
+		!reports(T);
+.
+
++!reports([]).
