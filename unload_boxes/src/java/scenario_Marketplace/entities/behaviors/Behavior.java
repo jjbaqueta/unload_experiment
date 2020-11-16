@@ -52,6 +52,6 @@ public abstract class Behavior
 	@Override
 	public String toString() 
 	{
-		return "Behavior [maxNumberInteractions=" + maxNumberInteractions + "]";
+		return "[maxNumberInteractions=" + maxNumberInteractions + "]";
 	}
 }

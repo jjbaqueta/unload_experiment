@@ -10,6 +10,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
+import scenario_Marketplace.entities.behaviors.Behavior;
 import scenario_Marketplace.enums.CriteriaType;
 
 /*
@@ -23,12 +24,22 @@ public class Product implements Cloneable
 	private Integer id;
 	private String name;
 	private Map<String, Double> attributes;
+	private Map<String, Behavior> behaviors;
 
 	public Product(String name) 
 	{
 		this.id = seqId.getAndIncrement();
 		this.name = name;
 		this.attributes = new HashMap<String, Double>();
+		this.behaviors = new HashMap<String, Behavior>();
+	}
+	
+	public Product(Integer id, String name) 
+	{
+		this.id = id;
+		this.name = name;
+		this.attributes = new HashMap<String, Double>();
+		this.behaviors = new HashMap<String, Behavior>();
 	}
 
 	public String getName() 
@@ -72,6 +83,30 @@ public class Product implements Cloneable
 	{
 		return attributes.keySet();
 	}
+	
+	/**
+	 * Associate a sale behavior to the product.
+	 * @param criterion: the criterion of preference of buyer.
+	 * @param behavior: a sale behavior.
+	 */
+	public void setBehavior(CriteriaType criterion, Behavior behavior)
+	{
+		behaviors.put(criterion.name(), behavior);
+	}
+	
+	/**
+	 * Get a value associated to a given criterion.
+	 * @param criterion: the associated to a behavior.
+	 * @return a sale behavior.
+	 */
+	public Behavior getBehavior(CriteriaType criterion) 
+	{
+		if(behaviors.containsKey(criterion.name()))
+		{
+			return behaviors.get(criterion.name());
+		}
+		return null;
+	}
 
 	/**
 	 * This method returns the product's attributes in literal format
@@ -107,21 +142,6 @@ public class Product implements Cloneable
 			structure.addTerm(new NumberTermImpl(productAttributes.get(criterion.name())));
 		}
 		return structure;
-	}
-	
-	@Override
-	public String toString() 
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append(", attributes{ ");
-		
-		for(Map.Entry<String, Double> pair : attributes.entrySet())
-		{
-			sb.append(pair).append(" ");
-		}
-		sb.append(" }");
-		
-		return "Product [name=" + name + sb.toString() + "]";
 	}
 
 	@Override
@@ -162,4 +182,27 @@ public class Product implements Cloneable
             return this;
         }
     }
+	
+	@Override
+	public String toString() 
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append(", attributes{ ");
+		
+		for(Map.Entry<String, Double> pair : attributes.entrySet())
+		{
+			sb.append(pair).append(" ");
+		}
+		sb.append(" }");
+		
+		sb.append(", behaviors{ ");
+		
+		for(Map.Entry<String, Behavior> pair : behaviors.entrySet())
+		{
+			sb.append(pair).append(" ");
+		}
+		sb.append(" }");
+		
+		return "Product [name=" + name + sb.toString() + "]";
+	}
 }

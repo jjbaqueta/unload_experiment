@@ -9,7 +9,6 @@ import java.util.Set;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
-import scenario_Marketplace.entities.behaviors.Behavior;
 import scenario_Marketplace.enums.CriteriaType;
 import scenario_Marketplace.environments.Market;
 
@@ -20,7 +19,6 @@ import scenario_Marketplace.environments.Market;
 public abstract class Seller extends SimpleAgent
 {
 	protected Stock productsForSale;
-	protected Map<String, Behavior> behaviors;
 	protected int madeSales;
 	protected int lostSales;
 	
@@ -30,7 +28,6 @@ public abstract class Seller extends SimpleAgent
 		this.madeSales = 0;
 		this.lostSales = 0;
 		this.productsForSale = new Stock(products);
-		this.behaviors = new HashMap<String, Behavior>();
 	}
 	
 	/*
@@ -52,35 +49,11 @@ public abstract class Seller extends SimpleAgent
 		// Updating some values from the old offer
 		for(CriteriaType criterion : criteria)
 		{			
-			newValues.put(criterion.name(), getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales) 
+			newValues.put(criterion.name(), oldOffer.getProduct().getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales) 
 					* oldOffer.getProduct().getAttribute(criterion));
 		}
 		
 		return Offer.getOfferAsLiteral(oldOffer.getProduct().getName(), name, newValues);
-	}
-	
-	/**
-	 * Associate a behavior for a given sale criterion.
-	 * @param criterion: the criterion of preference of buyer.
-	 * @param behavior: a sale behavior.
-	 */
-	public void setBehavior(CriteriaType criterion, Behavior behavior)
-	{
-		behaviors.put(criterion.name(), behavior);
-	}
-	
-	/**
-	 * Get a value associated to a given criterion.
-	 * @param criterion: the associated to a behavior.
-	 * @return a sale behavior.
-	 */
-	public Behavior getBehavior(CriteriaType criterion) 
-	{
-		if(behaviors.containsKey(criterion.name()))
-		{
-			return behaviors.get(criterion.name());
-		}
-		return null;
 	}
 	
 	public int getMadeSales() 
@@ -146,14 +119,6 @@ public abstract class Seller extends SimpleAgent
 		
 		Product p = (Product) products.get(products.size() - 1);
 		sb.append(p.getName()).append("}");
-		
-		sb.append(", behaviors{ ");
-		
-		for(Map.Entry<String, Behavior> pair : behaviors.entrySet())
-		{
-			sb.append(pair).append(" ");
-		}
-		sb.append(" }");
 		
 		return "Seller [" + super.toString() + ", " + sb.toString() + 
 				", madeSales=" + madeSales + ", lostSales=" + lostSales

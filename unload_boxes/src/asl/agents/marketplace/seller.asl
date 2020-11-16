@@ -32,7 +32,7 @@ find_product(Product, Products)
  * @param Product: product requested by the buyer.
  */ 
 +cfp(CNPId, buy(Product))[source(Buyer)]
-	:	provider(Buyer, initiator) & 
+	:	provider(Buyer, "initiator") & 
 		find_product(Product, Products) &
 		getMyName(Me)
 			
@@ -40,10 +40,12 @@ find_product(Product, Products)
 		{
 			.nth(0, Products, Offer);
 	      	+my_proposal(CNPId, offer(Offer, Me));	      	
+			.print("I have the product ", Product, ". Sending my proposal: ", Offer);
 	      	.send(Buyer, tell, proposal(CNPId, offer(Offer, Me)));
 	    }
 	    else
 	    {
+	    	.print("I don't have the product ", Product, ". I refused the call.");
 	    	.send(Buyer, tell, refuse(CNPId));
 	    }
 	    -cfp(CNPId,_)[source(Buyer)];
@@ -78,7 +80,7 @@ find_product(Product, Products)
 +!delivery(CNPId, Buyer)
 	:	my_proposal(CNPId, offer(Offer,_)) & getMyName(Me)
 	
-	<-	scenario_Marketplace.actions.seller.newContract(Me, CNPId, Offer, New_offer);
+	<-	scenario_Marketplace.actions.seller.getNewContract(Me, Old_offer, New_offer);
 		.send(Buyer, tell, delivered(CNPId, New_offer));
 		.print("[REPORT]: old offer: ", Offer, 
 			", new offer: ", New_offer);

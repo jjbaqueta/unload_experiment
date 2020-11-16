@@ -13,11 +13,10 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.StringTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import scenario_Marketplace.entities.model.Buyer;
-import scenario_Marketplace.entities.model.Seller;
+import scenario_Marketplace.entities.model.Offer;
 import scenario_Marketplace.enums.CriteriaType;
 import scenario_Marketplace.environments.Market;
 
@@ -45,29 +44,21 @@ public class evaluateOffers extends DefaultInternalAction
 		Buyer buyer = Market.buyers.get(args[0].toString());
 		ListTerm offers = (ListTerm) args[1];
 	
-		for(Term offer : offers)
+		for(Term term : offers)
 		{	
 			// Parsing the offer - format{offer(product(Product,_,_,_), Seller)}
-			Structure belief = (Structure) offer;
-			Structure product  = (Structure) belief.getTerm(0);
-			Seller seller =  Market.sellers.get(belief.getTerm(1).toString());
-			
-			// Parsing the product
-			StringTerm productName = (StringTerm) product.getTerm(0);
-			NumberTerm price = (NumberTerm) product.getTerm(1);
-			NumberTerm quality = (NumberTerm) product.getTerm(2);
-			NumberTerm delivery = (NumberTerm) product.getTerm(3);
+			Offer offer = Offer.parseOffer((Structure) term);
 			
 			// Getting trust value
-			String query = "trust("+ seller.getName() +"," + productName.getString() + ",_)";
+			String query = "trust("+ offer.getSeller() +"," + offer.getProduct().getName() + ",_)";
 			Structure trust = (Structure) ts.getAg().findBel(Literal.parseLiteral(query), un);
 			NumberTerm trustValue = (NumberTerm) trust.getTerm(2);
 			
 			// Updating maps
-			trustMap.put(seller.getName(), trustValue.solve());
-			priceMap.put(seller.getName(), price.solve());
-			qualityMap.put(seller.getName(), quality.solve());
-			deliveryMap.put(seller.getName(), delivery.solve());
+			trustMap.put(offer.getSeller(), trustValue.solve());
+			priceMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.PRICE));
+			qualityMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.QUALITY));
+			deliveryMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.DELIVERY));
 		}		
 		return un.unifies(classify(buyer, trustMap, priceMap, qualityMap, deliveryMap), args[2]);
     }

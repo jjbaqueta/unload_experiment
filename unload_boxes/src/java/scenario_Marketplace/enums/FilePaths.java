@@ -2,7 +2,7 @@ package scenario_Marketplace.enums;
 
 public enum FilePaths 
 {
-	LOAD_AGENTS("src/java/scenario_Marketplace/files/env.txt"),
+	LOAD_AGENTS("src/java/scenario_Marketplace/files/env.xml"),
 	SALES("src/java/scenario_Marketplace/files/sales.txt");
 	
 	private String path;

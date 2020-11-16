@@ -25,7 +25,7 @@ public abstract class Buyer extends SimpleAgent
 	protected Double minTrustBound;
 	
 	// Default constructor
-	public Buyer(String name, Double selfConfident, Double minTrustBound, List<Product> wishList)
+	public Buyer(String name, Double selfConfident, Double minTrustBound, List<String> wishList)
 	{
 		super(name);		
 		this.completedPurchases = 0;
@@ -35,9 +35,9 @@ public abstract class Buyer extends SimpleAgent
 		this.preferences = new HashMap<String, Double>();
 		this.productsToBuy = new Stack<Literal>();
 		
-		for(Product product : wishList)
+		for(String product : wishList)
 		{
-			productsToBuy.push(Literal.parseLiteral("buy(" + product.getName().toLowerCase() + ")"));
+			productsToBuy.push(Literal.parseLiteral("buy(" + product + ")"));
 		}
 		
 		this.selfConfident = selfConfident;

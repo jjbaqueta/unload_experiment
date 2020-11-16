@@ -27,17 +27,21 @@
 	:	cnp_state(CNPId, contract) &
 		proposal(CNPId, offer(Old_offer, Seller)) &
 		task(CNPId, buy(Product)) &
+		averagePrice(CNPId, AveragePrice) &
 		getMyName(Me)
 		
 	<-	-+cnp_state(CNPId, finished);
 		.df_search(initiator, Buyers);
-		scenario_Marketplace.actions.buyer.evaluation(Old_offer, New_offer, rating(Price, Quality, Time));
+		scenario_Marketplace.actions.buyer.getRating(Old_offer, New_offer, AveragePrice, rating(Price, Quality, Time));
 		scenario_Marketplace.actions.buyer.getOtherBuyers(Me, Buyers);
 		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "TIME"], [Price, Quality, Time]);			
 		!spreadImage(Seller, Product, Buyers);
 		purchase(finished);
 		purchase(completed);
 		!checkActivitiesStatus;
+		!deleteAllPoposals(CNPId);
+		!deleteAllRefuses(CNPId);
+		-averagePrice(CNPId,_);
 		-delivered(CNPId,_)[source(Seller)];
 .
 
@@ -49,7 +53,7 @@
 +task(CNPId, buy(Product))
 	<-	.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product);
 		+cnp_state(CNPId, propose);
-		!call(CNPId, Task, participant, Sellers);
+		!call(CNPId, buy(Product), participant, Sellers);
 		!bid(CNPId, Sellers);
 		!contract(CNPId);
 .
@@ -70,6 +74,8 @@
 		{
 			!updateTrust(Offers);
 			scenario_Marketplace.actions.buyer.evaluateOffers(Me, Offers, Winner);
+			scenario_Marketplace.actions.buyer.getAveragePrice(Offers, AveragePrice);
+			+averagePrice(CNPId, AveragePrice);
 			
 			if(Winner \== none)
 			{
@@ -81,6 +87,7 @@
 			{
 				.print("[TRUSTLESS] It wasn't possible to find trustworthiness sellers, so I'm giving up the product: ", Product);
 				-+cnp_state(CNPId, aborted);
+				-averagePrice(CNPId,_);
 				purchase(finished);
 				!checkActivitiesStatus;
 				!deleteAllPoposals(CNPId);

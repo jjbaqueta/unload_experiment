@@ -3,9 +3,13 @@ package scenario_Marketplace.entities.model;
 import java.util.Arrays;
 import java.util.Map;
 
+import jason.NoValueException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.StringTerm;
 import jason.asSyntax.Structure;
+import scenario_Marketplace.enums.CriteriaType;
 import scenario_Marketplace.environments.Market;
 
 /*
@@ -37,6 +41,31 @@ public class Offer
 		structure.addTerm(new Atom(Literal.parseLiteral(sellerName)));
 		
 		return structure;
+	}
+	
+	/**
+	 * This method parses a offer in literal format to a object.
+	 * @param offer: a structure that represents an offer.
+	 * @return an offer.
+	 */
+	public static Offer parseOffer(Structure offer) throws NoValueException
+	{
+		// Parsing the offer - format{offer(product(Product,_,_,_), Seller)}
+		Structure product  = (Structure) offer.getTerm(0);
+		Seller seller =  Market.sellers.get(offer.getTerm(1).toString());
+		
+		// Parsing the product
+		StringTerm productName = (StringTerm) product.getTerm(0);
+		NumberTerm price = (NumberTerm) product.getTerm(1);
+		NumberTerm quality = (NumberTerm) product.getTerm(2);
+		NumberTerm delivery = (NumberTerm) product.getTerm(3);
+
+		Product p = new Product(null, productName.getString());
+		p.setAttribute(CriteriaType.PRICE, price.solve());
+		p.setAttribute(CriteriaType.QUALITY, quality.solve());
+		p.setAttribute(CriteriaType.DELIVERY, delivery.solve());
+		
+		return new Offer(seller.getName(), p);
 	}
 	
 	/**
