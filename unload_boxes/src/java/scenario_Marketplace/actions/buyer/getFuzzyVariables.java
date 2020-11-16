@@ -1,28 +1,50 @@
-package scenario_Marketplace.entities.model;
+// Internal action code for project unload_boxes
 
+package scenario_Marketplace.actions.buyer;
+
+import jason.asSemantics.DefaultInternalAction;
+import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
+import jason.asSyntax.Term;
 import net.sourceforge.jFuzzyLogic.FIS;
-import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import scenario_Marketplace.enums.FilePaths;
-import scenario_Marketplace.environments.MarketFuzzyConfig;
 
-public class Test 
+public class getFuzzyVariables extends DefaultInternalAction 
 {
-	
-	public static void main(String[] args) throws Exception 
-	{
-		MarketFuzzyConfig.createFuzzyFile(5, 5);
-		FIS fis = loadFuzzyBlocks();
-		showInputCharts(fis);
-		Structure edges = getOutputValues(fis, 0.1, 0.5, 0.4, -0.4);	
-	}	
-	
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Arguments (come from parameter args):
+	 * @param args[0]: urgency level
+	 * @param args[1]: number of own impressions
+	 * @param args[2]: number of third part impressions (other's images)
+	 * @param args[3]: self-confident profile
+	 * @return args[4]: list of fuzzy values.
+	 */
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
+    {	
+    	FIS fis = loadFuzzyBlocks();
+    	
+    	NumberTerm urgencyValue = (NumberTerm) args[0];
+    	NumberTerm ownImpsValue = (NumberTerm) args[1];
+    	NumberTerm otherImpsValue = (NumberTerm) args[2];
+    	NumberTerm selfConfidentValue = (NumberTerm) args[3];
+    	
+    	Structure edges = getOutputValues(fis, urgencyValue.solve(), ownImpsValue.solve(), 
+    			otherImpsValue.solve(), selfConfidentValue.solve());
+    	
+    	return un.unifies(edges, args[4]);
+    }
+    
 	/**
 	 * Load the fuzzy blocks from a input file (fuzzy_system.fcl)
 	 * @return a Fuzzy inference system (FIS)
 	 */
-	private static FIS loadFuzzyBlocks()
+	private FIS loadFuzzyBlocks()
 	{
         FIS fis = FIS.load(FilePaths.FUZZY_VARS.getPath(), true);
         
@@ -41,7 +63,7 @@ public class Test
 	 * @param selfConfidentValue: buyer's self confident profile.
 	 * @return the values that'll be associated the edges of the trust model.
 	 */
-	private static Structure getOutputValues(FIS fis, double urgencyValue, double ownImpsValue, 
+	private Structure getOutputValues(FIS fis, double urgencyValue, double ownImpsValue, 
 			double otherImpsValue, double selfConfidentValue)
 	{
 		fis.setVariable("urgency", urgencyValue);
@@ -60,14 +82,5 @@ public class Test
 		weights.addTerm(Literal.parseLiteral("img_effect("+ fis.getVariable("img_effect").getValue() +")"));
 		
 		return weights;
-	}
-	
-	/**
-	 * Show the inputs as fuzzy sets
-	 * @param fis: a Fuzzy inference system.
-	 */
-	public static void showInputCharts(FIS fis)
-	{
-		JFuzzyChart.get().chart(fis);
 	}
 }

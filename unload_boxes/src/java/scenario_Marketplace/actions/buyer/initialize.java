@@ -26,7 +26,7 @@ public class initialize extends DefaultInternalAction
     	
     	ts.getAg().addBel(Literal.parseLiteral("id(" + b.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("self_confident(" + b.getSelfConfident() + ")"));
-    	ts.getAg().addBel(Literal.parseLiteral("task_urgency(-0.5)"));
+    	ts.getAg().addBel(Literal.parseLiteral("urgency(" + b.getUrgency() + ")"));
 
         return true;
     }

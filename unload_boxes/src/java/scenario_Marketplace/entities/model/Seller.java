@@ -18,16 +18,16 @@ import scenario_Marketplace.environments.Market;
  */
 public abstract class Seller extends SimpleAgent
 {
-	protected Stock productsForSale;
 	protected int madeSales;
 	protected int lostSales;
+	protected Stock productsForSale;
 	
-	public Seller(String name, List<Product> products) 
+	public Seller(String name) 
 	{	
 		super(name);
 		this.madeSales = 0;
 		this.lostSales = 0;
-		this.productsForSale = new Stock(products);
+		this.productsForSale = new Stock();
 	}
 	
 	/*
@@ -81,12 +81,60 @@ public abstract class Seller extends SimpleAgent
 		return this.productsForSale.getProductByName(productName);
 	}
 	
+	/**
+	 * This method adds a product to the stock.
+	 * @param product: the product to be added.
+	 * @param amount: the amount of the product.
+	 */
+	public void addProductToStock(Product product, int amount)
+	{
+		this.productsForSale.addProduct(product, amount);
+	}
+	
+	/**
+	 * This method withdraws a product from the stock.
+	 * @param product: the product to be removed.
+	 * @return true if there is product enough in stock, otherwise returns false.
+	 */
+	public boolean withdrawProduct(Product product)
+	{
+		return this.productsForSale.withdrawProduct(product);
+	}
+	
+	/**
+	 * @return true if the stock is empty.
+	 */
+	public boolean isEmptyStock()
+	{
+		return productsForSale.isEmpty();
+	}
+	
 	/*
 	 * @return a set of objects (product)
 	 */
 	public Set<Product> getProductsForSale() 
 	{
 		return this.productsForSale.getProducts();
+	}
+	
+	/**
+	 * Check if there is some product in stock.
+	 * @param product: a given product.
+	 * @return the amount of product stored in stock
+	 */
+	public int getAmountOf(Product product)
+	{
+		return productsForSale.getAmountOf(product);
+	}
+	
+	/**
+	 * Check if there is some product in stock.
+	 * @param product: a given product.
+	 * @return the amount of product stored in stock (the original amount)
+	 */
+	public int getOriginalAmountOf(Product product)
+	{
+		return productsForSale.getOriginalAmountOf(product);
 	}
 	
 	/*

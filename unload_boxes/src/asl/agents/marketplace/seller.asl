@@ -38,10 +38,22 @@ find_product(Product, Products)
 			
 	<-	if(Products \== [])
 		{
-			.nth(0, Products, Offer);
-	      	+my_proposal(CNPId, offer(Offer, Me));	      	
-			.print("I have the product ", Product, ". Sending my proposal: ", Offer);
-	      	.send(Buyer, tell, proposal(CNPId, offer(Offer, Me)));
+			scenario_Marketplace.actions.seller.withdrawProduct(Me, Product, Status);
+			
+			if(Status == done)
+			{
+				.nth(0, Products, Offer);
+		      	+my_proposal(CNPId, offer(Offer, Me));	      	
+				.print("I have the product ", Product, ". Sending my proposal: ", Offer);
+		      	.send(Buyer, tell, proposal(CNPId, offer(Offer, Me)));				
+			}
+			else
+			{
+				.print("Missing product ", Product, ". I refused the call.");
+	    		.send(Buyer, tell, refuse(CNPId));
+	    		.send(Buyer, tell, missing(CNPId, Product));
+	    		lost(sale);
+			}
 	    }
 	    else
 	    {

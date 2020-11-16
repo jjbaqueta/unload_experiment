@@ -46,6 +46,17 @@
 .
 
 /*
+ * The seller has the product registered in his stock, but the product it's not available right now.
+ * @param CNPId: id of the call.
+ * @param Product: product to be bought.
+ */
++missing(CNPId, Product)[source(Seller)]
+	<-	!initializeAvailability(Seller, Product);
+		!requestHelp(Seller, Product);
+		-missing(CNPId,_)[source(Seller)];
+.
+
+/*
  * The contract net protocol (CNP) is started
  * @param CNPId: id of the call.
  * @param Product: product to be bought.
@@ -109,14 +120,37 @@
  * @param Offers: list of received offers.
  */
 +!updateTrust([offer(product(Product,_,_,_), Seller)|T]): getMyName(Me)
-	<- 	?task_urgency(Task_urgency);
-        ?self_confident(Confident_profile);
+	<- 	?self_confident(Confident_profile);
+		?urgency(Urgency);
+        !initializeAvailability(Seller, Product);
+        !requestHelp(Seller, Product);
+        !helping(Seller, Product);
 		!computeAvailability(Seller, Product, Availability);
-		!checkTrust(Seller, Product, Availability, Task_urgency, Confident_profile);
+		!checkTrust(Seller, Product, Availability, Confident_profile, Urgency);
 		!updateTrust(T);
 .
 
 +!updateTrust([]).
+
+/** 
+ * Check if there is a trust belief for a seller.
+ * If there is no a trust belief a new trust belief is created with value 0.5 
+ */
++!checkTrust(Agent, Skill, Availability, Self_confident, Urgency)
+	:	trust(Agent, Skill,_) &
+		getMyImpressionsAbout(Impressions, Agent, Skill) &
+		getThirdPartImages(Images, Agent, Skill)
+		
+	<-	-trust(Agent, Skill,_);
+		.length(Impressions, Own_imps);
+		.length(Images, Other_imps);
+        scenario_Marketplace.actions.buyer.getFuzzyVariables(Own_imps, Other_imps, Self_confident, Urgency, EdgesValues);
+		!computeTrust(Agent, Skill, Availability, EdgesValues);
+.
+
++!checkTrust(Agent, Skill,_,_,_): not trust(Agent,Skill,_)
+	<-	+trust(Agent, Skill, 0.5);
+.
 
 /*
  * Check if all buyers finished their shopping, in this case, the application ends

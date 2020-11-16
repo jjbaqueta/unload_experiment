@@ -32,6 +32,7 @@ public class Market extends Environment
 		super.init(args);
 		
 		Files.loadAgentsFromFile();
+		MarketFuzzyConfig.createFuzzyFile(sellers.size(), buyers.size());
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
 		updatePercepts();
 	}

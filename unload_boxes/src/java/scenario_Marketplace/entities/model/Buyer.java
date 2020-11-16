@@ -22,10 +22,11 @@ public abstract class Buyer extends SimpleAgent
 	protected Integer abortedPurchases;
 	protected Boolean buying;
 	protected Double selfConfident;
+	protected Double urgency;
 	protected Double minTrustBound;
 	
 	// Default constructor
-	public Buyer(String name, Double selfConfident, Double minTrustBound, List<String> wishList)
+	public Buyer(String name, Double selfConfident, Double urgency, Double minTrustBound, List<String> wishList)
 	{
 		super(name);		
 		this.completedPurchases = 0;
@@ -41,6 +42,7 @@ public abstract class Buyer extends SimpleAgent
 		}
 		
 		this.selfConfident = selfConfident;
+		this.urgency = urgency;
 		this.minTrustBound = minTrustBound;
 	}
 	
@@ -63,6 +65,7 @@ public abstract class Buyer extends SimpleAgent
 		Random rand = new Random();
 		
 		this.selfConfident = rand.nextDouble();
+		this.urgency = rand.nextDouble();
 		this.minTrustBound = rand.nextDouble();
 		
 		// Create the possibility to pick up a negative value for selfConfident variable
@@ -75,6 +78,12 @@ public abstract class Buyer extends SimpleAgent
 		if(rand.nextBoolean())
 		{
 			this.minTrustBound *= -1;
+		}
+		
+		// Create the possibility to pick up a negative value for urgency variable
+		if(rand.nextBoolean())
+		{
+			this.urgency *= -1;
 		}
 	}
 	
@@ -151,6 +160,16 @@ public abstract class Buyer extends SimpleAgent
 	{
 		this.selfConfident = selfConfident;
 	}
+	
+	public Double getUrgency() 
+	{
+		return urgency;
+	}
+
+	public void setUrgency(Double urgency) 
+	{
+		this.urgency = urgency;
+	}
 
 	public Double getMinTrustBound() 
 	{
@@ -199,6 +218,7 @@ public abstract class Buyer extends SimpleAgent
 		
 		return "Buyer [" + super.toString() + ", " + sb.toString() + 
 				", completedPurchases=" + completedPurchases + ", abortedPurchases=" + abortedPurchases +
-				", selfConfident=" + selfConfident + ", minTrustBound=" + minTrustBound + "]";
+				", selfConfident=" + selfConfident +  ", urgency=" + urgency +
+				", minTrustBound=" + minTrustBound + "]";
 	}
 }

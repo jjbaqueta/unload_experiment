@@ -49,16 +49,18 @@ public abstract class Files
 				
 				// Getting seller's attributes
 				String sellerName = seller.getElementsByTagName("name").item(0).getTextContent();
-				int maxNI = Integer.parseInt(seller.getElementsByTagName("maxNumberInteractions").item(0).getTextContent());
+				Seller s = new GeneralSeller(sellerName);
 				
 				// Getting products
 				NodeList products = seller.getElementsByTagName("product");
-				List<Product> forSale = new ArrayList<Product>();
 				
 				for(int j = 0; j < products.getLength(); j++)
 				{
 					Element product = (Element) products.item(j);
+					
 					String productName = product.getElementsByTagName("name").item(0).getTextContent();
+					int amount = Integer.parseInt(product.getElementsByTagName("amount").item(0).getTextContent());
+					int behaviorAcceleration = Integer.parseInt(product.getElementsByTagName("behaviorAcceleration").item(0).getTextContent());
 					
 					double price = Double.parseDouble(product.getElementsByTagName("price").item(0).getTextContent());
 					String priceBehavior = product.getElementsByTagName("priceBehavior").item(0).getTextContent();
@@ -76,13 +78,12 @@ public abstract class Files
 					p.setAttribute(CriteriaType.DELIVERY, delivery);
 					
 					// Setting product's behavior
-					p.setBehavior(CriteriaType.PRICE, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(priceBehavior), maxNI));
-					p.setBehavior(CriteriaType.QUALITY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(qualityBehavior), maxNI));
-					p.setBehavior(CriteriaType.DELIVERY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(deliveryBehavior), maxNI));
+					p.setBehavior(CriteriaType.PRICE, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(priceBehavior), behaviorAcceleration));
+					p.setBehavior(CriteriaType.QUALITY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(qualityBehavior), behaviorAcceleration));
+					p.setBehavior(CriteriaType.DELIVERY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(deliveryBehavior), behaviorAcceleration));
 					
-					forSale.add(p);
+					s.addProductToStock(p, amount);
 				}
-				Seller s = new GeneralSeller(sellerName, forSale);
 				Market.sellers.put(s.getName(),s);
 			}
 			
@@ -96,6 +97,7 @@ public abstract class Files
 				// Getting buyer's attributes
 				String buyerName = buyer.getElementsByTagName("name").item(0).getTextContent();
 				double selfConfident = Double.parseDouble(buyer.getElementsByTagName("selfConfident").item(0).getTextContent());
+				double urgency = Double.parseDouble(buyer.getElementsByTagName("urgency").item(0).getTextContent());
 				double minTrustBound = Double.parseDouble(buyer.getElementsByTagName("minTrustBound").item(0).getTextContent());
 				double pricePreference = Double.parseDouble(buyer.getElementsByTagName("pricePreference").item(0).getTextContent());
 				double qualityPreference = Double.parseDouble(buyer.getElementsByTagName("qualityPreference").item(0).getTextContent());
@@ -109,7 +111,7 @@ public abstract class Files
 				{
 					wishList.add(products.item(j).getTextContent());
 				}
-				Buyer b = new GeneralOrientedBuyer(buyerName, selfConfident, minTrustBound, wishList, pricePreference, qualityPreference, deliveryPreference); 
+				Buyer b = new GeneralOrientedBuyer(buyerName, selfConfident, urgency, minTrustBound, wishList, pricePreference, qualityPreference, deliveryPreference); 
 				Market.buyers.put(b.getName(), b);
 			}
 		} 

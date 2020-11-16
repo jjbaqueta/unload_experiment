@@ -340,3 +340,22 @@ max_requests(2).    // limit for the number of requesting that can be done.
 	    }
         -+request_counter(Current_Value + 1);
 .
+
+/** 
+ * Check if there is a trust belief for a worker.
+ * If there is no a trust belief a new trust belief is created with value 0.5 
+ */
++!checkTrust(Agent, Skill, Availability, Urgency, Num_boxes, Self_confident)
+	:	trust(Agent, Skill,_) &
+		getMyImpressionsAbout(Impressions, Agent, Skill) &
+		getThirdPartImages(Images, Agent, Skill)
+	<-	-trust(Agent, Skill,_);
+		.length(Impressions, Own_imps);
+		.length(Images, Other_imps);
+        scenario_unloadBoxes.actions.generic.getFuzzyVariables(Urgency, Num_boxes, Own_imps, Other_imps, Self_confident, EdgesValues);
+		!computeTrust(Agent, Skill, Availability, EdgesValues);
+.
+
++!checkTrust(Agent, Skill,_,_,_,_): not trust(Agent,Skill,_)
+	<-	+trust(Agent, Skill, 0.5);
+.

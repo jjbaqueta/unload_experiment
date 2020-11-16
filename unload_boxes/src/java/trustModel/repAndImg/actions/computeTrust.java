@@ -56,7 +56,7 @@ public class computeTrust extends DefaultInternalAction
 		ListTerm reputation = (ListTerm)args[4];
 		ListTerm reference = (ListTerm)args[5];
 		NumberTerm availability = (NumberTerm) args[6];
-		ListTerm edgeValues = (ListTerm) args[7];
+		Structure edgeValues = (Structure) args[7];
 		
 		// Loading the image to the trust tree
 		addInputNodes(inputs, trustTree, trustTree.getFuzzyMap().getNodesByName(Mnemonic.IMAGE.name()).get(0), 
@@ -73,38 +73,35 @@ public class computeTrust extends DefaultInternalAction
 		// Loading availability value
 		trustTree.getFuzzyMap().getNodesByName("availability").get(0).setValue(availability.solve());
 		
-		boolean flag = true;
+		Structure abilityEffect = (Structure) edgeValues.getTerm(0);
+		NumberTerm abilityValue = (NumberTerm) abilityEffect.getTerm(0);
 		
-		if(flag == true)
-		{
+		Structure availabilityEffect = (Structure) edgeValues.getTerm(1);
+		NumberTerm availabilityValue = (NumberTerm) availabilityEffect.getTerm(0);
 		
-		for(int i = 0; i < edgeValues.size(); i++)
-		{
-			NumberTerm value = (NumberTerm) edgeValues.get(i);
-			
-			switch (i) 
-			{
-				case 0:
-					trustTree.getFuzzyMap().getEdgesByName("ability_effect").get(0).setValue(value.solve());
-					break;
-				case 1:
-					trustTree.getFuzzyMap().getEdgesByName("availability_effect").get(0).setValue(value.solve());
-					break;
-				case 2:
-					trustTree.getFuzzyMap().getEdgesByName("knowhow_effect").get(0).setValue(value.solve());
-					break;
-				case 3:
-					trustTree.getFuzzyMap().getEdgesByName("ir_effect").get(0).setValue(value.solve());
-					break;
-				case 4:
-					trustTree.getFuzzyMap().getEdgesByName("rep_effect").get(0).setValue(value.solve());
-					break;
-				default:
-					trustTree.getFuzzyMap().getEdgesByName("img_effect").get(0).setValue(value.solve());
-					break;
-			}
-		}
-		}
+		Structure knowhowEffect = (Structure) edgeValues.getTerm(2);
+		NumberTerm knowhowValue = (NumberTerm) knowhowEffect.getTerm(0);
+		
+		Structure irEffect = (Structure) edgeValues.getTerm(3);
+		NumberTerm irValue = (NumberTerm) irEffect.getTerm(0);
+		
+		Structure repEffect = (Structure) edgeValues.getTerm(4);
+		NumberTerm repValue = (NumberTerm) repEffect.getTerm(0);
+		
+		Structure imgEffect = (Structure) edgeValues.getTerm(5);
+		NumberTerm imgValue = (NumberTerm) imgEffect.getTerm(0);
+		
+		trustTree.getFuzzyMap().getEdgesByName("ability_effect").get(0).setValue(abilityValue.solve());
+		
+		trustTree.getFuzzyMap().getEdgesByName("availability_effect").get(0).setValue(availabilityValue.solve());
+		
+		trustTree.getFuzzyMap().getEdgesByName("knowhow_effect").get(0).setValue(knowhowValue.solve());
+
+		trustTree.getFuzzyMap().getEdgesByName("ir_effect").get(0).setValue(irValue.solve());
+		
+		trustTree.getFuzzyMap().getEdgesByName("rep_effect").get(0).setValue(repValue.solve());
+		
+		trustTree.getFuzzyMap().getEdgesByName("img_effect").get(0).setValue(imgValue.solve());
 		
 		// Computing trust value
 		PropagateInputsVisitor propagateVisitor = new PropagateInputsVisitor(inputs);

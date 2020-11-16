@@ -10,10 +10,10 @@ import scenario_Marketplace.enums.CriteriaType;
  */
 public class GeneralOrientedBuyer extends Buyer
 {	
-	public GeneralOrientedBuyer(String name, Double selfConfident, Double minTrustBound, List<String> wishList, 
+	public GeneralOrientedBuyer(String name, Double selfConfident, Double urgency, Double minTrustBound, List<String> wishList, 
 			double pricePreference, double qualityPreference, double deliveryPreference) 
 	{
-		super(name, selfConfident, minTrustBound, wishList);
+		super(name, selfConfident, urgency, minTrustBound, wishList);
 		
 		this.setPreference(CriteriaType.PRICE, pricePreference);
 		this.setPreference(CriteriaType.QUALITY, qualityPreference);
