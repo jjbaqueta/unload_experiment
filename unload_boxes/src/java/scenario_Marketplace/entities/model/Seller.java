@@ -48,9 +48,9 @@ public abstract class Seller extends SimpleAgent
 		
 		// Updating some values from the old offer
 		for(CriteriaType criterion : criteria)
-		{			
-			newValues.put(criterion.name(), oldOffer.getProduct().getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales) 
-					* oldOffer.getProduct().getAttribute(criterion));
+		{
+			double factor = getProductByName(oldOffer.getProduct().getName()).getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales);
+			newValues.put(criterion.name(), factor * oldOffer.getProduct().getAttribute(criterion));
 		}
 		
 		return Offer.getOfferAsLiteral(oldOffer.getProduct().getName(), name, newValues);

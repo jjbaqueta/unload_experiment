@@ -203,6 +203,6 @@ public class Product implements Cloneable
 		}
 		sb.append(" }");
 		
-		return "Product [name=" + name + sb.toString() + "]";
+		return "Product [id=" + id + ", name=" + name + sb.toString() + "]";
 	}
 }

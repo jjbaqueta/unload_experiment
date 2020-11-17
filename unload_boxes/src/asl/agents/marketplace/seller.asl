@@ -43,9 +43,9 @@ find_product(Product, Products)
 			if(Status == done)
 			{
 				.nth(0, Products, Offer);
-		      	+my_proposal(CNPId, offer(Offer, Me));	      	
+		      	+my_proposal(CNPId, Offer);	      	
 				.print("I have the product ", Product, ". Sending my proposal: ", Offer);
-		      	.send(Buyer, tell, proposal(CNPId, offer(Offer, Me)));				
+		      	.send(Buyer, tell, proposal(CNPId, Offer));				
 			}
 			else
 			{
@@ -68,7 +68,7 @@ find_product(Product, Products)
  */
 @s1[atomic]
 +accept_proposal(CNPId)[source(Buyer)]:	my_proposal(CNPId,_)
-	<-	.print("I won CNP, starting the delivery process: ", CNPId);
+	<-	.print("I won CNP: ", CNPId, ". I'm going to delive the product.");
 		made(sale);
 		!delivery(CNPId, Buyer);
 		-accept_proposal(CNPId)[source(Buyer)];
@@ -90,10 +90,9 @@ find_product(Product, Products)
  * @param Buyer: buyer that bought a product.
  */
 +!delivery(CNPId, Buyer)
-	:	my_proposal(CNPId, offer(Offer,_)) & getMyName(Me)
+	:	my_proposal(CNPId, Old_offer) & getMyName(Me)
 	
-	<-	scenario_Marketplace.actions.seller.getNewContract(Me, Old_offer, New_offer);
+	<-	scenario_Marketplace.actions.seller.getNewContract(Me, offer(Old_offer, Me), New_offer);
 		.send(Buyer, tell, delivered(CNPId, New_offer));
-		.print("[REPORT]: old offer: ", Offer, 
-			", new offer: ", New_offer);
+		.print("[REPORT]: old offer: ", Old_offer, ", new offer: ", New_offer);
 .

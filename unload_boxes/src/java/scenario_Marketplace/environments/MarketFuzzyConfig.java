@@ -75,10 +75,10 @@ public class MarketFuzzyConfig
 		sb.append("\timg_effect : REAL;\n");
 		sb.append("END_VAR\n\n");
 		
-		sb.append(getInputFuzzifyBlock("urgency", min_urgency, max_urgency));
-		sb.append(getInputFuzzifyBlock("self_confident", min_confident, max_confident));
-		sb.append(getInputFuzzifyBlock("own_imps", min_own_imps, max_own_imps));
-		sb.append(getInputFuzzifyBlock("other_imps", min_other_imps, max_other_imps));
+		sb.append(getInputFuzzify3Block("urgency", min_urgency, max_urgency));
+		sb.append(getInputFuzzify2Block("self_confident", min_confident, max_confident));
+		sb.append(getInputFuzzify3Block("own_imps", min_own_imps, max_own_imps));
+		sb.append(getInputFuzzify3Block("other_imps", min_other_imps, max_other_imps));
 		
 		sb.append(getOutputFuzzifyBlock("ability_effect"));
 		sb.append(getOutputFuzzifyBlock("availability_effect"));
@@ -103,7 +103,19 @@ public class MarketFuzzyConfig
 		}
 	}
 	
-	private static String getInputFuzzifyBlock(String varName, double min, double max)
+	private static String getInputFuzzify2Block(String varName, double min, double max)
+	{	
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("FUZZIFY " + varName).append("\n");
+		sb.append("\tTERM false := ("+ min +", 1) ("+ 0.2 +", 0);\n");
+		sb.append("\tTERM true := ("+ -0.2 +", 0) ("+ max +", 1);\n");
+		sb.append("END_FUZZIFY\n\n");
+		
+		return sb.toString();
+	}
+	
+	private static String getInputFuzzify3Block(String varName, double min, double max)
 	{
 		double middle = ((max - min) / 2) + min;
 		double middleRight = ((max - middle) / 2) + middle;
@@ -148,78 +160,65 @@ public class MarketFuzzyConfig
 		sb.append("\tACT : MIN;\n");
 		sb.append("\tACCU : MAX;\n\n");
 		
-		sb.append("\tRULE 1: IF urgency IS low AND num_boxes IS low THEN availability_effect IS low;\n");
-		sb.append("\tRULE 2: IF urgency IS low AND num_boxes IS low THEN ability_effect IS high;\n");		
-		sb.append("\tRULE 3: IF urgency IS low AND num_boxes IS middle THEN ability_effect IS high;\n");
-		sb.append("\tRULE 4: IF urgency IS low AND num_boxes IS middle THEN availability_effect IS low;\n");
-		sb.append("\tRULE 5: IF urgency IS low AND num_boxes IS high THEN ability_effect IS high;\n");
-		sb.append("\tRULE 6: IF urgency IS low AND num_boxes IS high THEN availability_effect IS low;\n");
-		sb.append("\tRULE 7: IF urgency IS middle AND num_boxes IS low THEN ability_effect IS middle;\n");
-		sb.append("\tRULE 8: IF urgency IS middle AND num_boxes IS low THEN availability_effect IS middle;\n");
-		sb.append("\tRULE 9: IF urgency IS middle AND num_boxes IS middle THEN ability_effect IS middle;\n");
-		sb.append("\tRULE 10: IF urgency IS middle AND num_boxes IS middle THEN availability_effect IS high;\n");
-		sb.append("\tRULE 11: IF urgency IS middle AND num_boxes IS high THEN ability_effect IS middle;\n");
-		sb.append("\tRULE 12: IF urgency IS middle AND num_boxes IS high THEN availability_effect IS high;\n");
-		sb.append("\tRULE 13: IF urgency IS high AND num_boxes IS low THEN ability_effect IS middle;\n");
-		sb.append("\tRULE 14: IF urgency IS high AND num_boxes IS low THEN availability_effect IS high;\n");
-		sb.append("\tRULE 15: IF urgency IS high AND num_boxes IS middle THEN ability_effect IS low;\n");
-		sb.append("\tRULE 16: IF urgency IS high AND num_boxes IS middle THEN availability_effect IS high;\n");
-		sb.append("\tRULE 17: IF urgency IS high AND num_boxes IS high THEN ability_effect IS low;\n");
-		sb.append("\tRULE 18: IF urgency IS high AND num_boxes IS high THEN availability_effect IS high;\n");
-		sb.append("\tRULE 19: IF other_imps IS low AND own_imps IS low THEN knowhow_effect IS high;\n");
-		sb.append("\tRULE 20: IF other_imps IS low AND own_imps IS low THEN ir_effect IS low;\n");		
-		sb.append("\tRULE 21: IF other_imps IS low AND own_imps IS middle THEN knowhow_effect IS high;\n");
-		sb.append("\tRULE 22: IF other_imps IS low AND own_imps IS middle THEN ir_effect IS middle;\n");
-		sb.append("\tRULE 23: IF other_imps IS low AND own_imps IS high THEN knowhow_effect IS high;\n");
-		sb.append("\tRULE 24: IF other_imps IS low AND own_imps IS high THEN ir_effect IS low;\n");
-		sb.append("\tRULE 25: IF other_imps IS middle AND own_imps IS low THEN knowhow_effect IS middle;\n");
-		sb.append("\tRULE 26: IF other_imps IS middle AND own_imps IS low THEN ir_effect IS middle;\n");
-		sb.append("\tRULE 27: IF other_imps IS middle AND own_imps IS middle THEN knowhow_effect IS high;\n");
-		sb.append("\tRULE 28: IF other_imps IS middle AND own_imps IS middle THEN ir_effect IS middle;\n");
-		sb.append("\tRULE 29: IF other_imps IS middle AND own_imps IS high THEN knowhow_effect IS middle;\n");
-		sb.append("\tRULE 30: IF other_imps IS middle AND own_imps IS high THEN ir_effect IS middle;\n");
-		sb.append("\tRULE 31: IF other_imps IS high AND own_imps IS low THEN knowhow_effect IS low;\n");
-		sb.append("\tRULE 32: IF other_imps IS high AND own_imps IS low THEN ir_effect IS high;\n");
-		sb.append("\tRULE 33: IF other_imps IS high AND own_imps IS middle THEN knowhow_effect IS low;\n");
-		sb.append("\tRULE 34: IF other_imps IS high AND own_imps IS middle THEN ir_effect IS middle;\n");
-		sb.append("\tRULE 35: IF other_imps IS high AND own_imps IS high THEN knowhow_effect IS low;\n");
-		sb.append("\tRULE 36: IF other_imps IS high AND own_imps IS high THEN ir_effect IS high;\n");
-		sb.append("\tRULE 37: IF self_confident IS true AND other_imps IS low AND own_imps IS low THEN rep_effect IS low;\n");
-		sb.append("\tRULE 38: IF self_confident IS true AND other_imps IS low AND own_imps IS low THEN img_effect IS high;\n");
-		sb.append("\tRULE 39: IF self_confident IS true AND other_imps IS low AND own_imps IS middle THEN img_effect IS middle;\n");
-		sb.append("\tRULE 40: IF self_confident IS true AND other_imps IS low AND own_imps IS middle THEN rep_effect IS low;\n");
-		sb.append("\tRULE 41: IF self_confident IS true AND other_imps IS low AND own_imps IS high THEN rep_effect IS low;\n");
-		sb.append("\tRULE 42: IF self_confident IS true AND other_imps IS low AND own_imps IS high THEN img_effect IS high;\n");
-		sb.append("\tRULE 43: IF self_confident IS true AND other_imps IS middle AND own_imps IS low THEN rep_effect IS middle;\n");
-		sb.append("\tRULE 44: IF self_confident IS true AND other_imps IS middle AND own_imps IS low THEN img_effect IS low;\n");
-		sb.append("\tRULE 45: IF self_confident IS true AND other_imps IS middle AND own_imps IS middle THEN rep_effect IS low;\n");
-		sb.append("\tRULE 46: IF self_confident IS true AND other_imps IS middle AND own_imps IS middle THEN img_effect IS high;\n");
-		sb.append("\tRULE 47: IF self_confident IS true AND other_imps IS middle AND own_imps IS high THEN rep_effect IS middle;\n");
-		sb.append("\tRULE 48: IF self_confident IS true AND other_imps IS middle AND own_imps IS high THEN img_effect IS high;\n");
-		sb.append("\tRULE 49: IF self_confident IS true AND other_imps IS high AND own_imps IS low THEN rep_effect IS high;\n");
-		sb.append("\tRULE 50: IF self_confident IS true AND other_imps IS high AND own_imps IS low THEN img_effect IS low;\n");
-		sb.append("\tRULE 51: IF self_confident IS true AND other_imps IS high AND own_imps IS middle THEN rep_effect IS high;\n");
-		sb.append("\tRULE 52: IF self_confident IS true AND other_imps IS high AND own_imps IS middle THEN img_effect IS middle;\n");
-		sb.append("\tRULE 53: IF self_confident IS true AND other_imps IS high AND own_imps IS high THEN rep_effect IS low;\n");
-		sb.append("\tRULE 54: IF self_confident IS true AND other_imps IS high AND own_imps IS high THEN img_effect IS high;\n");
-		sb.append("\tRULE 55: IF self_confident IS false AND other_imps IS low AND own_imps IS low THEN rep_effect IS high;\n");
-		sb.append("\tRULE 56: IF self_confident IS false AND other_imps IS low AND own_imps IS low THEN img_effect IS low;\n");
-		sb.append("\tRULE 57: IF self_confident IS false AND other_imps IS low AND own_imps IS middle THEN rep_effect IS low;\n");
-		sb.append("\tRULE 58: IF self_confident IS false AND other_imps IS low AND own_imps IS middle THEN img_effect IS middle;\n");
-		sb.append("\tRULE 59: IF self_confident IS false AND other_imps IS low AND own_imps IS high THEN rep_effect IS low;\n");
-		sb.append("\tRULE 60: IF self_confident IS false AND other_imps IS low AND own_imps IS high THEN img_effect IS high;\n");
-		sb.append("\tRULE 61: IF self_confident IS false AND other_imps IS middle AND own_imps IS low THEN rep_effect IS middle;\n");
-		sb.append("\tRULE 62: IF self_confident IS false AND other_imps IS middle AND own_imps IS low THEN img_effect IS low;\n");
-		sb.append("\tRULE 63: IF self_confident IS false AND other_imps IS middle AND own_imps IS middle THEN rep_effect IS high;\n");
-		sb.append("\tRULE 64: IF self_confident IS false AND other_imps IS middle AND own_imps IS middle THEN img_effect IS low;\n");
-		sb.append("\tRULE 65: IF self_confident IS false AND other_imps IS middle AND own_imps IS high THEN rep_effect IS middle;\n");
-		sb.append("\tRULE 66: IF self_confident IS false AND other_imps IS middle AND own_imps IS high THEN img_effect IS high;\n");
-		sb.append("\tRULE 67: IF self_confident IS false AND other_imps IS high AND own_imps IS low THEN rep_effect IS high;\n");
-		sb.append("\tRULE 68: IF self_confident IS false AND other_imps IS high AND own_imps IS low THEN img_effect IS low;\n");
-		sb.append("\tRULE 69: IF self_confident IS false AND other_imps IS high AND own_imps IS middle THEN rep_effect IS high;\n");
-		sb.append("\tRULE 70: IF self_confident IS false AND other_imps IS high AND own_imps IS middle THEN img_effect IS middle;\n");
-		sb.append("\tRULE 71: IF self_confident IS false AND other_imps IS high AND own_imps IS high THEN rep_effect IS high;\n");
-		sb.append("\tRULE 72: IF self_confident IS false AND other_imps IS high AND own_imps IS high THEN img_effect IS low;\n\n");
+		sb.append("\tRULE 1: IF urgency IS low THEN availability_effect IS low;\n");
+		sb.append("\tRULE 2: IF urgency IS middle THEN ability_effect IS middle;\n");
+		sb.append("\tRULE 3: IF urgency IS high THEN ability_effect IS high;\n");
+		
+		sb.append("\tRULE 4: IF other_imps IS low AND own_imps IS low THEN knowhow_effect IS high;\n");
+		sb.append("\tRULE 5: IF other_imps IS low AND own_imps IS low THEN ir_effect IS low;\n");		
+		sb.append("\tRULE 6: IF other_imps IS low AND own_imps IS middle THEN knowhow_effect IS high;\n");
+		sb.append("\tRULE 7: IF other_imps IS low AND own_imps IS middle THEN ir_effect IS middle;\n");
+		sb.append("\tRULE 8: IF other_imps IS low AND own_imps IS high THEN knowhow_effect IS high;\n");
+		sb.append("\tRULE 9: IF other_imps IS low AND own_imps IS high THEN ir_effect IS low;\n");
+		sb.append("\tRULE 10: IF other_imps IS middle AND own_imps IS low THEN knowhow_effect IS middle;\n");
+		sb.append("\tRULE 11: IF other_imps IS middle AND own_imps IS low THEN ir_effect IS middle;\n");
+		sb.append("\tRULE 12: IF other_imps IS middle AND own_imps IS middle THEN knowhow_effect IS high;\n");
+		sb.append("\tRULE 13: IF other_imps IS middle AND own_imps IS middle THEN ir_effect IS middle;\n");
+		sb.append("\tRULE 14: IF other_imps IS middle AND own_imps IS high THEN knowhow_effect IS middle;\n");
+		sb.append("\tRULE 15: IF other_imps IS middle AND own_imps IS high THEN ir_effect IS middle;\n");
+		sb.append("\tRULE 16: IF other_imps IS high AND own_imps IS low THEN knowhow_effect IS low;\n");
+		sb.append("\tRULE 17: IF other_imps IS high AND own_imps IS low THEN ir_effect IS high;\n");
+		sb.append("\tRULE 18: IF other_imps IS high AND own_imps IS middle THEN knowhow_effect IS low;\n");
+		sb.append("\tRULE 19: IF other_imps IS high AND own_imps IS middle THEN ir_effect IS middle;\n");
+		sb.append("\tRULE 20: IF other_imps IS high AND own_imps IS high THEN knowhow_effect IS low;\n");
+		sb.append("\tRULE 21: IF other_imps IS high AND own_imps IS high THEN ir_effect IS high;\n");
+		
+		sb.append("\tRULE 22: IF self_confident IS true AND other_imps IS low AND own_imps IS low THEN rep_effect IS low;\n");
+		sb.append("\tRULE 23: IF self_confident IS true AND other_imps IS low AND own_imps IS low THEN img_effect IS high;\n");
+		sb.append("\tRULE 24: IF self_confident IS true AND other_imps IS low AND own_imps IS middle THEN img_effect IS middle;\n");
+		sb.append("\tRULE 25: IF self_confident IS true AND other_imps IS low AND own_imps IS middle THEN rep_effect IS low;\n");
+		sb.append("\tRULE 26: IF self_confident IS true AND other_imps IS low AND own_imps IS high THEN rep_effect IS low;\n");
+		sb.append("\tRULE 27: IF self_confident IS true AND other_imps IS low AND own_imps IS high THEN img_effect IS high;\n");
+		sb.append("\tRULE 28: IF self_confident IS true AND other_imps IS middle AND own_imps IS low THEN rep_effect IS middle;\n");
+		sb.append("\tRULE 29: IF self_confident IS true AND other_imps IS middle AND own_imps IS low THEN img_effect IS low;\n");
+		sb.append("\tRULE 30: IF self_confident IS true AND other_imps IS middle AND own_imps IS middle THEN rep_effect IS low;\n");
+		sb.append("\tRULE 31: IF self_confident IS true AND other_imps IS middle AND own_imps IS middle THEN img_effect IS high;\n");
+		sb.append("\tRULE 32: IF self_confident IS true AND other_imps IS middle AND own_imps IS high THEN rep_effect IS middle;\n");
+		sb.append("\tRULE 33: IF self_confident IS true AND other_imps IS middle AND own_imps IS high THEN img_effect IS high;\n");
+		sb.append("\tRULE 34: IF self_confident IS true AND other_imps IS high AND own_imps IS low THEN rep_effect IS high;\n");
+		sb.append("\tRULE 35: IF self_confident IS true AND other_imps IS high AND own_imps IS low THEN img_effect IS low;\n");
+		sb.append("\tRULE 36: IF self_confident IS true AND other_imps IS high AND own_imps IS middle THEN rep_effect IS high;\n");
+		sb.append("\tRULE 37: IF self_confident IS true AND other_imps IS high AND own_imps IS middle THEN img_effect IS middle;\n");
+		sb.append("\tRULE 38: IF self_confident IS true AND other_imps IS high AND own_imps IS high THEN rep_effect IS low;\n");
+		sb.append("\tRULE 39: IF self_confident IS true AND other_imps IS high AND own_imps IS high THEN img_effect IS high;\n");
+		sb.append("\tRULE 40: IF self_confident IS false AND other_imps IS low AND own_imps IS low THEN rep_effect IS high;\n");
+		sb.append("\tRULE 41: IF self_confident IS false AND other_imps IS low AND own_imps IS low THEN img_effect IS low;\n");
+		sb.append("\tRULE 42: IF self_confident IS false AND other_imps IS low AND own_imps IS middle THEN rep_effect IS low;\n");
+		sb.append("\tRULE 43: IF self_confident IS false AND other_imps IS low AND own_imps IS middle THEN img_effect IS middle;\n");
+		sb.append("\tRULE 44: IF self_confident IS false AND other_imps IS low AND own_imps IS high THEN rep_effect IS low;\n");
+		sb.append("\tRULE 45: IF self_confident IS false AND other_imps IS low AND own_imps IS high THEN img_effect IS high;\n");
+		sb.append("\tRULE 46: IF self_confident IS false AND other_imps IS middle AND own_imps IS low THEN rep_effect IS middle;\n");
+		sb.append("\tRULE 47: IF self_confident IS false AND other_imps IS middle AND own_imps IS low THEN img_effect IS low;\n");
+		sb.append("\tRULE 48: IF self_confident IS false AND other_imps IS middle AND own_imps IS middle THEN rep_effect IS high;\n");
+		sb.append("\tRULE 49: IF self_confident IS false AND other_imps IS middle AND own_imps IS middle THEN img_effect IS low;\n");
+		sb.append("\tRULE 50: IF self_confident IS false AND other_imps IS middle AND own_imps IS high THEN rep_effect IS middle;\n");
+		sb.append("\tRULE 51: IF self_confident IS false AND other_imps IS middle AND own_imps IS high THEN img_effect IS high;\n");
+		sb.append("\tRULE 52: IF self_confident IS false AND other_imps IS high AND own_imps IS low THEN rep_effect IS high;\n");
+		sb.append("\tRULE 53: IF self_confident IS false AND other_imps IS high AND own_imps IS low THEN img_effect IS low;\n");
+		sb.append("\tRULE 54: IF self_confident IS false AND other_imps IS high AND own_imps IS middle THEN rep_effect IS high;\n");
+		sb.append("\tRULE 55: IF self_confident IS false AND other_imps IS high AND own_imps IS middle THEN img_effect IS middle;\n");
+		sb.append("\tRULE 56: IF self_confident IS false AND other_imps IS high AND own_imps IS high THEN rep_effect IS high;\n");
+		sb.append("\tRULE 57: IF self_confident IS false AND other_imps IS high AND own_imps IS high THEN img_effect IS low;\n\n");
 		
 		sb.append("END_RULEBLOCK\n");
 		sb.append("END_FUNCTION_BLOCK\n");

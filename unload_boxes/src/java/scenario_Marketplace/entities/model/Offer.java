@@ -7,7 +7,6 @@ import jason.NoValueException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.StringTerm;
 import jason.asSyntax.Structure;
 import scenario_Marketplace.enums.CriteriaType;
 import scenario_Marketplace.environments.Market;
@@ -55,12 +54,12 @@ public class Offer
 		Seller seller =  Market.sellers.get(offer.getTerm(1).toString());
 		
 		// Parsing the product
-		StringTerm productName = (StringTerm) product.getTerm(0);
+		Atom productName = (Atom) product.getTerm(0);
 		NumberTerm price = (NumberTerm) product.getTerm(1);
 		NumberTerm quality = (NumberTerm) product.getTerm(2);
 		NumberTerm delivery = (NumberTerm) product.getTerm(3);
 
-		Product p = new Product(null, productName.getString());
+		Product p = new Product(null, productName.toString());
 		p.setAttribute(CriteriaType.PRICE, price.solve());
 		p.setAttribute(CriteriaType.QUALITY, quality.solve());
 		p.setAttribute(CriteriaType.DELIVERY, delivery.solve());

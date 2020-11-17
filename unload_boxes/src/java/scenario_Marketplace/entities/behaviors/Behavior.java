@@ -8,10 +8,12 @@ package scenario_Marketplace.entities.behaviors;
  */
 public abstract class Behavior 
 {
+	protected String name;
 	protected Integer maxNumberInteractions;
 	
-	public Behavior(int maxNumberInteractions)
+	public Behavior(String name, int maxNumberInteractions)
 	{
+		this.name = name;
 		this.maxNumberInteractions = maxNumberInteractions;
 	}
 	
@@ -48,10 +50,15 @@ public abstract class Behavior
 	{
 		this.maxNumberInteractions = maxNumberInteractions;
 	}
+	
+	public String getName()
+	{
+		return this.name;
+	}
 
 	@Override
 	public String toString() 
 	{
-		return "[maxNumberInteractions=" + maxNumberInteractions + "]";
+		return "[name=" + name + ", maxNumberInteractions=" + maxNumberInteractions + "]";
 	}
 }

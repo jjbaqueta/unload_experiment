@@ -90,7 +90,7 @@
 			
 			if(Winner \== none)
 			{
-				.print("[PRODUCT: ", Product ,"] Best seller", Winner);
+				.print("[PRODUCT: ", Product ,"] The best seller: ", Winner);
 				-+cnp_state(CNPId, contract);
 				!result(CNPId, Offers, Winner);
 			}

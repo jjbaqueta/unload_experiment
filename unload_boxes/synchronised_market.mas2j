@@ -3,8 +3,8 @@
  * The CNP is used to communication among agents
  */
 
-MAS synchronised_market {
-
+MAS synchronised_market 
+{
 	infrastructure: Centralised
 
 	environment: scenario_Marketplace.environments.Market

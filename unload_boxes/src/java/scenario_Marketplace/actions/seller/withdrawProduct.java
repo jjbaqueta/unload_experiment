@@ -5,8 +5,8 @@ package scenario_Marketplace.actions.seller;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
-import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import scenario_Marketplace.entities.model.Product;
 import scenario_Marketplace.entities.model.Seller;
@@ -29,13 +29,13 @@ public class withdrawProduct extends DefaultInternalAction
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
     	Seller seller = Market.sellers.get(args[0].toString());
-    	StringTerm productName = (StringTerm) args[1];
+    	Atom productName = (Atom) args[1];
     	
-    	Product product = seller.getProductByName(productName.getString());
+    	Product product = seller.getProductByName(productName.toString());
     	
     	if(product == null)
     	{
-    		throw new Error("It is impossible to finde de product in the stock: " + productName.getString());
+    		throw new Error("It is impossible to finde de product in the stock: " + productName.toString());
     	}
     	else
     	{
