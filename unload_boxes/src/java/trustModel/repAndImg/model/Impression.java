@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jason.NoValueException;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.StringTerm;
@@ -123,15 +124,15 @@ public class Impression implements Comparable<Impression>
 		
 		try 
 		{
-			String requesterName = imp.getTerm(0).toString();
-			String providerName = imp.getTerm(1).toString();
+			Atom requesterName = (Atom) imp.getTerm(0);
+			Atom providerName = (Atom) imp.getTerm(1);
 			NumberTerm time = (NumberTerm) imp.getTerm(2);
-			StringTerm skill = (StringTerm) imp.getTerm(3);
+			Atom skill = (Atom) imp.getTerm(3);
 			ListTerm keys = (ListTerm) imp.getTerm(4);
 			ListTerm values = (ListTerm) imp.getTerm(5);
 			
-			impression = new Impression(requesterName, providerName,
-					(long) time.solve(), Skill.valueOf(skill.getString()));
+			impression = new Impression(requesterName.toString(), providerName.toString(),
+					(long) time.solve(), Skill.valueOf(skill.toString()));
 			
 			for(int i = 0; i < keys.size(); i++)
 			{

@@ -118,7 +118,7 @@ public class evaluateOffers extends DefaultInternalAction
 	 */
 	private Map.Entry<String, Double> getMinValue(Map<String, Double> map)
 	{
-		double minValue = Double.MAX_VALUE;
+		double minValue = Integer.MAX_VALUE;
 		Map.Entry<String, Double> bestTuple = null;
 		
 		for(Map.Entry<String, Double> pair : map.entrySet())
@@ -139,7 +139,7 @@ public class evaluateOffers extends DefaultInternalAction
 	 */
 	private Map.Entry<String, Double> getMaxValue(Map<String, Double> map)
 	{
-		double maxValue = Double.MIN_VALUE;
+		double maxValue = Integer.MIN_VALUE;
 		Map.Entry<String, Double> bestTuple = null;
 		
 		for(Map.Entry<String, Double> pair : map.entrySet())

@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.StringTerm;
@@ -42,9 +43,9 @@ public class computeReputation extends DefaultInternalAction
 		for(Term img : (ListTerm) args[0])
 			Images.add(Impression.parserBeleif((Structure) img));
 		
-		String requesterName = args[1].toString();
-		String providerName = args[2].toString();
-		StringTerm skill = (StringTerm) args[3];
+		Atom requesterName = (Atom) args[1];
+		Atom providerName = (Atom) args[2];
+		Atom skill = (Atom) args[3];
 		Set<String> criteria = new TreeSet<String>();
 		
 		for(Term t : (ListTerm) args[4])
@@ -53,13 +54,14 @@ public class computeReputation extends DefaultInternalAction
 			criteria.add(criterion.getString());
 		}
 		
-		Impression reputation = ImpressionAggregation.run(Images, requesterName, providerName, 
-				Skill.valueOf(skill.getString()), criteria);
+		Impression reputation = ImpressionAggregation.run(Images, requesterName.toString(), providerName.toString(), 
+				Skill.valueOf(skill.toString()), criteria);
 		
 		ts.getAg().delBel(Literal.parseLiteral(Mnemonic.REPUTATION.getMnemonic() + 
 				"(_," + providerName + ",_,"+ skill +",_,_)[source(_)]"));
 		
 		ts.getAg().addBel(ImpressionConverter.run(reputation, Mnemonic.REPUTATION));
+		
 		return true;
 	}
 }

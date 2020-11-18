@@ -33,10 +33,10 @@ public abstract class Seller extends SimpleAgent
 	/*
 	 * This method allows the seller redefines the conditions of a contract according with his behaviour.
 	 * @param oldOffer: initial contract.
-	 * @param criteria: list of criteria for which the offer must be recalculated.
+	 * @param criteria: set of criteria for which the offer must be recalculated.
 	 * @return a new contract in literal format, which will be replace the older offer.
 	 */
-	public Literal recalculateContractConditions(Offer oldOffer, List<CriteriaType> criteria)
+	public Literal recalculateContractConditions(Offer oldOffer, Set<Map.Entry<CriteriaType, Boolean>> criteria)
 	{
 		Map<String, Double> newValues = new HashMap<String, Double>();
 		
@@ -47,10 +47,15 @@ public abstract class Seller extends SimpleAgent
 		}
 		
 		// Updating some values from the old offer
-		for(CriteriaType criterion : criteria)
+		for(Map.Entry<CriteriaType, Boolean> pair : criteria)
 		{
+			CriteriaType criterion = pair.getKey();
 			double factor = getProductByName(oldOffer.getProduct().getName()).getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales);
-			newValues.put(criterion.name(), factor * oldOffer.getProduct().getAttribute(criterion));
+			
+			if(pair.getValue())
+				newValues.put(criterion.name(), factor * oldOffer.getProduct().getAttribute(criterion));				
+			else
+				newValues.put(criterion.name(), (1 / factor) * oldOffer.getProduct().getAttribute(criterion));
 		}
 		
 		return Offer.getOfferAsLiteral(oldOffer.getProduct().getName(), name, newValues);

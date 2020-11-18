@@ -3,6 +3,7 @@ package trustModel.repAndImg.actions;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
@@ -34,15 +35,15 @@ public class addImpression extends DefaultInternalAction
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
 	{	
-		String requesterName = args[0].toString();
-		String providerName = args[1].toString();
-		StringTerm skill = (StringTerm) args[2];
+		Atom requesterName = (Atom) args[0];
+		Atom providerName = (Atom) args[1];
+		Atom skill = (Atom) args[2];
 		ListTerm criteriaName = (ListTerm) args[3];
 		ListTerm criteriaValue = (ListTerm) args[4];
 		
-		Impression impression = new Impression(requesterName, providerName, 
+		Impression impression = new Impression(requesterName.toString(), providerName.toString(), 
 				(long) System.currentTimeMillis() - TimeBB.start, 
-				Skill.valueOf(skill.getString()));
+				Skill.valueOf(skill.toString()));
 		
 		for(int i = 0; i < criteriaName.size(); i++)
 		{

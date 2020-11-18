@@ -5,15 +5,15 @@ package scenario_Marketplace.actions.buyer;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.environments.Market;
 
 /**
- * This action returns all buyer on the system. 
+ * This action returns all the other buyers on the system. 
  */
 public class getOtherBuyers extends DefaultInternalAction 
 {
@@ -27,14 +27,14 @@ public class getOtherBuyers extends DefaultInternalAction
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
-    	ListTerm others = new ListTermImpl();
+    	ListTerm others = new ListTermImpl();    	
     	Buyer buyer = Market.buyers.get(args[0].toString());
-    	
+
     	for(String b : Market.buyers.keySet())
     	{
     		if(!b.equals(buyer.getName()))
     		{
-    			others.add(Atom.parseLiteral(b));
+    			others.add(Literal.parseLiteral(b));
     		}
     	}
     	return un.unifies(others, args[1]);

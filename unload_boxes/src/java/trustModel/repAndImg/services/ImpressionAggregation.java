@@ -2,7 +2,7 @@ package trustModel.repAndImg.services;
 
 import java.util.Set;
 
-import scenario_unloadBoxes.environments.UnloadEnv;
+import scenario_Marketplace.environments.Market;
 import trustModel.repAndImg.enums.Skill;
 import trustModel.repAndImg.model.Impression;
 import trustModel.repAndImg.model.TimeBB;
@@ -94,7 +94,8 @@ public class ImpressionAggregation
 	{	
 		// Number of impressions used to calculate the reputation.
 		int cardinality = impressions.size();
-		double ITM = UnloadEnv.model.getWorld().getItmForTruckers() * UnloadEnv.model.getWorld().getItmForWorkers();
+		double ITM = Market.sellers.size() * Market.buyers.size();
+//		double ITM = UnloadEnv.model.getWorld().getItmForTruckers() * UnloadEnv.model.getWorld().getItmForWorkers();
 	
 		/*
 		 * Computing Ni

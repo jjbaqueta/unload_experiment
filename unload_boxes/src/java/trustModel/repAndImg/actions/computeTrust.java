@@ -9,11 +9,8 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
-import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.StringTerm;
-import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import trustModel.fcm.model.FmcEdge;
@@ -42,6 +39,7 @@ public class computeTrust extends DefaultInternalAction
 	 * args[5]: target's references.
 	 * args[6]: target's availability
 	 * args[7]: values for edges
+	 * args[8]: the trust believe.
 	 */
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
@@ -51,7 +49,7 @@ public class computeTrust extends DefaultInternalAction
 		
 		Atom requesterName = (Atom) args[0];
 		Atom providerName = (Atom) args[1];;
-		StringTerm skill = (StringTerm) args[2];
+		Atom skill = (Atom) args[2];
 		ListTerm image = (ListTerm)args[3];
 		ListTerm reputation = (ListTerm)args[4];
 		ListTerm reference = (ListTerm)args[5];
@@ -111,15 +109,12 @@ public class computeTrust extends DefaultInternalAction
 		
 		// Creating the trust belief
 		Structure belief = new Structure(Mnemonic.TRUST.getMnemonic());
+		
 		belief.addTerm(providerName);
-		belief.addTerm(new StringTermImpl(skill.getString()));
+		belief.addTerm(skill);
 		belief.addTerm(new NumberTermImpl(trustTree.getFuzzyMap().getOutput().getValue()));
 		
-		ts.getAg().delBel(Literal.parseLiteral(Mnemonic.TRUST.getMnemonic() + 
-				"(" + providerName + "," + skill.getString() + ",_)[source(self)]"));
-		
-		ts.getAg().addBel(Literal.parseLiteral(belief.toString()));
-		return true;
+		return un.unifies(belief, args[8]);
 	}
 	
 	private void addInputNodes(Map<Integer, Double> inputs, TrustTree trustTree, FmcNode tarNode, Structure belief)

@@ -1,6 +1,7 @@
 package scenario_Marketplace.environments;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import scenario_Marketplace.entities.services.BehaviorFactory;
 import scenario_Marketplace.enums.BehaviorPattern;
 import scenario_Marketplace.enums.CriteriaType;
 import scenario_Marketplace.enums.FilePaths;
+import scenario_Marketplace.enums.ReportType;
 
 public abstract class Files 
 {
@@ -138,22 +140,81 @@ public abstract class Files
 	}
 	
 	/**
-	 * This method writes in an output file 'sales.txt' the current sale made for the seller.
-	 * @param seller: represents the seller who will be write his sale in file.
-	 * @param time: the time that the sale happened.
+	 * This method writes output files where the data necessary for generating the analysis charts are stored.
+	 * @param agentName: the name of a buyer or seller agent.
+	 * @param type: the type of report that'll be written.
+	 * @param content: the content to be written.
 	 */
-	public static void writeSaleStatus(Seller seller, long time)
+	public static void writeReportInFile(String agentName, ReportType type, String content)
 	{
 		try 
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(FilePaths.SALES.getPath(), true));
-			writer.append(seller.getName() + ";" + time +"\n");			     
+			String path = FilePaths.REPORTS.getPath() + "//" + agentName;
+			
+			switch (type) 
+			{
+				case AGENT:
+					path += ".txt";
+				break;
+				
+				case TRUST:
+					path += "_trust.txt";
+				break;
+				
+				case REPUTATION:
+					path += "_reputation.txt";
+				break;
+				
+				case IMAGE:
+					path += "_image.txt";
+				break;
+				
+				case KNOWHOW:
+					path += "_knowhow.txt";
+				break;
+				
+				case AVAILABILITY:
+					path += "_availability.txt";
+				break;
+				
+				case SALE:
+					path += "_sale.txt";
+				break;
+				
+				default:
+					throw new Exception("Requested report is not valid!: " + type);
+			}
+			
+			BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
+			writer.append(System.currentTimeMillis() + ";" + content +"\n");			     
 		    writer.close();
 		} 
 		catch (IOException e) 
 		{
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+		} 
+		catch (Exception e) 
+		{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Delete all files in the report folder.
+	 * This method must be used before to write new reports.
+	 */
+	public static void removeOldReports()
+	{
+		File folder = new File(FilePaths.REPORTS.getPath());
+		
+		if (folder.isDirectory()) 
+		{
+			File[] sun = folder.listFiles();
+			
+			for (File toDelete : sun)
+				toDelete.delete();
 		}
 	}
 }

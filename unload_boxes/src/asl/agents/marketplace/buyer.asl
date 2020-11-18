@@ -1,6 +1,6 @@
 /* MODULES *************/
 
-{ include("src/asl/modules/basicModule.asl") }		// rules and plans for social protocols
+{ include("src/asl/modules/basicModule.asl") }			// rules and plans for social protocols
 { include("src/asl/modules/contractingModule.asl") }	// rules and plans for contracting a service
 { include("src/asl/modules/socialModule.asl") }			// rules and plans for social evaluations
 
@@ -25,16 +25,19 @@
  */
 +delivered(CNPId, New_offer)[source(Seller)]
 	:	cnp_state(CNPId, contract) &
-		proposal(CNPId, offer(Old_offer, Seller)) &
+		proposal(CNPId, Old_offer) &
 		task(CNPId, buy(Product)) &
 		averagePrice(CNPId, AveragePrice) &
 		getMyName(Me)
 		
-	<-	-+cnp_state(CNPId, finished);
-		.df_search(initiator, Buyers);
-		scenario_Marketplace.actions.buyer.getRating(Old_offer, New_offer, AveragePrice, rating(Price, Quality, Time));
+	<-	// Evaluating the seller
+		-+cnp_state(CNPId, finished);
+		scenario_Marketplace.actions.buyer.getRating(offer(Old_offer, Seller), New_offer, AveragePrice, rating(Price, Quality, Delivery));
 		scenario_Marketplace.actions.buyer.getOtherBuyers(Me, Buyers);
-		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "TIME"], [Price, Quality, Time]);			
+		.print("[EVALUATION] {price:", Price , "; quality: ", Quality, "; delivery: ", Delivery, "}");
+		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "DELIVERY"], [Price, Quality, Delivery]);
+		
+		// Ending the purchase and cleaning the memory
 		!spreadImage(Seller, Product, Buyers);
 		purchase(finished);
 		purchase(completed);
@@ -127,6 +130,7 @@
         !helping(Seller, Product);
 		!computeAvailability(Seller, Product, Availability);
 		!checkTrust(Seller, Product, Availability, Confident_profile, Urgency);
+		!saveData(Seller, Product);
 		!updateTrust(T);
 .
 
@@ -136,20 +140,68 @@
  * Check if there is a trust belief for a seller.
  * If there is no a trust belief a new trust belief is created with value 0.5 
  */
-+!checkTrust(Agent, Skill, Availability, Self_confident, Urgency)
-	:	trust(Agent, Skill,_) &
-		getMyImpressionsAbout(Impressions, Agent, Skill) &
-		getThirdPartImages(Images, Agent, Skill)
++!checkTrust(Seller, Skill, Availability, Self_confident, Urgency)
+	:	trust(Seller, Skill,_) &
+		getMyImpressionsAbout(Impressions, Seller, Skill) &
+		getThirdPartImages(Images, Seller, Skill)
 		
-	<-	-trust(Agent, Skill,_);
-		.length(Impressions, Own_imps);
+	<-	.length(Impressions, Own_imps);
 		.length(Images, Other_imps);
         scenario_Marketplace.actions.buyer.getFuzzyVariables(Own_imps, Other_imps, Self_confident, Urgency, EdgesValues);
-		!computeTrust(Agent, Skill, Availability, EdgesValues);
+		!computeTrust(Seller, Skill, Availability, EdgesValues, trust(_,_, Value));
+		-trust(Seller, Skill,_);
+		+trust(Seller, Skill, Value);
 .
 
-+!checkTrust(Agent, Skill,_,_,_): not trust(Agent,Skill,_)
-	<-	+trust(Agent, Skill, 0.5);
++!checkTrust(Seller, Skill,_,_,_): not trust(Seller,Skill,_)
+	<-	+trust(Seller, Skill, 0.5);
+.
+
+/*
+ * Saving data for analysis
+ */
++!saveData(Seller, Product)
+	:	getMyName(Me) &
+		getTrustOf(Trust, Seller, Product) &
+		getReputationOf(Reputation, Seller, Product) &
+		getMyImageAbout(Image, Seller, Product) &
+		getReferencesOf(Knowhow, Seller, Product) &
+		getAvailabilityOf(Availability, Seller, Product)
+	
+	<-	// Saving trust in file
+		if(Trust \== [])
+		{
+			.nth(0, Trust, Vt);
+			scenario_Marketplace.actions.generic.saveContent(Me, "TRUST", Vt);
+		}
+		
+		// Saving reputation in file
+		if(Reputation \== [])
+		{
+			.nth(0, Reputation, Vrep);
+			scenario_Marketplace.actions.generic.saveContent(Me, "REPUTATION", Vrep);
+		}
+		
+		// Saving image in file
+		if(Image \== [])
+		{
+			.nth(0, Image, Vimg);
+			scenario_Marketplace.actions.generic.saveContent(Me, "IMAGE", Vimg);
+		}
+		
+		// Saving knowhow in file
+		if(Knowhow \== [])
+		{
+			.nth(0, Knowhow, Vkw);
+			scenario_Marketplace.actions.generic.saveContent(Me, "KNOWHOW", Vkw);
+		}
+		
+		// Saving availability in file
+		if(Availability \== [])
+		{
+			.nth(0, Availability, Vab);
+			scenario_Marketplace.actions.generic.saveContent(Me, "AVAILABILITY", Vab);
+		}
 .
 
 /*
@@ -161,7 +213,7 @@
 /*
  * The buyer shows his purchases data (the final report).
  */
-+!showReport
++!showReport: getMyName(Me)
 	<-	.count(cnp_state(CNPId, finished), Finished);
 		.count(cnp_state(CNPId, aborted), Aborted);
 		.count(cnp_state(CNPId, canceled), Canceled);
@@ -170,4 +222,14 @@
 		       ", Finished tasks: ", Finished, 
 		       ", Canceled tasks: ", Canceled,
 		       ", Aborted tasks: ", Aborted);
+		       
+		// Saving data for analysis
+		.concat("finished_sales:", Finished, ContentF);	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentF);
+		 
+		.concat("canceled_sales:", Canceled, ContentC);	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentC);
+		
+		.concat("aborted_sales:", Aborted, ContentA);	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentA);
 .

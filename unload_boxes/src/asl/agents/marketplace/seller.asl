@@ -38,14 +38,15 @@ find_product(Product, Products)
 			
 	<-	if(Products \== [])
 		{
-			scenario_Marketplace.actions.seller.withdrawProduct(Me, Product, Status);
+			!withdrawProduct(Product, Status);
 			
 			if(Status == done)
 			{
 				.nth(0, Products, Offer);
 		      	+my_proposal(CNPId, Offer);	      	
 				.print("I have the product ", Product, ". Sending my proposal: ", Offer);
-		      	.send(Buyer, tell, proposal(CNPId, Offer));				
+		      	.send(Buyer, tell, proposal(CNPId, Offer));
+		      	!sendMyknowHow(Product, Buyer);		
 			}
 			else
 			{
@@ -64,13 +65,25 @@ find_product(Product, Products)
 .
 
 /*
+ * 
+ */
+@s0[atomic]
++!withdrawProduct(Product, Status): getMyName(Me)
+	<-	scenario_Marketplace.actions.seller.withdrawProduct(Me, Product, Status);
+.
+
+/*
  * The offer sent by seller was accepted by a buyer
  */
 @s1[atomic]
-+accept_proposal(CNPId)[source(Buyer)]:	my_proposal(CNPId,_)
++accept_proposal(CNPId)[source(Buyer)]: getMyName(Me) &	my_proposal(CNPId,_)
 	<-	.print("I won CNP: ", CNPId, ". I'm going to delive the product.");
 		made(sale);
 		!delivery(CNPId, Buyer);
+		
+		// Saving data for analysis	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "SALE", "sale");
+		
 		-accept_proposal(CNPId)[source(Buyer)];
 .
 
@@ -93,6 +106,26 @@ find_product(Product, Products)
 	:	my_proposal(CNPId, Old_offer) & getMyName(Me)
 	
 	<-	scenario_Marketplace.actions.seller.getNewContract(Me, offer(Old_offer, Me), New_offer);
+		.print("[REPORT] old offer: ", Old_offer, ", new offer: ", New_offer);
 		.send(Buyer, tell, delivered(CNPId, New_offer));
-		.print("[REPORT]: old offer: ", Old_offer, ", new offer: ", New_offer);
+		-my_proposal(CNPId,_);
+.
+
+/*
+ * The seller shows his sale report.
+ */
++!showReport: getMyName(Me)
+	<-	scenario_Marketplace.actions.seller.getMadeSales(Me, Made_sales);
+		scenario_Marketplace.actions.seller.getLostSales(Me, Lost_sales);
+		    
+		.print("[FINAL REPORT] Number of calls: ", Made_sales + Lost_sales, 
+		       ", Made sales: ", Made_sales, 
+		       ", Lost sales: ", Lost_sales);
+		
+		// Saving data for analysis
+		.concat("made_sales:", Made_sales, ContentM);	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentM);
+		 
+		.concat("lost_sales:", Lost_sales, ContentL);	 
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentL);
 .

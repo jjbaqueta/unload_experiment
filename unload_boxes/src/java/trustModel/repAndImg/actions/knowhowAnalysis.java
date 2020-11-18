@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
@@ -32,8 +33,8 @@ public class knowhowAnalysis extends DefaultInternalAction
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
 	{	
-		String requesterName = args[0].toString();
-		String providerName = args[1].toString();
+		Atom requesterName = (Atom) args[0];
+		Atom providerName = (Atom) args[1];
 		ListTerm list = (ListTerm) args[2];
 		Set<Impression> references = new TreeSet<Impression>();
 		
@@ -42,7 +43,7 @@ public class knowhowAnalysis extends DefaultInternalAction
 		
 		Impression impTemp = (Impression) references.toArray()[0];
 		Impression reference = ImpressionAggregation.run(references, 
-				requesterName, providerName, 
+				requesterName.toString(), providerName.toString(), 
 				impTemp.getSkill(), impTemp.getCriteria());
 		
 		ts.getAg().delBel(Literal.parseLiteral(Mnemonic.KNOWHOW.getMnemonic() + 

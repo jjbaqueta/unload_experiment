@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.StringTerm;
@@ -42,9 +43,9 @@ public class computeImage extends DefaultInternalAction
 		for(Term imp : (ListTerm) args[0])
 			impressions.add(Impression.parserBeleif((Structure) imp));
 		
-		String requesterName = args[1].toString();
-		String providerName = args[2].toString();
-		StringTerm skill = (StringTerm) args[3];
+		Atom requesterName = (Atom) args[1];
+		Atom providerName = (Atom) args[2];
+		Atom skill = (Atom) args[3];
 		Set<String> criteria = new TreeSet<String>();
 		
 		for(Term t : (ListTerm) args[4])
@@ -53,8 +54,8 @@ public class computeImage extends DefaultInternalAction
 			criteria.add(criterion.getString());
 		}
 		
-		Impression image = ImpressionAggregation.run(impressions, requesterName, providerName, 
-				Skill.valueOf(skill.getString()), criteria);
+		Impression image = ImpressionAggregation.run(impressions, requesterName.toString(), providerName.toString(), 
+				Skill.valueOf(skill.toString()), criteria);
 		
 		ts.getAg().delBel(Literal.parseLiteral(Mnemonic.IMAGE.getMnemonic() + 
 				"(_," + providerName + ",_,"+ skill +",_,_)[source(self)]"));

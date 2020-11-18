@@ -32,13 +32,13 @@ public abstract class Behavior
 	protected double checkInterval(double behaviorValue)
 	{
 		if (behaviorValue <= 0)	
-			return 0;
+			return 2.0;
 		
 		else if (behaviorValue >= 1) 
 			return 1.0;
 		
-		else 
-			return behaviorValue; 
+		else
+			return -behaviorValue + 2.0; 
 	}
 	
 	public double getMaxNumberInteractions() 

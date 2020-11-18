@@ -39,11 +39,23 @@ getMyknowHow(Impressions, Skill)
 		imp(Requester, Provider, Time, Skill, Criteria, Values)[source(S)] & S \== self, 
 		Impressions).
 
+// Get the trust value of a target
+getTrustOf(Trust, Provider, Skill)
+	:-	.findall(trust(Provider, Skill, Value),
+		trust(Provider, Skill, Value)[source(self)],
+		Trust).
+
 // Get candidates able to perform a task
 getCandidatesFor(Skill, Candidates)
 	:-	.findall(trust(Provider, Value),
 		trust(Provider, Skill, Value)[source(_)],
 		Candidates).
+
+// Get the availability of a target
+getAvailabilityOf(Availability, Provider, Skill)
+	:-	.findall(availability(Provider, Skill, N_askForHelping, N_Help),
+		availability(Provider, Skill, N_askForHelping, N_Help)[source(self)],
+		Availability).		
 
 /* PLANS *************/
 
@@ -186,12 +198,12 @@ getCandidatesFor(Skill, Candidates)
  * Compute a trust measure about a provider using image, reputation and know-how.
  * The trust value is computed considering the context (Skill) 
  */
-+!computeTrust(Provider, Skill, Availability, EdgesValues)
++!computeTrust(Provider, Skill, Availability, EdgesValues, Trust)
 	:	getMyImageAbout(Image, Provider, Skill) &
 		getReputationOf(Reputation, Provider, Skill) &
 		getReferencesOf(Reference, Provider, Skill)
 	<-	.my_name(Requester);
-		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues).
+		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust).
 
 /** 
  * Find the most trustworthy candidate for a given task. 

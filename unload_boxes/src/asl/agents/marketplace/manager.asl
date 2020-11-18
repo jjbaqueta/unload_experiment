@@ -24,15 +24,23 @@
 .
 
 /**
- * Informs to buyers that they have to show their reports
+ * Informs to buyers and sellers that they have to show their reports.
  */ 
 +show_report
 	<-	.findall(Buyer, add_buyer(Buyer), Buyers);
 		!reports(Buyers);
+		
+		.findall(Seller, add_seller(Seller), Sellers);
+		!reports(Sellers);
 .
 
 +!reports([Buyer|T])
 	<-	.send(Buyer, achieve, showReport);
+		!reports(T);
+.
+
++!reports([Seller|T])
+	<-	.send(Seller, achieve, showReport);
 		!reports(T);
 .
 

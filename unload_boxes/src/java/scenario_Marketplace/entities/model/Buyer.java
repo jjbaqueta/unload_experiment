@@ -18,8 +18,6 @@ public abstract class Buyer extends SimpleAgent
 {
 	protected Stack<Literal> productsToBuy;
 	protected Map<String, Double> preferences;
-	protected Integer completedPurchases;
-	protected Integer abortedPurchases;
 	protected Boolean buying;
 	protected Double selfConfident;
 	protected Double urgency;
@@ -29,8 +27,6 @@ public abstract class Buyer extends SimpleAgent
 	public Buyer(String name, Double selfConfident, Double urgency, Double minTrustBound, List<String> wishList)
 	{
 		super(name);		
-		this.completedPurchases = 0;
-		this.abortedPurchases = 0;
 		this.buying = true;
 		
 		this.preferences = new HashMap<String, Double>();
@@ -50,8 +46,6 @@ public abstract class Buyer extends SimpleAgent
 	public Buyer(String name, List<Product> wishList)
 	{
 		super(name);		
-		this.completedPurchases = 0;
-		this.abortedPurchases = 0;
 		this.buying = true;
 		
 		this.preferences = new HashMap<String, Double>();
@@ -109,26 +103,6 @@ public abstract class Buyer extends SimpleAgent
 			return preferences.get(criterion.name());
 		}
 		return null;
-	}
-	
-	public int getCompletedPurchases() 
-	{
-		return completedPurchases;
-	}
-
-	public int getAbortedPurchases() 
-	{
-		return abortedPurchases;
-	}
-	
-	public void incCompletedPurchases() 
-	{
-		this.completedPurchases++;
-	}
-	
-	public void incAbortedPurchases() 
-	{
-		this.abortedPurchases++;
 	}
 	
 	public boolean isBuying() 
@@ -216,8 +190,7 @@ public abstract class Buyer extends SimpleAgent
 		}
 		sb.append("}");	
 		
-		return "Buyer [" + super.toString() + ", " + sb.toString() + 
-				", completedPurchases=" + completedPurchases + ", abortedPurchases=" + abortedPurchases +
+		return "Buyer [" + super.toString() + ", " + sb.toString() +
 				", selfConfident=" + selfConfident +  ", urgency=" + urgency +
 				", minTrustBound=" + minTrustBound + "]";
 	}

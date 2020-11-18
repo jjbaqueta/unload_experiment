@@ -31,6 +31,7 @@ public class Market extends Environment
 	{
 		super.init(args);
 		
+		Files.removeOldReports();
 		Files.loadAgentsFromFile();
 		MarketFuzzyConfig.createFuzzyFile(sellers.size(), buyers.size());
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
@@ -80,15 +81,15 @@ public class Market extends Environment
 
 		if (action.equals(Literal.parseLiteral("purchase(finished)"))) 
 		{
-			clearPercepts(agName);
 			Buyer buyer = buyers.get(agName);
+			clearPercepts(buyer.getName());
 			
-			if (buyer.hasBuyingDesire()) 
-				addPercept(agName, buyer.getProductsToBuy().pop());
+			if (buyer.hasBuyingDesire())
+				addPercept(buyer.getName(), Literal.parseLiteral("task("+ getNextCNPId() + "," + buyer.getProductsToBuy().pop() + ")"));
 			
 			else 
 			{
-				addPercept(agName, Literal.parseLiteral("buy(nothing)"));
+				addPercept(buyer.getName(), Literal.parseLiteral("buy(nothing)"));
 				logger.info("The buyer: " + agName + " ended his purchases (-- CONCLUDED --)");
 				buyer.setEndOfActivities();
 			}
@@ -96,28 +97,13 @@ public class Market extends Environment
 		else if(action.equals(Literal.parseLiteral("status(end)")))
 		{
 			if(Market.isMarketEnd())
-			{
 				addPercept("manager", Literal.parseLiteral("show_report"));
-			}
 		}
-		else if(action.equals(Literal.parseLiteral("purchase(completed)")))
-			buyers.get(agName).incCompletedPurchases();
-		
-		else if (action.equals(Literal.parseLiteral("purchase(aborted)")))
-			buyers.get(agName).incAbortedPurchases();
-		
 		else if(action.equals(Literal.parseLiteral("lost(sale)")))
 			sellers.get(agName).increaseLostSales();
 
-		else if(action.equals(Literal.parseLiteral("made(sale)")))
-		{	
+		else if(action.equals(Literal.parseLiteral("made(sale)")))	
 			sellers.get(agName).increaseMadeSales();
-			
-//			long time = System.currentTimeMillis();
-//			
-//			for(Seller seller : sellers)
-//				Files.writeSaleStatus(seller, time);
-		}
 		else 
 			logger.warning("executing: " + action + ", but not implemented!");
 

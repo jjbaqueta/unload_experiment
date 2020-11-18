@@ -28,8 +28,7 @@ public class getRating extends DefaultInternalAction
 	 */	
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
-    {
-
+    {	
     	Offer proposal = Offer.parseOffer((Structure) args[0]);
 		Offer contract = Offer.parseOffer((Structure) args[1]);
 		NumberTerm priceAverage = (NumberTerm) args[2];
@@ -51,20 +50,20 @@ public class getRating extends DefaultInternalAction
 		double deliveryDiscrepancy = contract.getProduct().getAttribute(CriteriaType.DELIVERY) / proposal.getProduct().getAttribute(CriteriaType.DELIVERY);
 		
 		Structure rating = new Structure("rating");
-		rating.addTerm(new NumberTermImpl(getScore(priceDiscrepancy)));
-		rating.addTerm(new NumberTermImpl(getScore(qualityDiscrepancy)));
-		rating.addTerm(new NumberTermImpl(getScore(deliveryDiscrepancy)));
+		rating.addTerm(new NumberTermImpl(getScoreUp(priceDiscrepancy)));
+		rating.addTerm(new NumberTermImpl(getScoreDown(qualityDiscrepancy)));
+		rating.addTerm(new NumberTermImpl(getScoreUp(deliveryDiscrepancy)));
 		
 		return rating;
 	}
 	
 	/**
-	 * This method defines the score for each evaluation criterion
+	 * This method defines the score for an increasing criterion
 	 * The minimum score is -1 and the maximum score is 1.
 	 * @param variation: a normalized value
 	 * @return the score value.
 	 */
-	private double getScore (double variation)
+	private double getScoreUp (double variation)
 	{	
 		if(variation <= 1)
 			return 1;
@@ -72,5 +71,21 @@ public class getRating extends DefaultInternalAction
 			return -1;
 		else
 			return -2 * variation + 3;
+	}
+	
+	/**
+	 * This method defines the score for an decreasing criterion
+	 * The minimum score is -1 and the maximum score is 1.
+	 * @param variation: a normalized value
+	 * @return the score value.
+	 */
+	private double getScoreDown (double variation)
+	{	
+		if(variation >= 1)
+			return 1;
+		else if(variation <= 0)
+			return -1;
+		else
+			return 2 * variation - 1;
 	}
 }

@@ -53,7 +53,7 @@ public class ImpressionConverter
 		belief.addTerm(new Atom(impression.getRequesterName()));
 		belief.addTerm(new Atom(impression.getProviderName()));
 		belief.addTerm(new NumberTermImpl(impression.getTime()));
-		belief.addTerm(new StringTermImpl(impression.getSkill().name()));
+		belief.addTerm(new Atom(impression.getSkill().name()));
 		
 		ListTerm criteriaNames = new ListTermImpl();
 		ListTerm criteriaValues = new ListTermImpl();
