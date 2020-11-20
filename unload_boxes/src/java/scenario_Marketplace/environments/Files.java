@@ -154,7 +154,7 @@ public abstract class Files
 			switch (type) 
 			{
 				case AGENT:
-					path += ".txt";
+					path += "_base.txt";
 				break;
 				
 				case TRUST:

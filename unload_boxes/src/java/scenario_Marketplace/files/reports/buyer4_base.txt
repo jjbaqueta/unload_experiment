@@ -1,0 +1,3 @@
+1605832912094;"finished_sales:11"
+1605832912095;"canceled_sales:0"
+1605832912095;"aborted_sales:0"

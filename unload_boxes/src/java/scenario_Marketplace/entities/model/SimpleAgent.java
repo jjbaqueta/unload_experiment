@@ -18,7 +18,7 @@ public abstract class SimpleAgent implements Comparable<SimpleAgent>
 	public SimpleAgent(String name) 
 	{
 		this.id = seqId.getAndIncrement() + 1;
-		this.name = name + "_" + id;
+		this.name = name + id;
 	}
 
 	public String getName() 
