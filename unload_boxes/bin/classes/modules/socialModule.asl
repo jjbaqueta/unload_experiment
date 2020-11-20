@@ -77,9 +77,9 @@ getAvailabilityOf(Availability, Provider, Skill)
 /** 
  * update the agent's references based on new evaluations received from appraisers.
  */
-+ref(List)[source(S)]: true
++ref(List)[source(S)]: itm(knowhow, Value)
 <-	.my_name(Requester);
-	trustModel.repAndImg.actions.knowhowAnalysis(Requester, S, List);
+	trustModel.repAndImg.actions.knowhowAnalysis(Requester, S, List, Value);
 	-ref(_)[source(S)]. 
 
 /**
@@ -159,30 +159,40 @@ getAvailabilityOf(Availability, Provider, Skill)
 +!evaluateProvider(Provider, Skill, Criteria, Values):	true
 	<-	.my_name(Requester);
 		trustModel.repAndImg.actions.addImpression(Requester, Provider, Skill, Criteria, Values, ImpReference);
-		.send(Provider, tell, ImpReference).
+		.send(Provider, tell, ImpReference);
+.
 
 /** 
  * Update the agent's image about a provider. 
  * If there is not an image about a provider a new image is computed and stored in the belief base.
  * Otherwise, the image is updated.
  */
-+!computeImage(Provider, Skill, Criteria): getMyImpressionsAbout(Impressions, Provider, Skill) 
++!computeImage(Provider, Skill, Criteria)
+	:	getMyImpressionsAbout(Impressions, Provider, Skill) &
+		itm(image, Value)
+		
 	<-	.my_name(Requester);
-		trustModel.repAndImg.actions.computeImage(Impressions, Requester, Provider, Skill, Criteria).
+		trustModel.repAndImg.actions.computeImage(Impressions, Requester, Provider, Skill, Criteria, Value);
+.
 
 /** 
  * Send the agent's image about a provider for a target. 
  */
 +!sendImage(Provider, Target, Skill): getMyImageAbout(Image, Provider, Skill)
-	<- 	.send(Target, tell, Image).
+	<- 	.send(Target, tell, Image);
+.
 
 /** 
  * Compute the reputation of a provider based on the third party opinions.
  * The provider's reputation is stored in the belief base of agent (requester). 
  */
-+!computeReputation(Provider, Skill, Criteria): getThirdPartImages(Images, Provider, Skill)
++!computeReputation(Provider, Skill, Criteria)
+	: 	getThirdPartImages(Images, Provider, Skill) &
+		itm(reputation, Value)
+	
 	<-	.my_name(Requester);
-		trustModel.repAndImg.actions.computeReputation(Images, Requester, Provider, Skill, Criteria).
+		trustModel.repAndImg.actions.computeReputation(Images, Requester, Provider, Skill, Criteria, Value);
+.
 
 /** 
  * Send a list of the provided services that agent has performed so far. 
@@ -203,7 +213,10 @@ getAvailabilityOf(Availability, Provider, Skill)
 		getReputationOf(Reputation, Provider, Skill) &
 		getReferencesOf(Reference, Provider, Skill)
 	<-	.my_name(Requester);
-		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust).
+		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust);
+		
+		.print("[IMPRESSIONS] Image: ", Image, ", Reputation: ", Reputation, ", Reference: ", Reference);
+.
 
 /** 
  * Find the most trustworthy candidate for a given task. 

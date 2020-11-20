@@ -20,7 +20,7 @@ public class ExponantialDecreaseBehavior extends Behavior
 	@Override
 	public double getBehaviorValueFor(int x) 
 	{
-		double y = -(Math.exp(x + maxNumberInteractions/3) / Math.exp(maxNumberInteractions)) + 1;
+		double y = -(Math.exp((double) x + maxNumberInteractions/3) / Math.exp(maxNumberInteractions)) + 1;
 		return checkInterval(y);
 	}
 }

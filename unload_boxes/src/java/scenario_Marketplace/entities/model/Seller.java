@@ -47,10 +47,13 @@ public abstract class Seller extends SimpleAgent
 		}
 		
 		// Updating some values from the old offer
+		int interaction = madeSales + lostSales;
+		
 		for(Map.Entry<CriteriaType, Boolean> pair : criteria)
 		{
 			CriteriaType criterion = pair.getKey();
-			double factor = getProductByName(oldOffer.getProduct().getName()).getBehavior(criterion).getBehaviorValueFor(madeSales + lostSales);
+			
+			double factor = getProductByName(oldOffer.getProduct().getName()).getBehavior(criterion).getBehaviorValueFor(interaction);
 			
 			if(pair.getValue())
 				newValues.put(criterion.name(), factor * oldOffer.getProduct().getAttribute(criterion));				

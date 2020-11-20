@@ -21,7 +21,7 @@ public class ExponentialIncreaseBehavior extends Behavior
 	@Override
 	public double getBehaviorValueFor(int x) 
 	{
-		double y = Math.exp(x + maxNumberInteractions/3) / Math.exp(maxNumberInteractions);
+		double y = Math.exp(x + (double) maxNumberInteractions/3) / Math.exp(maxNumberInteractions);
 		return checkInterval(y); 
 	}
 }

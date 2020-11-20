@@ -9,6 +9,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -34,6 +35,7 @@ public class computeImage extends DefaultInternalAction
 	 * args[2]: provider agent's name.
 	 * args[3]: evaluated skill.
 	 * args[4]: evaluation criteria.
+	 * args[5]: intimate level of interactions for other impressions (itm).
 	 */
 	@Override
 	public Object execute(TransitionSystem ts,	Unifier un, Term[] args) throws Exception 
@@ -53,9 +55,10 @@ public class computeImage extends DefaultInternalAction
 			StringTerm criterion = (StringTerm) t;
 			criteria.add(criterion.getString());
 		}
+		NumberTerm iTM = (NumberTerm) args[5];
 		
 		Impression image = ImpressionAggregation.run(impressions, requesterName.toString(), providerName.toString(), 
-				Skill.valueOf(skill.toString()), criteria);
+				Skill.valueOf(skill.toString()), criteria, (int) iTM.solve());
 		
 		ts.getAg().delBel(Literal.parseLiteral(Mnemonic.IMAGE.getMnemonic() + 
 				"(_," + providerName + ",_,"+ skill +",_,_)[source(self)]"));

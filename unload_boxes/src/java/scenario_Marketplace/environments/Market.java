@@ -14,6 +14,7 @@ import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.entities.model.Product;
 import scenario_Marketplace.entities.model.Seller;
 import scenario_Marketplace.enums.CriteriaType;
+import scenario_Marketplace.enums.FilePaths;
 
 public class Market extends Environment 
 {
@@ -21,7 +22,7 @@ public class Market extends Environment
 	
 	public static CriteriaType[] criteriaOrder = {CriteriaType.PRICE, CriteriaType.QUALITY, CriteriaType.DELIVERY};
     public static Map<String, Buyer> buyers = new HashMap<String, Buyer>();
-    public static Map<String, Seller> sellers = new HashMap<String, Seller>();
+    public static Map<String, Seller> sellers = new HashMap<String, Seller>(); 
 
 	private Logger logger = Logger.getLogger("Log messages for Class: " + Market.class.getName());;
 	private static AtomicInteger seqId = new AtomicInteger();
@@ -31,9 +32,11 @@ public class Market extends Environment
 	{
 		super.init(args);
 		
-		Files.removeOldReports();
+		Files.removeOldReports(FilePaths.REPORTS.getPath());
+		Files.removeOldReports(FilePaths.CHARTS.getPath());
 		Files.loadAgentsFromFile();
-		MarketFuzzyConfig.createFuzzyFile(sellers.size(), buyers.size());
+		MarketFuzzyConfig.createFuzzyFile(getMyImpressionsITM(), getThirdPartITM());
+		
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
 		updatePercepts();
 	}
@@ -100,10 +103,14 @@ public class Market extends Environment
 				addPercept("manager", Literal.parseLiteral("show_report"));
 		}
 		else if(action.equals(Literal.parseLiteral("lost(sale)")))
+		{
 			sellers.get(agName).increaseLostSales();
+		}
 
-		else if(action.equals(Literal.parseLiteral("made(sale)")))	
+		else if(action.equals(Literal.parseLiteral("made(sale)"))) 
+		{
 			sellers.get(agName).increaseMadeSales();
+		}
 		else 
 			logger.warning("executing: " + action + ", but not implemented!");
 
@@ -171,4 +178,35 @@ public class Market extends Environment
     	for(Product product : products)
     		System.out.println(product);
     }
+    
+    /**
+     * This method computes the intimate level of interactions (ITM) for image.
+     * @param the ITM value
+     */
+    public static int getMyImpressionsITM()
+	{
+		int mean = 0;
+		
+		for(Buyer buyer : buyers.values()) 
+		{
+			mean += buyer.getProductsToBuy().size();
+		}
+		
+		return (mean / buyers.size()) / sellers.size();
+	}
+    
+    /**
+     * This method computes the intimate level of interactions (ITM) for reputation.
+     * @param the ITM value
+     */
+    public static int getThirdPartITM()
+	{
+    	// No one impression is sent by others buyers
+    	if (buyers.size() == 1)
+		{
+			return 0;
+		}
+    	
+    	return getMyImpressionsITM() * (buyers.size() - 1);
+	}
 }

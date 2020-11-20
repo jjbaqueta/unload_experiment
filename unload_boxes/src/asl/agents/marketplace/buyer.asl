@@ -36,6 +36,7 @@
 		scenario_Marketplace.actions.buyer.getOtherBuyers(Me, Buyers);
 		.print("[EVALUATION] {price:", Price , "; quality: ", Quality, "; delivery: ", Delivery, "}");
 		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "DELIVERY"], [Price, Quality, Delivery]);
+		!saveData(Seller, Product);
 		
 		// Ending the purchase and cleaning the memory
 		!spreadImage(Seller, Product, Buyers);
@@ -130,7 +131,6 @@
         !helping(Seller, Product);
 		!computeAvailability(Seller, Product, Availability);
 		!checkTrust(Seller, Product, Availability, Confident_profile, Urgency);
-		!saveData(Seller, Product);
 		!updateTrust(T);
 .
 
@@ -148,7 +148,13 @@
 	<-	.length(Impressions, Own_imps);
 		.length(Images, Other_imps);
         scenario_Marketplace.actions.buyer.getFuzzyVariables(Own_imps, Other_imps, Self_confident, Urgency, EdgesValues);
+      
 		!computeTrust(Seller, Skill, Availability, EdgesValues, trust(_,_, Value));
+		
+		.print("[TRUST] Own_imps: ", Own_imps,": Other_imps, ", Other_imps, 
+			", Self_confident: ", Self_confident, ", Urgency: ", Urgency, ", Availability: ", Availability, 
+			", Edges: ", EdgesValues, ", trust: ", Value);
+		
 		-trust(Seller, Skill,_);
 		+trust(Seller, Skill, Value);
 .
@@ -232,4 +238,5 @@
 		
 		.concat("aborted_sales:", Aborted, ContentA);	 
 		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentA);
+//		!saveData(Seller, Product);
 .

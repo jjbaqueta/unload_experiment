@@ -2,7 +2,6 @@ package trustModel.repAndImg.services;
 
 import java.util.Set;
 
-import scenario_Marketplace.environments.Market;
 import trustModel.repAndImg.enums.Skill;
 import trustModel.repAndImg.model.Impression;
 import trustModel.repAndImg.model.TimeBB;
@@ -16,10 +15,11 @@ public class ImpressionAggregation
 	 * @param providerName: the name of provider agent.
 	 * @param skill: the skill which the evaluation refers.
 	 * @param criteria: a set of evaluation criteria.
+	 * @param iTM: the intimate level of interactions.
 	 * @return an impression resulting of aggregation operation.
 	 */
 	public static Impression run(Set<Impression> impressions, String requesterName, String providerName, 
-			Skill skill, Set<String> criteria)
+			Skill skill, Set<String> criteria, int iTM)
 	{
 		long aggrTime = System.currentTimeMillis() - TimeBB.start;
 		
@@ -44,7 +44,7 @@ public class ImpressionAggregation
 		}
 		
 		// Computing reliability
-		Impression reliability = computeReliability(resultImp, aggrTime, impressions, requesterName, providerName, skill, criteria);
+		Impression reliability = computeReliability(resultImp, aggrTime, impressions, requesterName, providerName, skill, criteria, iTM);
 		
 		for(String criterion : criteria)
 		{
@@ -63,11 +63,11 @@ public class ImpressionAggregation
 	 */
 	private static Impression computeReliability(Impression aggrImp, long aggrTime, 
 			Set<Impression> impressions, String requesterName, String providerName, 
-			Skill skill, Set<String> criteria)
+			Skill skill, Set<String> criteria, int iTM)
 	{			
 		Impression resultImp = new Impression(requesterName, providerName, aggrTime, skill);
 		Impression deviations = computeDeviation(aggrImp, aggrTime, impressions, requesterName, providerName, skill, criteria);
-		double ni = computeNi(impressions);
+		double ni = computeNi(impressions, iTM);
 		double aggrValue;
 		
 		for(String criterion : criteria)
@@ -90,20 +90,18 @@ public class ImpressionAggregation
 	 * @param impressions List of impressions considered to compute the subjective reputation.
 	 * @return how much expressive is the list of impressions
 	 */
-	private static double computeNi(Set<Impression> impressions)
+	private static double computeNi(Set<Impression> impressions, int iTM)
 	{	
 		// Number of impressions used to calculate the reputation.
 		int cardinality = impressions.size();
-		double ITM = Market.sellers.size() * Market.buyers.size();
-//		double ITM = UnloadEnv.model.getWorld().getItmForTruckers() * UnloadEnv.model.getWorld().getItmForWorkers();
 	
 		/*
 		 * Computing Ni
 		 * If the rating cardinality is below the ITM, the importance of impressions is reduced (to a value less than 1).
 		 * Otherwise, the importance level is defined as 1. 
 		 */
-		if(cardinality <= ITM)
-			return Math.sin(Math.PI/(2 * ITM) * cardinality);
+		if(cardinality <= iTM)
+			return Math.sin(Math.PI/(2 * iTM) * cardinality);
 		else
 			return 1;
 	}

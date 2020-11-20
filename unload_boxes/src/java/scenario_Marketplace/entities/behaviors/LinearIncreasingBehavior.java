@@ -20,7 +20,7 @@ public class LinearIncreasingBehavior extends Behavior
 	@Override
 	public double getBehaviorValueFor(int x) 
 	{
-		double y = x/maxNumberInteractions;
+		double y = x / (double) maxNumberInteractions;
 		return checkInterval(y); 
 	}
 

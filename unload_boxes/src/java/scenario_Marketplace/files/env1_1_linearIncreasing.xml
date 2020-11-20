@@ -10,11 +10,11 @@
                 <amount>20</amount>
                 <behaviorAcceleration>10</behaviorAcceleration>
                 <price>1500</price>
-                <priceBehavior>LINEAR_DECREASING</priceBehavior>
+                <priceBehavior>LINEAR_INCREASING</priceBehavior>
 	            <quality>1.0</quality>
-                <qualityBehavior>LINEAR_DECREASING</qualityBehavior>                
+                <qualityBehavior>LINEAR_INCREASING</qualityBehavior>                
 	            <delivery>10.0</delivery>
-                <deliveryBehavior>LINEAR_DECREASING</deliveryBehavior>
+                <deliveryBehavior>LINEAR_INCREASING</deliveryBehavior>
 	        </product>
         </sell>
     </seller>
@@ -28,6 +28,15 @@
         <qualityPreference>0.5</qualityPreference>
         <deliveryPreference>0.5</deliveryPreference>
         <buy>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
             <product>tv</product>
             <product>tv</product>
         </buy>

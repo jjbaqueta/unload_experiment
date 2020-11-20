@@ -4,7 +4,8 @@ public enum FilePaths
 {
 	LOAD_AGENTS("src/java/scenario_Marketplace/files/env.xml"),
 	FUZZY_VARS("src/java/scenario_Marketplace/files/fuzzy_vars.fcl"),
-	REPORTS("src/java/scenario_Marketplace/files/reports");
+	REPORTS("src/java/scenario_Marketplace/files/reports"),
+	CHARTS("src/java/scenario_Marketplace/files/charts");
 	
 	private String path;
 	

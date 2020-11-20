@@ -24,9 +24,15 @@ public class initialize extends DefaultInternalAction
     {
     	Buyer b = Market.buyers.get(args[0].toString());
     	
+    	// Buyer's attributes
     	ts.getAg().addBel(Literal.parseLiteral("id(" + b.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("self_confident(" + b.getSelfConfident() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("urgency(" + b.getUrgency() + ")"));
+    	
+    	// Attributes for social module
+    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + 1 + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("itm(reputation," + Market.getThirdPartITM() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("itm(image," + Market.getMyImpressionsITM() + ")"));
 
         return true;
     }

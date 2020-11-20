@@ -20,7 +20,7 @@ public class LinearDecreaseBehavior extends Behavior
 	@Override
 	public double getBehaviorValueFor(int x) 
 	{
-		double y = 1 + (-x/maxNumberInteractions);
+		double y = 1 + (-x/ (double) maxNumberInteractions);
 		return checkInterval(y); 
 	}
 }

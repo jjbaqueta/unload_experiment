@@ -205,9 +205,9 @@ public abstract class Files
 	 * Delete all files in the report folder.
 	 * This method must be used before to write new reports.
 	 */
-	public static void removeOldReports()
+	public static void removeOldReports(String dir)
 	{
-		File folder = new File(FilePaths.REPORTS.getPath());
+		File folder = new File(dir);
 		
 		if (folder.isDirectory()) 
 		{

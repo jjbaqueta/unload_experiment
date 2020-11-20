@@ -1,0 +1,3 @@
+1605907790410;availability(seller1,tv,2,2)
+1605907792746;availability(seller1,tv,3,3)
+1605907793299;availability(seller1,tv,3,3)

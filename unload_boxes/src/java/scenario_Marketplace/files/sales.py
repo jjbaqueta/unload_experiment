@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from collections import defaultdict
+from decimal import Decimal
 
 dir_reports = os.path.dirname(os.path.realpath(__file__)) + '/reports'
 dir_charts = os.path.dirname(os.path.realpath(__file__)) + '/charts'
@@ -90,7 +91,6 @@ def impressionChart(chartType):
     for buyer in impressions.keys():
         
         sellersOf = defaultdict(list)
-        plt.subplots()
 
         for data in impressions[buyer]:
             seller = data[0]
@@ -104,22 +104,35 @@ def impressionChart(chartType):
                 key = seller + "-" + product + "-" + cName
                 sellersOf[key].append((time, cValue))
         
+        products = defaultdict(list)
+
         for seller in sellersOf.keys():
-            times = []
-            values = []
+            key = seller.split("-")[0] + "-" + seller.split("-")[1]
+            criterion = seller.split("-")[2]
+            products[key].append((criterion, sellersOf[seller]))
 
-            for data in sellersOf[seller]:
-                times.append(data[0])
-                values.append(data[1])
+        for product in products.keys():
+            plt.subplots()
 
-            plt.plot(times, values, label=seller)
+            for data in products[product]:
+                criterion = data[0]
+                series = data[1]
+
+                times = []
+                values = []
+
+                for serie in series:
+                    times.append(serie[0])
+                    values.append(serie[1])
+
+                plt.plot(times, values, label=criterion)
     
-        plt.title(chartTitle)
-        plt.xlabel('Time')
-        plt.ylabel(yLabel)
-        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.subplots_adjust(left=0.126, right=0.6)
-        plt.savefig(dir_charts + '/' + buyer + fileName)
+            plt.title(chartTitle + ": " + product)
+            plt.xlabel('Time')
+            plt.ylabel(yLabel)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.subplots_adjust(left=0.114, right=0.755)
+            plt.savefig(dir_charts + '/' + buyer + '_' + product + fileName)
 
 def availabilityChart():
     '''
@@ -221,7 +234,7 @@ for entry in os.listdir(dir_reports):
             elif suffix == 'trust.txt':
                 seller = content.split(",")[0][6:]
                 product = content.split(",")[1]
-                value = float(content.split(",")[2][:-2])
+                value = Decimal(content.split(",")[2][:-2])
                 trust[agent].append((seller, product, time, value))
 
             elif suffix == 'reputation.txt' or suffix == 'image.txt' or suffix == 'knowhow.txt':
@@ -230,9 +243,9 @@ for entry in os.listdir(dir_reports):
                 c1 = content.split(",")[4][2:-1]
                 c2 = content.split(",")[5][1:-1]
                 c3 = content.split(",")[6][1:-2]
-                v1 = float(content.split(",")[7][1:])
-                v2 = float(content.split(",")[8])
-                v3 = float(content.split(",")[9][:-3])
+                v1 = Decimal(content.split(",")[7][1:])
+                v2 = Decimal(content.split(",")[8])
+                v3 = Decimal(content.split(",")[9][:-3])
                 
                 if suffix == 'reputation.txt':
                     reputation[agent].append((seller, product, time, [(c1, v1), (c2, v2), (c3, v3)]))
