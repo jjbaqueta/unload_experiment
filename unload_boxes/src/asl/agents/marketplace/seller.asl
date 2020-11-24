@@ -45,8 +45,8 @@ find_product(Product, Products)
 				.nth(0, Products, Offer);
 		      	+my_proposal(CNPId, Offer);
 				.print("I have the product ", Product, ". Sending my proposal: ", Offer);
-		      	.send(Buyer, tell, proposal(CNPId, Offer));
 		      	!sendMyknowHow(Product, Buyer);		
+		      	.send(Buyer, tell, proposal(CNPId, Offer));
 			}
 			else
 			{

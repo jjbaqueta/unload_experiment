@@ -63,6 +63,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Update the image of a provider, 
  * when a new impression about him is added in agent's belief base. 
  */
+ @ms1[atomic]
 +imp(_,Provider,_,Skill,Criteria,_)[source(self)]: true
 <-	!computeImage(Provider, Skill, Criteria).
 
@@ -70,6 +71,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Update the reputation of a provider, 
  * when a new image about him is added in agent's belief base. 
  */
+ @ms2[atomic]
 +img(_,Provider,_,Skill,Criteria,_)[source(S)]
 :	S \== self
 <-	!computeReputation(Provider, Skill, Criteria).
@@ -77,10 +79,12 @@ getAvailabilityOf(Availability, Provider, Skill)
 /** 
  * update the agent's references based on new evaluations received from appraisers.
  */
-+ref(List)[source(S)]: itm(knowhow, Value)
+ @ms3[atomic]
++refs(List)[source(S)]: itm(knowhow, Value)
 <-	.my_name(Requester);
 	trustModel.repAndImg.actions.knowhowAnalysis(Requester, S, List, Value);
-	-ref(_)[source(S)]. 
+	-refs(_)[source(S)]
+. 
 
 /**
  * Begins the availability level of an agent.
@@ -97,7 +101,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Increase the number of ask for helping by one unit.
  * @param Agent: agent for who the help was asked. 
  */
-@b_inc1 [atomic]
+@ms4 [atomic]
 +!requestHelp(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
 	<-	-availability(Agent, Skill,_,_);
 		+availability(Agent, Skill, N_askForHelping + 1, N_Help); 
@@ -109,7 +113,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Increase by one unit the helping counter of a helper.
  * @param Agent: agent who helped. 
  */
-@b_inc2 [atomic]
+@ms5 [atomic]
 +!helping(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
 	<-	-availability(Agent, Skill,_,_);
 		+availability(Agent, Skill, N_askForHelping, N_Help + 1);
@@ -200,7 +204,7 @@ getAvailabilityOf(Availability, Provider, Skill)
 +!sendMyknowHow(Skill, Target):	getMyknowHow(Impressions, Skill)
 	<-	if(Impressions \== [])
 		{
-			.send(Target, tell, ref(Impressions));
+			.send(Target, tell, refs(Impressions));
 		}
 .
 

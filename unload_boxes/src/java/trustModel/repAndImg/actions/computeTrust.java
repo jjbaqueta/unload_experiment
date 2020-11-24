@@ -69,7 +69,7 @@ public class computeTrust extends DefaultInternalAction
 				reference.isEmpty() ? null : (Structure) reference.get(0));
 		
 		// Loading availability value
-		trustTree.getFuzzyMap().getNodesByName("availability").get(0).setValue(availability.solve());
+		trustTree.getFuzzyMap().getNodesByName(Mnemonic.AVAILABILITY.getMnemonic()).get(0).setValue(availability.solve());
 		
 		Structure abilityEffect = (Structure) edgeValues.getTerm(0);
 		NumberTerm abilityValue = (NumberTerm) abilityEffect.getTerm(0);
@@ -89,17 +89,12 @@ public class computeTrust extends DefaultInternalAction
 		Structure imgEffect = (Structure) edgeValues.getTerm(5);
 		NumberTerm imgValue = (NumberTerm) imgEffect.getTerm(0);
 		
-		trustTree.getFuzzyMap().getEdgesByName("ability_effect").get(0).setValue(abilityValue.solve());
-		
-		trustTree.getFuzzyMap().getEdgesByName("availability_effect").get(0).setValue(availabilityValue.solve());
-		
-		trustTree.getFuzzyMap().getEdgesByName("knowhow_effect").get(0).setValue(knowhowValue.solve());
-
-		trustTree.getFuzzyMap().getEdgesByName("ir_effect").get(0).setValue(irValue.solve());
-		
-		trustTree.getFuzzyMap().getEdgesByName("rep_effect").get(0).setValue(repValue.solve());
-		
-		trustTree.getFuzzyMap().getEdgesByName("img_effect").get(0).setValue(imgValue.solve());
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.ABILITY_EFFECT.getMnemonic()).get(0).setValue(abilityValue.solve());	
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.AVAILABILITY_EFFECT.getMnemonic()).get(0).setValue(availabilityValue.solve());		
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.KNOWHOW_EFFECT.getMnemonic()).get(0).setValue(knowhowValue.solve());
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.REASONING_EFFECT.getMnemonic()).get(0).setValue(irValue.solve());
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.REP_EFFECT.getMnemonic()).get(0).setValue(repValue.solve());
+		trustTree.getFuzzyMap().getEdgesByName(Mnemonic.IMG_EFFECT.getMnemonic()).get(0).setValue(imgValue.solve());
 		
 		// Computing trust value
 		PropagateInputsVisitor propagateVisitor = new PropagateInputsVisitor(inputs);
@@ -132,7 +127,7 @@ public class computeTrust extends DefaultInternalAction
 		}
 		else
 		{
-			inputs.put(tarNode.getId(), 0.0);
+			inputs.put(tarNode.getId(), -1.0);
 			trustTree.getFuzzyMap().setAsInput(tarNode.getId());
 		}
 	}

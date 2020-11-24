@@ -100,8 +100,9 @@ public class ImpressionAggregation
 		 * If the rating cardinality is below the ITM, the importance of impressions is reduced (to a value less than 1).
 		 * Otherwise, the importance level is defined as 1. 
 		 */
-		if(cardinality <= iTM)
-			return Math.sin(Math.PI/(2 * iTM) * cardinality);
+		if(cardinality >=0 && cardinality <= iTM)
+			return Math.sin((Math.PI * cardinality) / (2 * iTM));
+//			return Math.tanh(2 * iTM * cardinality);
 		else
 			return 1;
 	}

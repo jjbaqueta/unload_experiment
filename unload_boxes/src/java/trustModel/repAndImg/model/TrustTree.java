@@ -25,17 +25,17 @@ public class TrustTree
 		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.IMAGE.name(), 0.0));				//0
 		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.REPUTATION.name(), 0.0));		//1
 		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.KNOWHOW.name(), 0.0));			//2
-		fuzzyMap.insertNode(new FmcNode(idNode++, "i/r", 0.0));								//3
-		fuzzyMap.insertNode(new FmcNode(idNode++, "ability", 0.0));							//4
-		fuzzyMap.insertNode(new FmcNode(idNode++, "availability", 0.0));					//5
-		fuzzyMap.insertNode(new FmcNode(idNode++, "Trustfulness", 0.0));					//6
+		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.REASONING.getMnemonic(), 0.0));			//3
+		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.ABILITY.getMnemonic(), 0.0));			//4
+		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.AVAILABILITY.getMnemonic(), 0.0));		//5
+		fuzzyMap.insertNode(new FmcNode(idNode++, Mnemonic.TRUSTFULNESS.getMnemonic(), 0.0));		//6
 		
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "img_effect", 0.5, 0, 3));				//img -> i/r		
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "rep_effect", 0.5, 1, 3));				//rep -> i/r
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "ir_effect", 0.5, 3, 4));				//i/r -> ability
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "knowhow_effect", 0.5, 2, 4));			//ref -> ability
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "ability_effect", 0.1, 4, 6));			//ability -> internal factors
-		fuzzyMap.insertEdge(new FmcEdge(idEdge++, "availability_effect", 1.0, 5, 6));		//availability -> internal factors 
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.IMG_EFFECT.getMnemonic(), 0.5, 0, 3));				//img -> i/r		
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.REP_EFFECT.getMnemonic(), 0.5, 1, 3));				//rep -> i/r
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.REASONING_EFFECT.getMnemonic(), 0.5, 3, 4));		//i/r -> ability
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.KNOWHOW_EFFECT.getMnemonic(), 0.5, 2, 4));			//ref -> ability
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.ABILITY_EFFECT.getMnemonic(), 0.1, 4, 6));			//ability -> internal factors
+		fuzzyMap.insertEdge(new FmcEdge(idEdge++, Mnemonic.AVAILABILITY_EFFECT.getMnemonic(), 1.0, 5, 6));		//availability -> internal factors 
 		
 		fuzzyMap.setAsOutput(6);
 	}
@@ -61,7 +61,7 @@ public class TrustTree
 //		
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "img_effect", 1.0, 0, 3));				//img -> i/r		
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "rep_effect", 1.0, 1, 3));				//rep -> i/r
-//		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ir_effect", 1.0, 3, 4));				//i/r -> ability
+//		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "reasoning_effect", 1.0, 3, 4));				//i/r -> ability
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "knowhow_effect", 1.0, 2, 4));			//ref -> ability
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ability_effect", 1.0, 4, 6));			//ability -> internal factors
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "availability_effect", 0.1, 5, 6));		//availability -> internal factors
@@ -94,7 +94,7 @@ public class TrustTree
 //		
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "img_effect", 1.0, 0, 3));				//img -> i/r		
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "rep_effect", 1.0, 1, 3));				//rep -> i/r
-//		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ir_effect", 1.0, 3, 4));				//i/r -> ability
+//		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "reasoning_effect", 1.0, 3, 4));				//i/r -> ability
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "knowhow_effect", 1.0, 2, 4));			//ref -> ability
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "ability_effect", 1.0, 4, 6));			//ability -> internal factors
 //		fuzzyMap.insertEdge(new FuzzyEdge(idEdge++, "availability_effect", 1.0, 5, 6));		//availability -> internal factors

@@ -184,13 +184,19 @@ public class Market extends Environment
      * @param the ITM value
      */
     public static int getMyImpressionsITM()
-	{
+	{    	
 		int mean = 0;
 		
 		for(Buyer buyer : buyers.values()) 
 		{
 			mean += buyer.getProductsToBuy().size();
 		}
+		
+		if (sellers.size() == 0)
+			return 1;
+		
+		if(sellers.size() == 1)
+			return (mean / buyers.size()) / 2;
 		
 		return (mean / buyers.size()) / sellers.size();
 	}

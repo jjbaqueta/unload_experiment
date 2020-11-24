@@ -11,6 +11,7 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import net.sourceforge.jFuzzyLogic.FIS;
 import scenario_Marketplace.enums.FilePaths;
+import trustModel.repAndImg.enums.Mnemonic;
 
 public class getFuzzyVariables extends DefaultInternalAction 
 {
@@ -28,16 +29,18 @@ public class getFuzzyVariables extends DefaultInternalAction
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {	
     	FIS fis = loadFuzzyBlocks();
+//    	JFuzzyChart.get().chart(fis);		// show the fuzzy variables universe
     	
     	NumberTerm urgencyValue = (NumberTerm) args[0];
     	NumberTerm ownImpsValue = (NumberTerm) args[1];
     	NumberTerm otherImpsValue = (NumberTerm) args[2];
     	NumberTerm selfConfidentValue = (NumberTerm) args[3];
+    	NumberTerm references = (NumberTerm) args[4];
     	
     	Structure edges = getOutputValues(fis, urgencyValue.solve(), ownImpsValue.solve(), 
-    			otherImpsValue.solve(), selfConfidentValue.solve());
+    			otherImpsValue.solve(), selfConfidentValue.solve(), references.solve());
     	
-    	return un.unifies(edges, args[4]);
+    	return un.unifies(edges, args[5]);
     }
     
 	/**
@@ -61,25 +64,27 @@ public class getFuzzyVariables extends DefaultInternalAction
 	 * @param ownImpsValue: the buyer's imagem about a seller.
 	 * @param otherImpsValue: the reputation of the seller.
 	 * @param selfConfidentValue: buyer's self confident profile.
+	 * @para references: if the seller has references
 	 * @return the values that'll be associated the edges of the trust model.
 	 */
 	private Structure getOutputValues(FIS fis, double urgencyValue, double ownImpsValue, 
-			double otherImpsValue, double selfConfidentValue)
+			double otherImpsValue, double selfConfidentValue, double references)
 	{
-		fis.setVariable("urgency", urgencyValue);
-		fis.setVariable("own_imps", ownImpsValue);
-		fis.setVariable("other_imps", otherImpsValue);
-		fis.setVariable("self_confident", selfConfidentValue);
+		fis.setVariable(Mnemonic.URGENCY.getMnemonic(), urgencyValue);
+		fis.setVariable(Mnemonic.OWN_IMPS.getMnemonic(), ownImpsValue);
+		fis.setVariable(Mnemonic.OTHER_IMPS.getMnemonic(), otherImpsValue);
+		fis.setVariable(Mnemonic.SELFCONFIDENT.getMnemonic(), selfConfidentValue);
+		fis.setVariable(Mnemonic.REFERENCES.getMnemonic(), references);
 		fis.evaluate();
 		
 		Structure weights = new Structure("edges");
 		
-		weights.addTerm(Literal.parseLiteral("ability_effect("+ fis.getVariable("ability_effect").getValue() +")"));
-		weights.addTerm(Literal.parseLiteral("availability_effect("+ fis.getVariable("availability_effect").getValue() +")"));
-		weights.addTerm(Literal.parseLiteral("knowhow_effect("+ fis.getVariable("knowhow_effect").getValue() +")"));
-		weights.addTerm(Literal.parseLiteral("ir_effect("+ fis.getVariable("ir_effect").getValue() +")"));
-		weights.addTerm(Literal.parseLiteral("rep_effect("+ fis.getVariable("rep_effect").getValue() +")"));
-		weights.addTerm(Literal.parseLiteral("img_effect("+ fis.getVariable("img_effect").getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.ABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.ABILITY_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.AVAILABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.AVAILABILITY_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.KNOWHOW_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.KNOWHOW_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.REASONING_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REASONING_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.REP_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REP_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.IMG_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.IMG_EFFECT.getMnemonic()).getValue() +")"));
 		
 		return weights;
 	}
