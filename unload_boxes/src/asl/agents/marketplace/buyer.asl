@@ -149,7 +149,7 @@
 	<-	.length(Impressions, Own_imps);
 		.length(Images, Other_imps);
 		.length(Reference, References);
-        scenario_Marketplace.actions.buyer.getFuzzyVariables(Urgency, Own_imps, Other_imps, Self_confident, References, EdgesValues);
+        scenario_Marketplace.actions.buyer.getFuzzyVariables(Urgency, Own_imps, Own_imps + Other_imps, Self_confident, References, EdgesValues);
       
 		!computeTrust(Seller, Skill, Availability, EdgesValues, trust(_,_, Value));
 		

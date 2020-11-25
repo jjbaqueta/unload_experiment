@@ -7,6 +7,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.environments.Market;
+import scenario_Marketplace.environments.MarketFuzzyConfig;
 
 /**
  * This action initializes a buyer.
@@ -30,10 +31,10 @@ public class initialize extends DefaultInternalAction
     	ts.getAg().addBel(Literal.parseLiteral("urgency(" + b.getUrgency() + ")"));
     	
     	// Attributes for social module
-    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + 1 + ")"));
-    	ts.getAg().addBel(Literal.parseLiteral("itm(reputation," + Market.getThirdPartITM() + ")"));
-    	ts.getAg().addBel(Literal.parseLiteral("itm(image," + Market.getMyImpressionsITM() + ")"));
-
+    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + MarketFuzzyConfig.max_references + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("itm(reputation," + MarketFuzzyConfig.max_other_impressions + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("itm(image," + MarketFuzzyConfig.max_own_impressions + ")"));
+    	
         return true;
     }
 }

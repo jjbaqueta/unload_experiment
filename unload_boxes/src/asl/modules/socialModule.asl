@@ -72,8 +72,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * when a new image about him is added in agent's belief base. 
  */
  @ms2[atomic]
-+img(_,Provider,_,Skill,Criteria,_)[source(S)]
-:	S \== self
++img(_,Provider,_,Skill,Criteria,_)[source(_)]
 <-	!computeReputation(Provider, Skill, Criteria).
 
 /** 
@@ -191,10 +190,12 @@ getAvailabilityOf(Availability, Provider, Skill)
  * The provider's reputation is stored in the belief base of agent (requester). 
  */
 +!computeReputation(Provider, Skill, Criteria)
-	: 	getThirdPartImages(Images, Provider, Skill) &
+	: 	getThirdPartImages(Third_part_images, Provider, Skill) &
+		getMyImageAbout(Own_image, Provider, Skill) &
 		itm(reputation, Value)
 	
 	<-	.my_name(Requester);
+		.concat(Own_image, Third_part_images, Images)
 		trustModel.repAndImg.actions.computeReputation(Images, Requester, Provider, Skill, Criteria, Value);
 .
 

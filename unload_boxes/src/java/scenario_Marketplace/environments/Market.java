@@ -34,7 +34,7 @@ public class Market extends Environment
 		
 		Files.removeOldReports(FilePaths.REPORTS.getPath());
 		Files.removeOldReports(FilePaths.CHARTS.getPath());
-		Files.loadAgentsFromFile();
+		Files.loadAgentsFromFile();		
 		MarketFuzzyConfig.createFuzzyFile(getMyImpressionsITM(), getThirdPartITM());
 		
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
@@ -183,17 +183,16 @@ public class Market extends Environment
      * This method computes the intimate level of interactions (ITM) for image.
      * @param the ITM value
      */
-    public static int getMyImpressionsITM()
+    private int getMyImpressionsITM()
 	{    	
-		int mean = 0;
-		
-		for(Buyer buyer : buyers.values()) 
-		{
-			mean += buyer.getProductsToBuy().size();
-		}
-		
+    	
+    	int mean = 0;
+    	
+    	for(Buyer buyer : buyers.values()) 
+    		mean += buyer.getProductsToBuy().size();
+  	
 		if (sellers.size() == 0)
-			return 1;
+			return 0;
 		
 		if(sellers.size() == 1)
 			return (mean / buyers.size()) / 2;
@@ -205,13 +204,11 @@ public class Market extends Environment
      * This method computes the intimate level of interactions (ITM) for reputation.
      * @param the ITM value
      */
-    public static int getThirdPartITM()
+    private int getThirdPartITM()
 	{
     	// No one impression is sent by others buyers
     	if (buyers.size() == 1)
-		{
-			return 0;
-		}
+			return getMyImpressionsITM();
     	
     	return getMyImpressionsITM() * (buyers.size() - 1);
 	}

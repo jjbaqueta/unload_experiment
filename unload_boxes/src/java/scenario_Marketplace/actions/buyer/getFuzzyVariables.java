@@ -10,6 +10,7 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import scenario_Marketplace.enums.FilePaths;
 import trustModel.repAndImg.enums.Mnemonic;
 
@@ -29,7 +30,7 @@ public class getFuzzyVariables extends DefaultInternalAction
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {	
     	FIS fis = loadFuzzyBlocks();
-//    	JFuzzyChart.get().chart(fis);		// show the fuzzy variables universe
+    	JFuzzyChart.get().chart(fis);		// show the fuzzy variables universe
     	
     	NumberTerm urgencyValue = (NumberTerm) args[0];
     	NumberTerm ownImpsValue = (NumberTerm) args[1];
@@ -64,7 +65,7 @@ public class getFuzzyVariables extends DefaultInternalAction
 	 * @param ownImpsValue: the buyer's imagem about a seller.
 	 * @param otherImpsValue: the reputation of the seller.
 	 * @param selfConfidentValue: buyer's self confident profile.
-	 * @para references: if the seller has references
+	 * @param references: if the seller has references
 	 * @return the values that'll be associated the edges of the trust model.
 	 */
 	private Structure getOutputValues(FIS fis, double urgencyValue, double ownImpsValue, 
@@ -77,6 +78,8 @@ public class getFuzzyVariables extends DefaultInternalAction
 		fis.setVariable(Mnemonic.REFERENCES.getMnemonic(), references);
 		fis.evaluate();
 		
+//		printVars(fis);
+		
 		Structure weights = new Structure("edges");
 		
 		weights.addTerm(Literal.parseLiteral(Mnemonic.ABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.ABILITY_EFFECT.getMnemonic()).getValue() +")"));
@@ -87,5 +90,18 @@ public class getFuzzyVariables extends DefaultInternalAction
 		weights.addTerm(Literal.parseLiteral(Mnemonic.IMG_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.IMG_EFFECT.getMnemonic()).getValue() +")"));
 		
 		return weights;
+	}
+	
+	/**
+	 * Show the fuzzy variable on screen.
+	 * @param FIS: a Fuzzy inference system (FIS) (loaded from flc file).
+	 */
+	private void printVars(FIS fis)
+	{
+		System.out.println(fis.getVariable(Mnemonic.URGENCY.getMnemonic()));
+		System.out.println(fis.getVariable(Mnemonic.OWN_IMPS.getMnemonic()));
+		System.out.println(fis.getVariable(Mnemonic.OTHER_IMPS.getMnemonic()));
+		System.out.println(fis.getVariable(Mnemonic.SELFCONFIDENT.getMnemonic()));
+		System.out.println(fis.getVariable(Mnemonic.REFERENCES.getMnemonic()));
 	}
 }
