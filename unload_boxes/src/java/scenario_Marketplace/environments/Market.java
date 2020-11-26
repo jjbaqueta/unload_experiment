@@ -10,6 +10,8 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.Environment;
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.entities.model.Product;
 import scenario_Marketplace.entities.model.Seller;
@@ -23,6 +25,7 @@ public class Market extends Environment
 	public static CriteriaType[] criteriaOrder = {CriteriaType.PRICE, CriteriaType.QUALITY, CriteriaType.DELIVERY};
     public static Map<String, Buyer> buyers = new HashMap<String, Buyer>();
     public static Map<String, Seller> sellers = new HashMap<String, Seller>(); 
+    public static FIS fis;
 
 	private Logger logger = Logger.getLogger("Log messages for Class: " + Market.class.getName());;
 	private static AtomicInteger seqId = new AtomicInteger();
@@ -36,6 +39,10 @@ public class Market extends Environment
 		Files.removeOldReports(FilePaths.CHARTS.getPath());
 		Files.loadAgentsFromFile();		
 		MarketFuzzyConfig.createFuzzyFile(getMyImpressionsITM(), getThirdPartITM());
+    	fis = Files.loadFuzzyBlocks();
+    	
+    	showFuzzyUniverse();
+    	
 		
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
 		updatePercepts();
@@ -211,5 +218,13 @@ public class Market extends Environment
 			return getMyImpressionsITM();
     	
     	return getMyImpressionsITM() * (buyers.size() - 1);
+	}
+    
+    /**
+	 * This method shows the fuzzy variables universe. 
+	 */
+	public static void showFuzzyUniverse()
+	{
+		JFuzzyChart.get().chart(fis);
 	}
 }

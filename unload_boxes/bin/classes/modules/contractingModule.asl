@@ -69,26 +69,8 @@ all_proposals_received(CNPId, NP)
       	
 // No offer case
 +!show_winner(CNPId,_ , _, nowinner)
-	<-	.print("There is not a winner for the calling, CNPId: ", CNPId).
-
-/**
- * Announce who won the calling for all participants
- * @param CNPId: id of required service
- * @param Loffers: list of received offers
- * @param Wagent: the winner agent 
- */	
-// Announce result to the winner
-+!result(CNPId, [offer(_, Agent)|T], Wagent): Agent == Wagent 
-	<-	.send(Agent, tell, accept_proposal(CNPId));
-      	!result(CNPId, T, Wagent).
-
-// Announce to others      
-+!result(CNPId,[offer(_, Agent)|T], Wagent): Agent \== Wagent
-	<-	.send(Agent, tell, reject_proposal(CNPId));
-      	!result(CNPId, T, Wagent).
-
-// Case the list of offers is empty      
-+!result(_,[],_).
+	<-	.print("There is not a winner for the calling, CNPId: ", CNPId)
+.
 
 /**
  * Delete all refuses sent by an agent for a given CNPId

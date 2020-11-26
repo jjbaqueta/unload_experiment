@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import net.sourceforge.jFuzzyLogic.FIS;
 import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.entities.model.GeneralOrientedBuyer;
 import scenario_Marketplace.entities.model.GeneralSeller;
@@ -29,6 +30,20 @@ import scenario_Marketplace.enums.ReportType;
 
 public abstract class Files 
 {
+	/**
+	 * Load the fuzzy blocks from a input file (fuzzy_system.fcl)
+	 * @return a Fuzzy inference system (FIS)
+	 */
+	public static FIS loadFuzzyBlocks()
+	{
+        FIS fis = FIS.load(FilePaths.FUZZY_VARS.getPath(), true);
+        
+        if( fis == null )
+        	throw new Error("Can't load file: '" + FilePaths.FUZZY_VARS.getPath() + "'");
+        
+        return fis;
+	}
+	
 	/**
 	 * This method load the agents from a xml file.
 	 * @param fileName: name of file to be loaded.
@@ -144,8 +159,9 @@ public abstract class Files
 	 * @param agentName: the name of a buyer or seller agent.
 	 * @param type: the type of report that'll be written.
 	 * @param content: the content to be written.
+	 * @param interaction: number of the current interaction.
 	 */
-	public static void writeReportInFile(String agentName, ReportType type, String content)
+	public static void writeReportInFile(String agentName, ReportType type, String content, int interaction)
 	{
 		try 
 		{
@@ -186,7 +202,7 @@ public abstract class Files
 			}
 			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
-			writer.append(System.currentTimeMillis() + ";" + content +"\n");			     
+			writer.append(interaction + ";" + content +"\n");			     
 		    writer.close();
 		} 
 		catch (IOException e) 

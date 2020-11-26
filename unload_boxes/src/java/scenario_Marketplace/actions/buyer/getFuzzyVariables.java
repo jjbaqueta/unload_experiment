@@ -10,8 +10,7 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import net.sourceforge.jFuzzyLogic.FIS;
-import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
-import scenario_Marketplace.enums.FilePaths;
+import scenario_Marketplace.environments.Market;
 import trustModel.repAndImg.enums.Mnemonic;
 
 public class getFuzzyVariables extends DefaultInternalAction 
@@ -29,34 +28,17 @@ public class getFuzzyVariables extends DefaultInternalAction
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {	
-    	FIS fis = loadFuzzyBlocks();
-    	JFuzzyChart.get().chart(fis);		// show the fuzzy variables universe
-    	
     	NumberTerm urgencyValue = (NumberTerm) args[0];
     	NumberTerm ownImpsValue = (NumberTerm) args[1];
     	NumberTerm otherImpsValue = (NumberTerm) args[2];
     	NumberTerm selfConfidentValue = (NumberTerm) args[3];
     	NumberTerm references = (NumberTerm) args[4];
     	
-    	Structure edges = getOutputValues(fis, urgencyValue.solve(), ownImpsValue.solve(), 
+    	Structure edges = getOutputValues(Market.fis, urgencyValue.solve(), ownImpsValue.solve(), 
     			otherImpsValue.solve(), selfConfidentValue.solve(), references.solve());
     	
     	return un.unifies(edges, args[5]);
     }
-    
-	/**
-	 * Load the fuzzy blocks from a input file (fuzzy_system.fcl)
-	 * @return a Fuzzy inference system (FIS)
-	 */
-	private FIS loadFuzzyBlocks()
-	{
-        FIS fis = FIS.load(FilePaths.FUZZY_VARS.getPath(), true);
-        
-        if( fis == null )
-        	throw new Error("Can't load file: '" + FilePaths.FUZZY_VARS.getPath() + "'");
-        
-        return fis;
-	}
 	
 	/**
 	 * This methods compute the values for each fuzzy varible of trust model based on a flc file.
@@ -96,6 +78,7 @@ public class getFuzzyVariables extends DefaultInternalAction
 	 * Show the fuzzy variable on screen.
 	 * @param FIS: a Fuzzy inference system (FIS) (loaded from flc file).
 	 */
+	@SuppressWarnings("unused")
 	private void printVars(FIS fis)
 	{
 		System.out.println(fis.getVariable(Mnemonic.URGENCY.getMnemonic()));

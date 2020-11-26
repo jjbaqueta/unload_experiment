@@ -137,16 +137,12 @@ public class MarketFuzzyConfig
 	
 	private static String getInputFuzzify3Block(String varName, double min, double max)
 	{
-		double middle = ((max - min) / 2) + min;
-		double middleRight = ((max - middle) / 2) + middle;
-		double middleLeft = ((middle - min) / 2) + min;
-		
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("FUZZIFY " + varName).append("\n");
-		sb.append("\tTERM low := ("+ min +", 1) ("+ middleLeft +", 1) ("+ middle +", 0);\n");
-		sb.append("\tTERM middle := ("+ middleLeft +", 0) ("+ middle +", 1) ("+ middleRight +", 0);\n");
-		sb.append("\tTERM high := ("+ middle +", 0) ("+ middleRight +", 1) ("+ max +", 1);\n");
+		sb.append("\tTERM low := ("+ -1.0 +", 1) ("+ -0.75 +", 1) ("+ -0.25 +", 0);\n");
+		sb.append("\tTERM middle := ("+ -0.5 +", 0) ("+ 0.0 +", 1) ("+ 0.5 +", 0);\n");
+		sb.append("\tTERM high := ("+ 0.25 +", 0) ("+ 0.5 +", 1) ("+ 1.0 +", 1);\n");
 		sb.append("END_FUZZIFY\n\n");
 		
 		return sb.toString();
@@ -159,7 +155,7 @@ public class MarketFuzzyConfig
 		if(min == max)
 		{
 			sb.append("FUZZIFY " + varName).append("\n");
-			sb.append("\tTERM none := (0, 1) (" + max +", 0);\n");
+			sb.append("\tTERM none := (0, 1) (1, 0);\n");
 			sb.append("\tTERM low := (0, 0);\n");
 			sb.append("\tTERM middle := (0, 0);\n");
 			sb.append("\tTERM high := (" + (max/2) + ", 0)(" + max + ", 1);\n");
@@ -167,34 +163,38 @@ public class MarketFuzzyConfig
 		}
 		else
 		{
-			double middle = ((max - min) / 2) + min;
-			double middleRight = ((max - middle) / 2) + middle;
-			double middleLeft = ((middle - min) / 2) + min;
-			
+			double area = max - min;
 			sb.append("FUZZIFY " + varName).append("\n");
 			sb.append("\tTERM none := (0, 1) (1, 0);\n");
-			sb.append("\tTERM low := (" + (min/2) + ", 0) ("+ min +", 1) ("+ middleLeft +", 1) ("+ middle +", 0);\n");
-			sb.append("\tTERM middle := ("+ middleLeft +", 0) ("+ middle +", 1) ("+ middleRight +", 0);\n");
-			sb.append("\tTERM high := ("+ middle +", 0) ("+ middleRight +", 1) ("+ max +", 1);\n");
+			sb.append("\tTERM low := (0, 0) ("+ min +", 1) ("+ ((area * 0.2) + min) +", 1) ("+ ((area * 0.3) + min) +", 0);\n");
+			sb.append("\tTERM middle := ("+ ((area * 0.2) + min) +", 0) ("+ ((area * 0.4) + min) +", 1) ("+ ((area * 0.6) + min) +", 0);\n");
+			sb.append("\tTERM high := ("+ ((area * 0.5) + min) +", 0) ("+ ((area * 0.7) + min) +", 1) ("+ max +", 1);\n");
 			sb.append("END_FUZZIFY\n\n");
 		}
 		
 		return sb.toString();
 	}
 	
+	/**
+	 * This method defuzzify the outputs.
+	 * Methods for defuzzification:
+	 * METHOD COG: center of gravity.
+	 * METHOD COGS: center of gravity singletons.
+	 * METHOD COF: center of gravity functions.
+	 * METHOD COA: center of area.
+	 * METHOD LM: left most max.
+	 * METHOD RM: right most max.
+	 * @param varName: an output variable.
+	 */
 	private static String getOutputFuzzifyBlock(String varName)
-	{
-		double middle = 0;
-		double middleRight = 0.5;
-		double middleLeft = -0.5;
-		
+	{	
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("DEFUZZIFY " + varName).append("\n");
-		sb.append("\tTERM negative := ("+ -1.0 +", 1) ("+ middleLeft +", 1) ("+ middle +", 0);\n");
-		sb.append("\tTERM neutral := ("+ middleLeft +", 0) ("+ middle +", 1) ("+ middleRight +", 0);\n");
-		sb.append("\tTERM positive := ("+ middle +", 0) ("+ middleRight +", 1) ("+ 1.0 +", 1);\n");
-		sb.append("\tMETHOD : COG;\n");
+		sb.append("\tTERM negative := ("+ -1.0 +", 1) ("+ -0.75 +", 1) ("+ -0.25 +", 0);\n");
+		sb.append("\tTERM neutral := ("+ -0.5 +", 0) ("+ 0.0 +", 1) ("+ 0.5 +", 0);\n");
+		sb.append("\tTERM positive := ("+ 0.25 +", 0) ("+ 0.5 +", 1) ("+ 1.0 +", 1);\n");
+		sb.append("\tMETHOD : RM;\n");
 		sb.append("\tDEFAULT := 0;\n");		
 		sb.append("END_DEFUZZIFY\n\n");
 		

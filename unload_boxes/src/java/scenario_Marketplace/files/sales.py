@@ -51,13 +51,14 @@ def trustChart():
 
             for data in sellersOf[seller]:
                 times.append(data[0])
-                values.append(data[1])
+                values.append(round(data[1], 2))
 
             plt.plot(times, values, label=seller)
+            plt.xticks(range(times[0], times[len(times) - 1] + 1, 1)) 
     
-        plt.title('Trust Variation')
-        plt.xlabel('Time')
-        plt.ylabel('Trust Values')
+        plt.title('Trust variation')
+        plt.xlabel('Interactions')
+        plt.ylabel('Trust values')
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.subplots_adjust(left=0.14, right=0.686)
         plt.savefig(dir_charts + '/' + buyer + '_trust.png')
@@ -74,18 +75,18 @@ def impressionChart(chartType):
 
     if chartType == 0:
         fileName = '_reputation.png'
-        chartTitle = 'Reputation Variation'
-        yLabel = 'Reputation Values'
+        chartTitle = 'Reputation variation'
+        yLabel = 'Reputation values'
         impressions = reputation
     elif chartType == 1:
         fileName = '_image.png'
-        chartTitle = 'Image Variation'
-        yLabel = 'Image Values'
+        chartTitle = 'Image variation'
+        yLabel = 'Image values'
         impressions = image
     else:
         fileName = '_knowhow.png'
-        chartTitle = 'Knowhow Variation'
-        yLabel = 'Knowhow Values'
+        chartTitle = 'Knowhow variation'
+        yLabel = 'Knowhow values'
         impressions = knowhow
 
     for buyer in impressions.keys():
@@ -123,12 +124,13 @@ def impressionChart(chartType):
 
                 for serie in series:
                     times.append(serie[0])
-                    values.append(serie[1])
+                    values.append(round(serie[1],2))
 
                 plt.plot(times, values, label=criterion)
+                plt.xticks(range(times[0], times[len(times) - 1] + 1, 1))                
     
             plt.title(chartTitle + ": " + product)
-            plt.xlabel('Time')
+            plt.xlabel('Interactions')
             plt.ylabel(yLabel)
             plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
             plt.subplots_adjust(left=0.114, right=0.755)
@@ -158,13 +160,14 @@ def availabilityChart():
 
             for data in sellersOf[seller]:
                 times.append(data[0])
-                values.append(data[1])
+                values.append(round(data[1], 2))
 
             plt.plot(times, values, label=seller)
+            plt.xticks(range(times[0], times[len(times) - 1] + 1, 1)) 
     
-        plt.title('Availability Variation')
-        plt.xlabel('Time')
-        plt.ylabel('Availability Values')
+        plt.title('Availability variation')
+        plt.xlabel('Interactions')
+        plt.ylabel('Availability values')
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.subplots_adjust(left=0.14, right=0.686)
         plt.savefig(dir_charts + '/' + buyer + '_availability.png')

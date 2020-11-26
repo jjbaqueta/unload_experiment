@@ -4,6 +4,7 @@
 { include("src/asl/modules/contractingModule.asl") }	// rules and plans for contracting a service
 { include("src/asl/modules/socialModule.asl") }			// rules and plans for social evaluations
 
+request_counter(0).
 !start.
 
 +!start: getMyName(Me)
@@ -176,40 +177,45 @@
 		getReferencesOf(Knowhow, Seller, Product) &
 		getAvailabilityOf(Availability, Seller, Product)
 	
-	<-	// Saving trust in file
+	<-	?request_counter(Requisitions)
+		Req = Requisitions + 1;
+	
+		// Saving trust in file
 		if(Trust \== [])
 		{
 			.nth(0, Trust, Vt);
-			scenario_Marketplace.actions.generic.saveContent(Me, "TRUST", Vt);
+			scenario_Marketplace.actions.generic.saveContent(Me, "TRUST", Vt, Req);
 		}
 		
 		// Saving reputation in file
 		if(Reputation \== [])
 		{
 			.nth(0, Reputation, Vrep);
-			scenario_Marketplace.actions.generic.saveContent(Me, "REPUTATION", Vrep);
+			scenario_Marketplace.actions.generic.saveContent(Me, "REPUTATION", Vrep, Req);
 		}
 		
 		// Saving image in file
 		if(Image \== [])
 		{
 			.nth(0, Image, Vimg);
-			scenario_Marketplace.actions.generic.saveContent(Me, "IMAGE", Vimg);
+			scenario_Marketplace.actions.generic.saveContent(Me, "IMAGE", Vimg, Req);
 		}
 		
 		// Saving knowhow in file
 		if(Knowhow \== [])
 		{
 			.nth(0, Knowhow, Vkw);
-			scenario_Marketplace.actions.generic.saveContent(Me, "KNOWHOW", Vkw);
+			scenario_Marketplace.actions.generic.saveContent(Me, "KNOWHOW", Vkw, Req);
 		}
 		
 		// Saving availability in file
 		if(Availability \== [])
 		{
 			.nth(0, Availability, Vab);
-			scenario_Marketplace.actions.generic.saveContent(Me, "AVAILABILITY", Vab);
+			scenario_Marketplace.actions.generic.saveContent(Me, "AVAILABILITY", Vab, Req);
 		}
+		
+		-+request_counter(Req);
 .
 
 /*
@@ -231,14 +237,32 @@
 		       ", Canceled tasks: ", Canceled,
 		       ", Aborted tasks: ", Aborted);
 		       
-		// Saving data for analysis
+		// Saving data for analysis		
 		.concat("finished_sales:", Finished, ContentF);	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentF);
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentF, -1);
 		 
 		.concat("canceled_sales:", Canceled, ContentC);	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentC);
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentC, -1);
 		
 		.concat("aborted_sales:", Aborted, ContentA);	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentA);
-//		!saveData(Seller, Product);
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentA, -1);
 .
+
+/**
+ * Announce who won the calling for all participants
+ * @param CNPId: id of required service
+ * @param Loffers: list of received offers
+ * @param Wagent: the winner agent 
+ */	
+// Announce result to the winner
++!result(CNPId, [offer(_, Agent)|T], Wagent): Agent == Wagent & request_counter(Requisition)
+	<-	.send(Agent, tell, accept_proposal(CNPId, Requisition));
+      	!result(CNPId, T, Wagent).
+
+// Announce to others      
++!result(CNPId,[offer(_, Agent)|T], Wagent): Agent \== Wagent
+	<-	.send(Agent, tell, reject_proposal(CNPId));
+      	!result(CNPId, T, Wagent).
+
+// Case the list of offers is empty      
++!result(_,[],_).

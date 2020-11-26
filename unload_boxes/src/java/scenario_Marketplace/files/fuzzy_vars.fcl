@@ -18,29 +18,29 @@ VAR_OUTPUT
 END_VAR
 
 FUZZIFY urgency
-	TERM low := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM low := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM middle := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM high := (0.0, 0) (0.5, 1) (1.0, 1);
+	TERM high := (0.25, 0) (0.5, 1) (1.0, 1);
 END_FUZZIFY
 
 FUZZIFY self_confident
-	TERM low := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM low := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM middle := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM high := (0.0, 0) (0.5, 1) (1.0, 1);
+	TERM high := (0.25, 0) (0.5, 1) (1.0, 1);
 END_FUZZIFY
 
 FUZZIFY own_impressions
-	TERM none := (0, 1) (1.0, 0);
-	TERM low := (0, 0);
-	TERM middle := (0, 0);
-	TERM high := (0.5, 0)(1.0, 1);
+	TERM none := (0, 1) (1, 0);
+	TERM low := (0, 0) (1.0, 1) (1.8, 1) (2.2, 0);
+	TERM middle := (1.8, 0) (2.6, 1) (3.4, 0);
+	TERM high := (3.0, 0) (3.8, 1) (5.0, 1);
 END_FUZZIFY
 
 FUZZIFY other_impressions
-	TERM none := (0, 1) (1.0, 0);
-	TERM low := (0, 0);
-	TERM middle := (0, 0);
-	TERM high := (0.5, 0)(1.0, 1);
+	TERM none := (0, 1) (1, 0);
+	TERM low := (0, 0) (1.0, 1) (1.8, 1) (2.2, 0);
+	TERM middle := (1.8, 0) (2.6, 1) (3.4, 0);
+	TERM high := (3.0, 0) (3.8, 1) (5.0, 1);
 END_FUZZIFY
 
 FUZZIFY references
@@ -49,50 +49,50 @@ FUZZIFY references
 END_FUZZIFY
 
 DEFUZZIFY ability_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY availability_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY knowhow_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY reasoning_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY rep_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY img_effect
-	TERM negative := (-1.0, 1) (-0.5, 1) (0.0, 0);
+	TERM negative := (-1.0, 1) (-0.75, 1) (-0.25, 0);
 	TERM neutral := (-0.5, 0) (0.0, 1) (0.5, 0);
-	TERM positive := (0.0, 0) (0.5, 1) (1.0, 1);
-	METHOD : COG;
+	TERM positive := (0.25, 0) (0.5, 1) (1.0, 1);
+	METHOD : RM;
 	DEFAULT := 0;
 END_DEFUZZIFY
 

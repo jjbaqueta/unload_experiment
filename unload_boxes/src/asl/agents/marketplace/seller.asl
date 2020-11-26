@@ -76,13 +76,15 @@ find_product(Product, Products)
  * The offer sent by seller was accepted by a buyer
  */
 @s1[atomic]
-+accept_proposal(CNPId)[source(Buyer)]: getMyName(Me) &	my_proposal(CNPId,_)
++accept_proposal(CNPId, Requisition)[source(Buyer)]
+	: 	getMyName(Me) & 
+		my_proposal(CNPId, product(Product,_,_,_))
 	<-	.print("I won CNP: ", CNPId, ". I'm going to delive the product.");
 		made(sale);
 		!delivery(CNPId, Buyer);
 		
 		// Saving data for analysis	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "SALE", "sale");
+		scenario_Marketplace.actions.generic.saveContent(Me, "SALE", Product, Requisition);
 		
 		-accept_proposal(CNPId)[source(Buyer)];
 .
@@ -124,8 +126,8 @@ find_product(Product, Products)
 		
 		// Saving data for analysis
 		.concat("made_sales:", Made_sales, ContentM);	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentM);
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentM, -1);
 		 
 		.concat("lost_sales:", Lost_sales, ContentL);	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentL);
+		scenario_Marketplace.actions.generic.saveContent(Me, "AGENT", ContentL, -1);
 .
