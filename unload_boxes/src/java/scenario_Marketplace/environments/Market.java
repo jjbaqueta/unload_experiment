@@ -41,7 +41,7 @@ public class Market extends Environment
 		MarketFuzzyConfig.createFuzzyFile(getMyImpressionsITM(), getThirdPartITM());
     	fis = Files.loadFuzzyBlocks();
     	
-    	showFuzzyUniverse();
+//    	showFuzzyUniverse();
     	
 		
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");

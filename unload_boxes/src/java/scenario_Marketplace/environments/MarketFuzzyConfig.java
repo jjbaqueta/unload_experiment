@@ -129,7 +129,7 @@ public class MarketFuzzyConfig
 		
 		sb.append("FUZZIFY " + varName).append("\n");
 		sb.append("\tTERM none := (" + min +", 1) (" + max +", 0);\n");
-		sb.append("\tTERM has := (" + (max/2) + ", 0) (" + max + ", 1);\n");
+		sb.append("\tTERM has := (" + min + ", 0) (" + max + ", 1);\n");
 		sb.append("END_FUZZIFY\n\n");
 		
 		return sb.toString();

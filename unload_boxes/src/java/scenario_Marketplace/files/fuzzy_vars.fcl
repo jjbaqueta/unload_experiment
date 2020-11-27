@@ -45,7 +45,7 @@ END_FUZZIFY
 
 FUZZIFY references
 	TERM none := (0.0, 1) (1.0, 0);
-	TERM has := (0.5, 0) (1.0, 1);
+	TERM has := (0.0, 0) (1.0, 1);
 END_FUZZIFY
 
 DEFUZZIFY ability_effect

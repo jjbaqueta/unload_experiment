@@ -213,13 +213,9 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Compute a trust measure about a provider using image, reputation and know-how.
  * The trust value is computed considering the context (Skill) 
  */
-+!computeTrust(Provider, Skill, Availability, EdgesValues, Trust)
-	:	getMyImageAbout(Image, Provider, Skill) &
-		getReputationOf(Reputation, Provider, Skill) &
-		getReferencesOf(Reference, Provider, Skill)
++!computeTrust(Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust)		
 	<-	.my_name(Requester);
 		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust);
-		
 		.print("[IMPRESSIONS] Image: ", Image, ", Reputation: ", Reputation, ", Reference: ", Reference);
 .
 

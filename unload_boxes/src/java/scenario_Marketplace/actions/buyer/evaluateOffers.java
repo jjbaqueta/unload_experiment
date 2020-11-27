@@ -91,14 +91,17 @@ public class evaluateOffers extends DefaultInternalAction
 			// Normalization and computation of the ratings (based on weighted average)
 			for(String sellerName : trustMap.keySet())
 			{
-				Double score = 0.0;
-				
-				score += (priceMap.get(sellerName) / minPrice.getValue()) * (buyer.getPreference(CriteriaType.PRICE));
-				score -= (qualityMap.get(sellerName) / maxQuality.getValue()) * (buyer.getPreference(CriteriaType.QUALITY));
-				score += (deliveryMap.get(sellerName) / minDelivery.getValue()) * (buyer.getPreference(CriteriaType.DELIVERY));
-				score /= 3;
-				
-				ratings.put(sellerName, score);
+				if(trustMap.get(sellerName) >= buyer.getMinTrustBound())
+				{
+					Double score = 0.0;
+					
+					score += (priceMap.get(sellerName) / minPrice.getValue()) * (buyer.getPreference(CriteriaType.PRICE));
+					score -= (qualityMap.get(sellerName) / maxQuality.getValue()) * (buyer.getPreference(CriteriaType.QUALITY));
+					score += (deliveryMap.get(sellerName) / minDelivery.getValue()) * (buyer.getPreference(CriteriaType.DELIVERY));
+					score /= 3;
+					
+					ratings.put(sellerName, score);
+				}
 			}
 			
 			// Getting best offer according with buyer preferences

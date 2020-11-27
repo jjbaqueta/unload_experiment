@@ -143,16 +143,21 @@ request_counter(0).
  */
 +!checkTrust(Seller, Skill, Availability, Self_confident, Urgency)
 	:	trust(Seller, Skill,_) &
-		getMyImpressionsAbout(Impressions, Seller, Skill) &
-		getThirdPartImages(Images, Seller, Skill) &
-		getReferencesOf(Reference, Provider, Skill)
+		getMyImpressionsAbout(My_impressions, Seller, Skill) &
+		getThirdPartImages(Other_images, Seller, Skill) &
+		getMyImageAbout(My_image, Seller, Skill) &
+		getReputationOf(Seller_reputation, Seller, Skill) &
+		getReferencesOf(Seller_reference, Seller, Skill) &
+		getMyName(Me)
 		
-	<-	.length(Impressions, Own_imps);
-		.length(Images, Other_imps);
-		.length(Reference, References);
-        scenario_Marketplace.actions.buyer.getFuzzyVariables(Urgency, Own_imps, Own_imps + Other_imps, Self_confident, References, EdgesValues);
+	<-	.length(My_impressions, Own_imps);
+		.length(Other_images, Other_imps);
+		.length(Seller_reference, Num_references);
+		
+        scenario_Marketplace.actions.buyer.getFuzzyVariables(Urgency, Own_imps, Own_imps + Other_imps, Self_confident, Num_references, EdgesValues);
+		scenario_Marketplace.actions.buyer.applyPreferences(Me, My_image, Seller_reputation, Seller_reference, tuple(Image, Reputation, Knowhow));
       
-		!computeTrust(Seller, Skill, Availability, EdgesValues, trust(_,_, Value));
+		!computeTrust(Seller, Skill, Image, Reputation, Knowhow, Availability, EdgesValues, trust(_,_, Value));
 		
 		.print("[TRUST] Own_imps: ", Own_imps,": Other_imps, ", Other_imps, 
 			", Self_confident: ", Self_confident, ", Urgency: ", Urgency, ", Availability: ", Availability, 
