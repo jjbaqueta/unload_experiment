@@ -47,7 +47,7 @@ public abstract class Seller extends SimpleAgent
 		}
 		
 		// Updating some values from the old offer
-		int interaction = madeSales + lostSales;
+		int interaction = madeSales;
 		
 		for(Map.Entry<CriteriaType, Boolean> pair : criteria)
 		{

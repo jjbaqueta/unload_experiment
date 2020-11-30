@@ -10,6 +10,7 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import net.sourceforge.jFuzzyLogic.FIS;
+import scenario_Marketplace.entities.model.Buyer;
 import scenario_Marketplace.environments.Market;
 import trustModel.repAndImg.enums.Mnemonic;
 
@@ -19,25 +20,29 @@ public class getFuzzyVariables extends DefaultInternalAction
 
 	/**
 	 * Arguments (come from parameter args):
-	 * @param args[0]: urgency level
-	 * @param args[1]: number of own impressions
-	 * @param args[2]: number of third part impressions (other's images)
-	 * @param args[3]: self-confident profile
-	 * @return args[4]: list of fuzzy values.
+	 * @param args[0]: buyer's name
+	 * @param args[1]: urgency level
+	 * @param args[2]: number of own impressions
+	 * @param args[3]: number of third part impressions (other's images)
+	 * @param args[4]: self-confident profile
+	 * @param args[5]: number of references
+	 * @return args[6]: list of fuzzy values.
 	 */
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
-    {	
-    	NumberTerm urgencyValue = (NumberTerm) args[0];
-    	NumberTerm ownImpsValue = (NumberTerm) args[1];
-    	NumberTerm otherImpsValue = (NumberTerm) args[2];
-    	NumberTerm selfConfidentValue = (NumberTerm) args[3];
-    	NumberTerm references = (NumberTerm) args[4];
+    {   
+    	Buyer buyer = Market.buyers.get(args[0].toString());
     	
-    	Structure edges = getOutputValues(Market.fis, urgencyValue.solve(), ownImpsValue.solve(), 
+    	NumberTerm urgencyValue = (NumberTerm) args[1];
+    	NumberTerm ownImpsValue = (NumberTerm) args[2];
+    	NumberTerm otherImpsValue = (NumberTerm) args[3];
+    	NumberTerm selfConfidentValue = (NumberTerm) args[4];
+    	NumberTerm references = (NumberTerm) args[5];
+    	
+    	Structure edges = getOutputValues(buyer.getFis(), urgencyValue.solve(), ownImpsValue.solve(), 
     			otherImpsValue.solve(), selfConfidentValue.solve(), references.solve());
     	
-    	return un.unifies(edges, args[5]);
+    	return un.unifies(edges, args[6]);
     }
 	
 	/**
@@ -52,24 +57,25 @@ public class getFuzzyVariables extends DefaultInternalAction
 	 */
 	private Structure getOutputValues(FIS fis, double urgencyValue, double ownImpsValue, 
 			double otherImpsValue, double selfConfidentValue, double references)
-	{
+	{		
 		fis.setVariable(Mnemonic.URGENCY.getMnemonic(), urgencyValue);
 		fis.setVariable(Mnemonic.OWN_IMPS.getMnemonic(), ownImpsValue);
 		fis.setVariable(Mnemonic.OTHER_IMPS.getMnemonic(), otherImpsValue);
 		fis.setVariable(Mnemonic.SELFCONFIDENT.getMnemonic(), selfConfidentValue);
-		fis.setVariable(Mnemonic.REFERENCES.getMnemonic(), references);
+		fis.setVariable(Mnemonic.REFERENCES.getMnemonic(), references);		
 		fis.evaluate();
-		
-//		printVars(fis);
+
+//		printInputVars(fis);
+//		printOutputVars(fis);
 		
 		Structure weights = new Structure("edges");
 		
-		weights.addTerm(Literal.parseLiteral(Mnemonic.ABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.ABILITY_EFFECT.getMnemonic()).getValue() +")"));
-		weights.addTerm(Literal.parseLiteral(Mnemonic.AVAILABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.AVAILABILITY_EFFECT.getMnemonic()).getValue() +")"));
-		weights.addTerm(Literal.parseLiteral(Mnemonic.KNOWHOW_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.KNOWHOW_EFFECT.getMnemonic()).getValue() +")"));
-		weights.addTerm(Literal.parseLiteral(Mnemonic.REASONING_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REASONING_EFFECT.getMnemonic()).getValue() +")"));
-		weights.addTerm(Literal.parseLiteral(Mnemonic.REP_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REP_EFFECT.getMnemonic()).getValue() +")"));
-		weights.addTerm(Literal.parseLiteral(Mnemonic.IMG_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.IMG_EFFECT.getMnemonic()).getValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.ABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.ABILITY_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.AVAILABILITY_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.AVAILABILITY_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.KNOWHOW_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.KNOWHOW_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.REASONING_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REASONING_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.REP_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.REP_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
+		weights.addTerm(Literal.parseLiteral(Mnemonic.IMG_EFFECT.getMnemonic() + "("+ fis.getVariable(Mnemonic.IMG_EFFECT.getMnemonic()).getLatestDefuzzifiedValue() +")"));
 		
 		return weights;
 	}
@@ -79,12 +85,27 @@ public class getFuzzyVariables extends DefaultInternalAction
 	 * @param FIS: a Fuzzy inference system (FIS) (loaded from flc file).
 	 */
 	@SuppressWarnings("unused")
-	private void printVars(FIS fis)
+	private void printInputVars(FIS fis)
 	{
 		System.out.println(fis.getVariable(Mnemonic.URGENCY.getMnemonic()));
 		System.out.println(fis.getVariable(Mnemonic.OWN_IMPS.getMnemonic()));
 		System.out.println(fis.getVariable(Mnemonic.OTHER_IMPS.getMnemonic()));
 		System.out.println(fis.getVariable(Mnemonic.SELFCONFIDENT.getMnemonic()));
 		System.out.println(fis.getVariable(Mnemonic.REFERENCES.getMnemonic()));
+	}
+	
+	/**
+	 * Show the fuzzy variable on screen.
+	 * @param FIS: a Fuzzy inference system (FIS) (loaded from flc file).
+	 */
+	@SuppressWarnings("unused")
+	private void printOutputVars(FIS fis)
+	{
+		System.out.println(fis.getVariable(Mnemonic.ABILITY_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
+		System.out.println(fis.getVariable(Mnemonic.AVAILABILITY_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
+		System.out.println(fis.getVariable(Mnemonic.KNOWHOW_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
+		System.out.println(fis.getVariable(Mnemonic.REASONING_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
+		System.out.println(fis.getVariable(Mnemonic.REP_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
+		System.out.println(fis.getVariable(Mnemonic.IMG_EFFECT.getMnemonic()).getLatestDefuzzifiedValue());
 	}
 }

@@ -1,3 +1,0 @@
--1;"finished_sales:10"
--1;"canceled_sales:0"
--1;"aborted_sales:0"

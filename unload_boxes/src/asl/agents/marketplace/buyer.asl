@@ -41,7 +41,6 @@ request_counter(0).
 		// Ending the purchase and cleaning the memory
 		!spreadImage(Seller, Product, Buyers);
 		purchase(finished);
-		purchase(completed);
 		!checkActivitiesStatus;
 		!deleteAllPoposals(CNPId);
 		!deleteAllRefuses(CNPId);
@@ -66,8 +65,11 @@ request_counter(0).
  * @param Product: product to be bought.
  */
 +task(CNPId, buy(Product))
-	<-	.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product);
-		+cnp_state(CNPId, propose);
+	<-	+cnp_state(CNPId, propose);
+		.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product);
+		?request_counter(Requisitions)
+		Req = Requisitions + 1;
+		-+request_counter(Req);
 		!call(CNPId, buy(Product), participant, Sellers);
 		!bid(CNPId, Sellers);
 		!contract(CNPId);
@@ -142,7 +144,7 @@ request_counter(0).
  * If there is no a trust belief a new trust belief is created with value 0.5 
  */
 +!checkTrust(Seller, Skill, Availability, Self_confident, Urgency)
-	:	trust(Seller, Skill,_) &
+	:	trust(Seller,Skill,_) &
 		getMyImpressionsAbout(My_impressions, Seller, Skill) &
 		getThirdPartImages(Other_images, Seller, Skill) &
 		getMyImageAbout(My_image, Seller, Skill) &
@@ -154,12 +156,14 @@ request_counter(0).
 		.length(Other_images, Other_imps);
 		.length(Seller_reference, Num_references);
 		
-        scenario_Marketplace.actions.buyer.getFuzzyVariables(Urgency, Own_imps, Own_imps + Other_imps, Self_confident, Num_references, EdgesValues);
+		All_imps = Own_imps + Other_imps;
+		
+        scenario_Marketplace.actions.buyer.getFuzzyVariables(Me, Urgency, Own_imps, All_imps, Self_confident, Num_references, EdgesValues);
 		scenario_Marketplace.actions.buyer.applyPreferences(Me, My_image, Seller_reputation, Seller_reference, tuple(Image, Reputation, Knowhow));
       
 		!computeTrust(Seller, Skill, Image, Reputation, Knowhow, Availability, EdgesValues, trust(_,_, Value));
 		
-		.print("[TRUST] Own_imps: ", Own_imps,": Other_imps, ", Other_imps, 
+		.print("[TRUST] AGENT:", Seller ,", Own_imps: ", Own_imps,", Other_imps, ", Other_imps, ", Num_references: ", Num_references, 
 			", Self_confident: ", Self_confident, ", Urgency: ", Urgency, ", Availability: ", Availability, 
 			", Edges: ", EdgesValues, ", trust: ", Value);
 		
@@ -168,7 +172,7 @@ request_counter(0).
 .
 
 +!checkTrust(Seller, Skill,_,_,_): not trust(Seller,Skill,_)
-	<-	+trust(Seller, Skill, 0.5);
+	<-	+trust(Seller, Skill, 0.0);
 .
 
 /*
@@ -182,8 +186,7 @@ request_counter(0).
 		getReferencesOf(Knowhow, Seller, Product) &
 		getAvailabilityOf(Availability, Seller, Product)
 	
-	<-	?request_counter(Requisitions)
-		Req = Requisitions + 1;
+	<-	?request_counter(Req)
 	
 		// Saving trust in file
 		if(Trust \== [])
@@ -219,14 +222,12 @@ request_counter(0).
 			.nth(0, Availability, Vab);
 			scenario_Marketplace.actions.generic.saveContent(Me, "AVAILABILITY", Vab, Req);
 		}
-		
-		-+request_counter(Req);
 .
 
 /*
  * Check if all buyers finished their shopping, in this case, the application ends
  */
-@b2[atomic]
+@b3[atomic]
 +!checkActivitiesStatus	<- status(end).
 
 /*

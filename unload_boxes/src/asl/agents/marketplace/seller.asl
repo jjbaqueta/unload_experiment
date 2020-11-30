@@ -83,8 +83,10 @@ find_product(Product, Products)
 		made(sale);
 		!delivery(CNPId, Buyer);
 		
-		// Saving data for analysis	 
-		scenario_Marketplace.actions.generic.saveContent(Me, "SALE", Product, Requisition);
+		// Saving data for analysis	
+		.concat(Buyer,"-", Temp);
+		.concat(Temp, Product, Content)	  
+		scenario_Marketplace.actions.generic.saveContent(Me, "SALE", Content, Requisition);
 		
 		-accept_proposal(CNPId)[source(Buyer)];
 .

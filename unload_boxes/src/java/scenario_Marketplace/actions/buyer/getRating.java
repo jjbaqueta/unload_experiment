@@ -45,7 +45,7 @@ public class getRating extends DefaultInternalAction
 	 */
 	private Structure evaluateSeller(Offer proposal, Offer contract, double priceAverage)
 	{
-		double priceDiscrepancy = priceAverage / proposal.getProduct().getAttribute(CriteriaType.PRICE);
+		double priceDiscrepancy = contract.getProduct().getAttribute(CriteriaType.PRICE) / proposal.getProduct().getAttribute(CriteriaType.PRICE);
 		double qualityDiscrepancy = contract.getProduct().getAttribute(CriteriaType.QUALITY) / proposal.getProduct().getAttribute(CriteriaType.QUALITY);
 		double deliveryDiscrepancy = contract.getProduct().getAttribute(CriteriaType.DELIVERY) / proposal.getProduct().getAttribute(CriteriaType.DELIVERY);
 		

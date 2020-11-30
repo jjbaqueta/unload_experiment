@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<marketplace>
+
+    <seller>
+	    <name>seller</name>
+        <sell>
+	        <product>
+	            <name>tv</name>
+                <amount>10</amount>
+                <behaviorAcceleration>10</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>1.0</quality>
+                <qualityBehavior>CONSTANT</qualityBehavior>                
+	            <delivery>10.0</delivery>
+                <deliveryBehavior>CONSTANT</deliveryBehavior>
+	        </product>
+
+	        <product>
+	            <name>desktop</name>
+                <amount>10</amount>
+                <behaviorAcceleration>10</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>1.0</quality>
+                <qualityBehavior>EXPONENTIAL_DECREASING</qualityBehavior>                
+	            <delivery>10.0</delivery>
+                <deliveryBehavior>EXPONENTIAL_DECREASING</deliveryBehavior>
+	        </product>
+        </sell>
+
+        <sell>
+	        <product>
+	            <name>tv</name>
+                <amount>10</amount>
+                <behaviorAcceleration>10</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>1.0</quality>
+                <qualityBehavior>CONSTANT</qualityBehavior>                
+	            <delivery>10.0</delivery>
+                <deliveryBehavior>CONSTANT</deliveryBehavior>
+	        </product>
+
+	        <product>
+	            <name>desktop</name>
+                <amount>10</amount>
+                <behaviorAcceleration>10</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>1.0</quality>
+                <qualityBehavior>LINEAR_DECREASING</qualityBehavior>                
+	            <delivery>10.0</delivery>
+                <deliveryBehavior>LINEAR_DECREASING</deliveryBehavior>
+	        </product>
+        </sell>
+    </seller>
+
+    <buyer>
+	    <name>buyer</name>
+        <selfConfident>0.0</selfConfident>
+        <urgency>0.0</urgency>
+        <minTrustBound>0.5</minTrustBound>
+        <pricePreference>0.0</pricePreference>
+        <qualityPreference>1.0</qualityPreference>
+        <deliveryPreference>1.0</deliveryPreference>
+        <buy>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+        </buy>
+    </buyer>
+</marketplace>

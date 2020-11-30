@@ -40,6 +40,7 @@ public class getNewContract extends DefaultInternalAction
     	 *  A criterion defined as true has its values increased as it is changed.
     	 */
     	Map<CriteriaType, Boolean> criteria = new HashMap<CriteriaType, Boolean>();
+    	criteria.put(CriteriaType.PRICE, true);
     	criteria.put(CriteriaType.QUALITY, false);
     	criteria.put(CriteriaType.DELIVERY, true);
     	

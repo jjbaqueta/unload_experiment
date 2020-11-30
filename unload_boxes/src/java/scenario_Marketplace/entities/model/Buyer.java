@@ -8,7 +8,10 @@ import java.util.Stack;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import scenario_Marketplace.enums.CriteriaType;
+import scenario_Marketplace.environments.Files;
 
 /*
  * This class implements a buyer.
@@ -22,12 +25,14 @@ public abstract class Buyer extends SimpleAgent
 	protected Double selfConfident;
 	protected Double urgency;
 	protected Double minTrustBound;
+	protected FIS fis;
 	
 	// Default constructor
 	public Buyer(String name, Double selfConfident, Double urgency, Double minTrustBound, List<String> wishList)
 	{
 		super(name);		
 		this.buying = true;
+		this.fis = Files.loadFuzzyBlocks();
 		
 		this.preferences = new HashMap<String, Double>();
 		this.productsToBuy = new Stack<Literal>();
@@ -47,6 +52,7 @@ public abstract class Buyer extends SimpleAgent
 	{
 		super(name);		
 		this.buying = true;
+		this.fis = Files.loadFuzzyBlocks();
 		
 		this.preferences = new HashMap<String, Double>();
 		this.productsToBuy = new Stack<Literal>();
@@ -105,6 +111,11 @@ public abstract class Buyer extends SimpleAgent
 		return null;
 	}
 	
+	public FIS getFis()
+	{
+		return fis;
+	}
+
 	public boolean isBuying() 
 	{
 		return buying;
@@ -168,6 +179,14 @@ public abstract class Buyer extends SimpleAgent
 			preferences.addTerm(new NumberTermImpl(this.preferences.get(criterion.name())));
 		}
 		return preferences;
+	}
+	
+	/**
+	 * This method shows the fuzzy variables universe. 
+	 */
+	public void showFuzzyUniverse()
+	{
+		JFuzzyChart.get().chart(fis);
 	}
 	
 	@Override

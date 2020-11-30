@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<marketplace>
+
+    <seller>
+	    <name>seller</name>
+        <sell>
+	        <product>
+	            <name>tv</name>
+                <amount>2</amount>
+                <behaviorAcceleration>20</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>0.5</quality>
+                <qualityBehavior>CONSTANT</qualityBehavior>                
+	            <delivery>15.0</delivery>
+                <deliveryBehavior>CONSTANT</deliveryBehavior>
+	        </product>
+        </sell>
+    </seller>
+
+    <seller>
+	    <name>seller</name>
+        <sell>
+	        <product>
+	            <name>tv</name>
+                <amount>30</amount>
+                <behaviorAcceleration>20</behaviorAcceleration>
+                <price>1500</price>
+                <priceBehavior>CONSTANT</priceBehavior>
+	            <quality>0.5</quality>
+                <qualityBehavior>CONSTANT</qualityBehavior>                
+	            <delivery>15.0</delivery>
+                <deliveryBehavior>CONSTANT</deliveryBehavior>
+	        </product>
+        </sell>
+    </seller>
+
+    <buyer>
+	    <name>buyer</name>
+        <selfConfident>0.0</selfConfident>
+        <urgency>-1.0</urgency>
+        <minTrustBound>0.5</minTrustBound>
+        <pricePreference>0.0</pricePreference>
+        <qualityPreference>1.0</qualityPreference>
+        <deliveryPreference>1.0</deliveryPreference>
+        <buy>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+        </buy>
+    </buyer>
+
+    <buyer>
+	    <name>buyer</name>
+        <selfConfident>0.0</selfConfident>
+        <urgency>-1.0</urgency>
+        <minTrustBound>0.5</minTrustBound>
+        <pricePreference>0.0</pricePreference>
+        <qualityPreference>1.0</qualityPreference>
+        <deliveryPreference>1.0</deliveryPreference>
+        <buy>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+        </buy>
+    </buyer>
+
+    <buyer>
+	    <name>buyer</name>
+        <selfConfident>0.0</selfConfident>
+        <urgency>-1.0</urgency>
+        <minTrustBound>0.5</minTrustBound>
+        <pricePreference>0.0</pricePreference>
+        <qualityPreference>1.0</qualityPreference>
+        <deliveryPreference>1.0</deliveryPreference>
+        <buy>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+            <product>tv</product>
+        </buy>
+    </buyer>
+</marketplace>

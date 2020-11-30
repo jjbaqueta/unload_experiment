@@ -258,7 +258,7 @@ for entry in os.listdir(dir_reports):
                     knowhow[agent].append((seller, product, time, [(c1, v1), (c2, v2), (c3, v3)]))
 
             elif suffix == 'availability.txt':
-                seller = content.split(",")[0][-7:]
+                seller = content.split(",")[0][-8:]
                 product = content.split(",")[1]
                 request = int(content.split(",")[2])
                 helping = int(content.split(",")[3][:-2])

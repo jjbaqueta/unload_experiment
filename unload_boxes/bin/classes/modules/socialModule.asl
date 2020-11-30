@@ -216,7 +216,7 @@ getAvailabilityOf(Availability, Provider, Skill)
 +!computeTrust(Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust)		
 	<-	.my_name(Requester);
 		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust);
-		.print("[IMPRESSIONS] Image: ", Image, ", Reputation: ", Reputation, ", Reference: ", Reference);
+		.print("[IMPRESSIONS] AGENT:", Provider, ", Image: ", Image, ", Reputation: ", Reputation, ", Reference: ", Reference);
 .
 
 /** 
