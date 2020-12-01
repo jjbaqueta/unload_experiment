@@ -227,13 +227,13 @@ RULEBLOCK No1
 	RULE 125: IF self_confident IS middle AND other_impressions IS middle AND own_impressions IS middle THEN img_effect IS positive;
 	RULE 126: IF self_confident IS middle AND other_impressions IS middle AND own_impressions IS high THEN rep_effect IS positive;
 	RULE 127: IF self_confident IS middle AND other_impressions IS middle AND own_impressions IS high THEN img_effect IS positive;
-	RULE 128: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS none THEN rep_effect IS neutral;
+	RULE 128: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS none THEN rep_effect IS positive;
 	RULE 129: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS none THEN img_effect IS positive;
-	RULE 130: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS low THEN rep_effect IS neutral;
+	RULE 130: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS low THEN rep_effect IS positive;
 	RULE 131: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS low THEN img_effect IS positive;
-	RULE 132: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS middle THEN rep_effect IS neutral;
+	RULE 132: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS middle THEN rep_effect IS positive;
 	RULE 133: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS middle THEN img_effect IS positive;
-	RULE 134: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS high THEN rep_effect IS neutral;
+	RULE 134: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS high THEN rep_effect IS positive;
 	RULE 135: IF self_confident IS middle AND other_impressions IS high AND own_impressions IS high THEN img_effect IS positive;
 	RULE 136: IF self_confident IS high AND other_impressions IS none AND own_impressions IS none THEN rep_effect IS neutral;
 	RULE 137: IF self_confident IS high AND other_impressions IS none AND own_impressions IS none THEN img_effect IS positive;

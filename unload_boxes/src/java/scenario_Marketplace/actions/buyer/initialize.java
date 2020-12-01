@@ -31,7 +31,8 @@ public class initialize extends DefaultInternalAction
     	ts.getAg().addBel(Literal.parseLiteral("urgency(" + b.getUrgency() + ")"));
     	
     	// Attributes for social module
-    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + MarketFuzzyConfig.max_references + ")"));
+//    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + MarketFuzzyConfig.max_references + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("itm(knowhow," + MarketFuzzyConfig.max_own_impressions / 2 + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("itm(reputation," + MarketFuzzyConfig.max_other_impressions + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("itm(image," + MarketFuzzyConfig.max_own_impressions + ")"));
     	

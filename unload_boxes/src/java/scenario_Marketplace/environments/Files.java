@@ -30,6 +30,7 @@ import scenario_Marketplace.enums.ReportType;
 
 public abstract class Files 
 {
+	private static Integer numberOfInteractions = 0;
 	/**
 	 * Load the fuzzy blocks from a input file (fuzzy_system.fcl)
 	 * @return a Fuzzy inference system (FIS)
@@ -56,53 +57,6 @@ public abstract class Files
 			builder = factory.newDocumentBuilder();
 					
 			Document document = builder.parse(FilePaths.LOAD_AGENTS.getPath());
-					
-			// Getting sellers
-			NodeList sellers = document.getElementsByTagName("seller");
-			
-			for(int i = 0; i < sellers.getLength(); i++)
-			{
-				Element seller = (Element) sellers.item(i);
-				
-				// Getting seller's attributes
-				String sellerName = seller.getElementsByTagName("name").item(0).getTextContent();
-				Seller s = new GeneralSeller(sellerName);
-				
-				// Getting products
-				NodeList products = seller.getElementsByTagName("product");
-				
-				for(int j = 0; j < products.getLength(); j++)
-				{
-					Element product = (Element) products.item(j);
-					
-					String productName = product.getElementsByTagName("name").item(0).getTextContent();
-					int amount = Integer.parseInt(product.getElementsByTagName("amount").item(0).getTextContent());
-					int behaviorAcceleration = Integer.parseInt(product.getElementsByTagName("behaviorAcceleration").item(0).getTextContent());
-					
-					double price = Double.parseDouble(product.getElementsByTagName("price").item(0).getTextContent());
-					String priceBehavior = product.getElementsByTagName("priceBehavior").item(0).getTextContent();
-					
-					double quality = Double.parseDouble(product.getElementsByTagName("quality").item(0).getTextContent());
-					String qualityBehavior = product.getElementsByTagName("qualityBehavior").item(0).getTextContent();
-					
-					double delivery = Double.parseDouble(product.getElementsByTagName("delivery").item(0).getTextContent());
-					String deliveryBehavior = product.getElementsByTagName("deliveryBehavior").item(0).getTextContent();
-					
-					// Setting product's attributes
-					Product p = new Product(productName);
-					p.setAttribute(CriteriaType.PRICE, price);
-					p.setAttribute(CriteriaType.QUALITY, quality);
-					p.setAttribute(CriteriaType.DELIVERY, delivery);
-					
-					// Setting product's behavior
-					p.setBehavior(CriteriaType.PRICE, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(priceBehavior), behaviorAcceleration));
-					p.setBehavior(CriteriaType.QUALITY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(qualityBehavior), behaviorAcceleration));
-					p.setBehavior(CriteriaType.DELIVERY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(deliveryBehavior), behaviorAcceleration));
-					
-					s.addProductToStock(p, amount);
-				}
-				Market.sellers.put(s.getName(),s);
-			}
 			
 			// Getting buyers
 			NodeList buyers = document.getElementsByTagName("buyer");
@@ -130,6 +84,55 @@ public abstract class Files
 				}
 				Buyer b = new GeneralOrientedBuyer(buyerName, selfConfident, urgency, minTrustBound, wishList, pricePreference, qualityPreference, deliveryPreference); 
 				Market.buyers.put(b.getName(), b);
+				
+				numberOfInteractions += products.getLength();
+			}
+			
+			// Getting sellers
+			NodeList sellers = document.getElementsByTagName("seller");
+			
+			for(int i = 0; i < sellers.getLength(); i++)
+			{
+				Element seller = (Element) sellers.item(i);
+				
+				// Getting seller's attributes
+				String sellerName = seller.getElementsByTagName("name").item(0).getTextContent();
+				Seller s = new GeneralSeller(sellerName);
+				
+				// Getting products
+				NodeList products = seller.getElementsByTagName("product");
+				
+				for(int j = 0; j < products.getLength(); j++)
+				{
+					Element product = (Element) products.item(j);
+					
+					String productName = product.getElementsByTagName("name").item(0).getTextContent();
+					int amount = Integer.parseInt(product.getElementsByTagName("amount").item(0).getTextContent());
+					double behaviorAcceleration = Double.parseDouble(product.getElementsByTagName("behaviorAcceleration").item(0).getTextContent());
+					
+					double price = Double.parseDouble(product.getElementsByTagName("price").item(0).getTextContent());
+					String priceBehavior = product.getElementsByTagName("priceBehavior").item(0).getTextContent();
+					
+					double quality = Double.parseDouble(product.getElementsByTagName("quality").item(0).getTextContent());
+					String qualityBehavior = product.getElementsByTagName("qualityBehavior").item(0).getTextContent();
+					
+					double delivery = Double.parseDouble(product.getElementsByTagName("delivery").item(0).getTextContent());
+					String deliveryBehavior = product.getElementsByTagName("deliveryBehavior").item(0).getTextContent();
+					
+					// Setting product's attributes
+					Product p = new Product(productName);
+					p.setAttribute(CriteriaType.PRICE, price);
+					p.setAttribute(CriteriaType.QUALITY, quality);
+					p.setAttribute(CriteriaType.DELIVERY, delivery);					
+					
+					// Setting product's behavior
+					p.setBehavior(CriteriaType.PRICE, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(priceBehavior), (int) (behaviorAcceleration * numberOfInteractions)));
+					p.setBehavior(CriteriaType.QUALITY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(qualityBehavior), (int) (behaviorAcceleration * numberOfInteractions)));
+					p.setBehavior(CriteriaType.DELIVERY, BehaviorFactory.factoryMethod(BehaviorPattern.valueOf(deliveryBehavior), (int) (behaviorAcceleration * numberOfInteractions)));
+					
+					s.addProductToStock(p, amount);
+				}
+				Market.sellers.put(s.getName(),s);
 			}
 		} 
 		catch (ParserConfigurationException e) 

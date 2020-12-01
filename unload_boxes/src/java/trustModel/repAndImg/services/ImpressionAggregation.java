@@ -101,8 +101,8 @@ public class ImpressionAggregation
 		 * Otherwise, the importance level is defined as 1. 
 		 */
 		if(cardinality >=0 && cardinality <= iTM)
-			return cardinality/iTM;
-//			return Math.sin((Math.PI * cardinality) / (2 * iTM));
+//			return cardinality/iTM;
+			return Math.sin((Math.PI * cardinality) / (2 * iTM));
 //			return Math.tanh(2 * iTM * cardinality);
 		else
 			return 1;

@@ -77,9 +77,9 @@ public class evaluateOffers extends DefaultInternalAction
 			Map<String, Double> qualityMap, Map<String, Double> deliveryMap) throws NoValueException
 	{
 		// Getting optimal values for each criteria
-		Map.Entry<String, Double> maxTrust = getMaxValue(trustMap);
+		Double maxTrust = getMaxValue(trustMap).getValue();
 		
-		if(maxTrust.getValue() >= buyer.getMinTrustBound())
+		if(maxTrust >= buyer.getMinTrustBound())
 		{
 			Map.Entry<String, Double> minPrice = getMinValue(priceMap);
 			Map.Entry<String, Double> maxQuality = getMaxValue(qualityMap); 
@@ -93,19 +93,19 @@ public class evaluateOffers extends DefaultInternalAction
 			{
 				if(trustMap.get(sellerName) >= buyer.getMinTrustBound())
 				{
-					Double score = 0.0;
+					double score = 0.0;
 					
-					score += (priceMap.get(sellerName) / minPrice.getValue()) * (buyer.getPreference(CriteriaType.PRICE));
-					score -= (qualityMap.get(sellerName) / maxQuality.getValue()) * (buyer.getPreference(CriteriaType.QUALITY));
-					score += (deliveryMap.get(sellerName) / minDelivery.getValue()) * (buyer.getPreference(CriteriaType.DELIVERY));
+					score += (minPrice.getValue() == 0.0 ? 0.0 : (priceMap.get(sellerName) / minPrice.getValue()) * (buyer.getPreference(CriteriaType.PRICE)));
+					score -= (maxQuality.getValue() == 0.0 ? 0.0 : (qualityMap.get(sellerName) / maxQuality.getValue()) * (buyer.getPreference(CriteriaType.QUALITY)));
+					score += (minDelivery.getValue() == 0.0 ? 0.0 : (deliveryMap.get(sellerName) / minDelivery.getValue()) * (buyer.getPreference(CriteriaType.DELIVERY)));
 					score /= 3;
 					
-					ratings.put(sellerName, score);
+					ratings.put(sellerName, (score == 0.0 ? 0.0 : trustMap.get(sellerName) / score));
 				}
 			}
 			
 			// Getting best offer according with buyer preferences
-			Map.Entry<String, Double> bestScore = getMinValue(ratings);
+			Map.Entry<String, Double> bestScore = getMaxValue(ratings);
 			return new Atom(Literal.parseLiteral(bestScore.getKey()));
 		}
 		else
@@ -113,7 +113,7 @@ public class evaluateOffers extends DefaultInternalAction
 			return new Atom(Literal.parseLiteral("none"));
 		}
 	}
-
+	
 	/**
 	 * This methods searches for a tuple with minimum value in a hash map .
 	 * @param map: a hash map.
@@ -152,7 +152,7 @@ public class evaluateOffers extends DefaultInternalAction
 				maxValue = pair.getValue();
 				bestTuple = pair;
 			}
-		}
+		}		
 		return bestTuple;
 	}
 }

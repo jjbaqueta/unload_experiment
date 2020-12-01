@@ -53,7 +53,7 @@ find_product(Product, Products)
 				.print("Missing product ", Product, ". I refused the call.");
 	    		.send(Buyer, tell, refuse(CNPId));
 	    		.send(Buyer, tell, missing(CNPId, Product));
-	    		lost(sale);
+	    		!countLostSale;
 			}
 	    }
 	    else
@@ -80,7 +80,7 @@ find_product(Product, Products)
 	: 	getMyName(Me) & 
 		my_proposal(CNPId, product(Product,_,_,_))
 	<-	.print("I won CNP: ", CNPId, ". I'm going to delive the product.");
-		made(sale);
+		!countMadeSale;
 		!delivery(CNPId, Buyer);
 		
 		// Saving data for analysis	
@@ -96,7 +96,7 @@ find_product(Product, Products)
  */
 @s2[atomic]
 +reject_proposal(CNPId)[source(Buyer)]
-	<-	lost(sale);
+	<-	!countLostSale;
 		-my_proposal(CNPId,_);
 		-reject_proposal(CNPId)[source(Buyer)];
 .
@@ -106,13 +106,24 @@ find_product(Product, Products)
  * @param CNPId: id of the call.
  * @param Buyer: buyer that bought a product.
  */
+ @s3[atomic]
 +!delivery(CNPId, Buyer)
 	:	my_proposal(CNPId, Old_offer) & getMyName(Me)
 	
 	<-	scenario_Marketplace.actions.seller.getNewContract(Me, offer(Old_offer, Me), New_offer);
-		.print("[REPORT] old offer: ", Old_offer, ", new offer: ", New_offer);
-		.send(Buyer, tell, delivered(CNPId, New_offer));
+		.print("[REPORT] old offer: ", offer(Old_offer, Me), ", new offer: ", New_offer);
+		.send(Buyer, tell, delivered(CNPId, New_offer, offer(Old_offer, Me)));
 		-my_proposal(CNPId,_);
+.
+
+@s4[atomic]
++!countMadeSale
+	<-	made(sale);
+.
+
+@s5[atomic]
++!countLostSale
+	<-	lost(sale);
 .
 
 /*

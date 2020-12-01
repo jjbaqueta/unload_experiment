@@ -54,7 +54,7 @@ public abstract class Seller extends SimpleAgent
 			CriteriaType criterion = pair.getKey();
 			
 			double factor = getProductByName(oldOffer.getProduct().getName()).getBehavior(criterion).getBehaviorValueFor(interaction);
-			
+						
 			if(pair.getValue())
 				newValues.put(criterion.name(), factor * oldOffer.getProduct().getAttribute(criterion));				
 			else

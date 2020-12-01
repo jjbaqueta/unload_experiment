@@ -22,18 +22,17 @@ request_counter(0).
 /*
  * This plan is executed every time that a seller delivered a product.
  * @param CNPId: id of the call
- * @param New_offer: new contract with new terms.
+ * @param New_offer: the new contract with new terms.
+ * @param Old_offer: the old contract.
  */
-+delivered(CNPId, New_offer)[source(Seller)]
++delivered(CNPId, New_offer, Old_offer)[source(Seller)]
 	:	cnp_state(CNPId, contract) &
-		proposal(CNPId, Old_offer) &
 		task(CNPId, buy(Product)) &
-		averagePrice(CNPId, AveragePrice) &
 		getMyName(Me)
 		
 	<-	// Evaluating the seller
 		-+cnp_state(CNPId, finished);
-		scenario_Marketplace.actions.buyer.getRating(offer(Old_offer, Seller), New_offer, AveragePrice, rating(Price, Quality, Delivery));
+		scenario_Marketplace.actions.buyer.getRating(Old_offer, New_offer, rating(Price, Quality, Delivery));
 		scenario_Marketplace.actions.buyer.getOtherBuyers(Me, Buyers);
 		.print("[EVALUATION] {price:", Price , "; quality: ", Quality, "; delivery: ", Delivery, "}");
 		!evaluateProvider(Seller, Product, ["PRICE", "QUALITY", "DELIVERY"], [Price, Quality, Delivery]);
@@ -44,7 +43,6 @@ request_counter(0).
 		!checkActivitiesStatus;
 		!deleteAllPoposals(CNPId);
 		!deleteAllRefuses(CNPId);
-		-averagePrice(CNPId,_);
 		-delivered(CNPId,_)[source(Seller)];
 .
 
@@ -91,8 +89,6 @@ request_counter(0).
 		{
 			!updateTrust(Offers);
 			scenario_Marketplace.actions.buyer.evaluateOffers(Me, Offers, Winner);
-			scenario_Marketplace.actions.buyer.getAveragePrice(Offers, AveragePrice);
-			+averagePrice(CNPId, AveragePrice);
 			
 			if(Winner \== none)
 			{
@@ -104,7 +100,6 @@ request_counter(0).
 			{
 				.print("[TRUSTLESS] It wasn't possible to find trustworthiness sellers, so I'm giving up the product: ", Product);
 				-+cnp_state(CNPId, aborted);
-				-averagePrice(CNPId,_);
 				purchase(finished);
 				!checkActivitiesStatus;
 				!deleteAllPoposals(CNPId);
@@ -156,9 +151,7 @@ request_counter(0).
 		.length(Other_images, Other_imps);
 		.length(Seller_reference, Num_references);
 		
-		All_imps = Own_imps + Other_imps;
-		
-        scenario_Marketplace.actions.buyer.getFuzzyVariables(Me, Urgency, Own_imps, All_imps, Self_confident, Num_references, EdgesValues);
+        scenario_Marketplace.actions.buyer.getFuzzyVariables(Me, Urgency, Own_imps, Other_imps, Self_confident, Num_references, EdgesValues);
 		scenario_Marketplace.actions.buyer.applyPreferences(Me, My_image, Seller_reputation, Seller_reference, tuple(Image, Reputation, Knowhow));
       
 		!computeTrust(Seller, Skill, Image, Reputation, Knowhow, Availability, EdgesValues, trust(_,_, Value));
@@ -172,7 +165,7 @@ request_counter(0).
 .
 
 +!checkTrust(Seller, Skill,_,_,_): not trust(Seller,Skill,_)
-	<-	+trust(Seller, Skill, 0.0);
+	<-	+trust(Seller, Skill, 0.5);
 .
 
 /*
@@ -228,7 +221,9 @@ request_counter(0).
  * Check if all buyers finished their shopping, in this case, the application ends
  */
 @b3[atomic]
-+!checkActivitiesStatus	<- status(end).
++!checkActivitiesStatus	
+	<- status(end)
+.
 
 /*
  * The buyer shows his purchases data (the final report).
