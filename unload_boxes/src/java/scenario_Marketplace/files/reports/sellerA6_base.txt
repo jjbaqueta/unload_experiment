@@ -1,2 +1,0 @@
--1;"made_sales:49"
--1;"lost_sales:51"

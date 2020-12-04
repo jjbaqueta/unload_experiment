@@ -90,6 +90,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * @param Agent: an agent..
  * @param Skill: the role played by this agent.
  */
+ @ms4[atomic]
 +!initializeAvailability(Agent, Skill): not availability(Agent, Skill,_,_) 
     <-  +availability(Agent, Skill, 1, 1);
 .
@@ -100,7 +101,7 @@ getAvailabilityOf(Availability, Provider, Skill)
  * Increase the number of ask for helping by one unit.
  * @param Agent: agent for who the help was asked. 
  */
-@ms4 [atomic]
+@ms5 [atomic]
 +!requestHelp(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
 	<-	-availability(Agent, Skill,_,_);
 		+availability(Agent, Skill, N_askForHelping + 1, N_Help); 
@@ -109,10 +110,10 @@ getAvailabilityOf(Availability, Provider, Skill)
 +!requestHelp(Agent, Skill): not availability(Agent, Skill,_,_).
 
 /**
- * Increase by one unit the helping counter of a helper.
+ * Increase by one unit the helping counter of an agent.
  * @param Agent: agent who helped. 
  */
-@ms5 [atomic]
+@ms6 [atomic]
 +!helping(Agent, Skill): availability(Agent, Skill, N_askForHelping, N_Help)
 	<-	-availability(Agent, Skill,_,_);
 		+availability(Agent, Skill, N_askForHelping, N_Help + 1);

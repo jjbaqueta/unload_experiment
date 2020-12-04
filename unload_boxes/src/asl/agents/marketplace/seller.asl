@@ -51,8 +51,9 @@ find_product(Product, Products)
 			else
 			{
 				.print("Missing product ", Product, ". I refused the call.");
-	    		.send(Buyer, tell, refuse(CNPId));
 	    		.send(Buyer, tell, missing(CNPId, Product));
+	    		.wait(50);
+	    		.send(Buyer, tell, refuse(CNPId));
 	    		!countLostSale;
 			}
 	    }

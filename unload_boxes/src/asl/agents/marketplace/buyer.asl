@@ -64,10 +64,10 @@ request_counter(0).
  */
 +task(CNPId, buy(Product))
 	<-	+cnp_state(CNPId, propose);
-		.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product);
 		?request_counter(Requisitions)
 		Req = Requisitions + 1;
 		-+request_counter(Req);
+		.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product, "; Request number: ", Req);
 		!call(CNPId, buy(Product), participant, Sellers);
 		!bid(CNPId, Sellers);
 		!contract(CNPId);
@@ -111,10 +111,28 @@ request_counter(0).
 			.print("[NO OFFERS] It wasn't possible to find available workers, so I'm giving up the product: ", Product);
 			-+cnp_state(CNPId, canceled);
 			purchase(finished);
+			!keepState(CNPId, Product)
 			!checkActivitiesStatus;
 			!deleteAllRefuses(CNPId);
 		}
 .
+
+/**
+ * Save the current state of a seller when no one offer was done.
+ * @CNPId: id of the call
+ * @Product: product requested for the buyer.
+ */
++!keepState(CNPId, Product)
+	<-	.findall(Seller, refuse(CNPId)[source(Seller)], Sellers);
+		!saveState(Sellers, Product)		
+.
+
++!saveState([Seller|T], Product)
+	<-	!saveData(Seller, Product);
+		!saveState(T, Product);
+.
+
++!saveState([],_).
 
 /**
  * Update trust value for each seller that sent an offer to buyer.

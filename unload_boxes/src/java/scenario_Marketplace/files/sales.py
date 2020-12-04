@@ -54,7 +54,7 @@ def trustChart():
                 values.append(round(data[1], 2))
 
             plt.plot(times, values, label=seller)
-            plt.xticks(range(times[0], times[len(times) - 1] + 1, 1)) 
+            plt.xticks(range(times[0], times[len(times) - 1] + 1, 2)) 
     
         plt.title('Trust variation')
         plt.xlabel('Interactions')
@@ -127,7 +127,7 @@ def impressionChart(chartType):
                     values.append(round(serie[1],2))
 
                 plt.plot(times, values, label=criterion)
-                plt.xticks(range(times[0], times[len(times) - 1] + 1, 1))                
+                plt.xticks(range(times[0], times[len(times) - 1] + 1, 2))                
     
             plt.title(chartTitle + ": " + product)
             plt.xlabel('Interactions')
@@ -163,7 +163,7 @@ def availabilityChart():
                 values.append(round(data[1], 2))
 
             plt.plot(times, values, label=seller)
-            plt.xticks(range(times[0], times[len(times) - 1] + 1, 1)) 
+            plt.xticks(range(times[0], times[len(times) - 1] + 1, 2)) 
     
         plt.title('Availability variation')
         plt.xlabel('Interactions')
@@ -206,7 +206,7 @@ def salesChart():
     plt.xlabel('Kind of sales')
     plt.title('Sales Report')
     plt.xticks([])
-    plt.yticks(np.arange(0, y, 1))
+    plt.yticks(np.arange(0, y, 5))
     plt.legend(p, seriesNames, bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.subplots_adjust(left=0.4, right=0.61)
     plt.savefig(dir_charts + '/sales.png')
@@ -225,7 +225,7 @@ for entry in os.listdir(dir_reports):
             content = line.split(";")[1]
 
             if suffix == 'base.txt':
-                if agent[:-1] == 'buyer':
+                if 'buyer' in agent:
                     if content.split(":")[0][1:] == 'canceled_sales':
                         canceledSales = canceledSales + int(content.split(":")[1][:-2])
                     elif content.split(":")[0][1:] == 'aborted_sales':
