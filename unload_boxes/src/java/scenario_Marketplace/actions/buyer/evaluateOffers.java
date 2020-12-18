@@ -31,7 +31,8 @@ public class evaluateOffers extends DefaultInternalAction
 	 * Arguments (come from parameter args):
 	 * @param args[0]: buyer's name
 	 * @param args[1]: list of offers
-	 * @return args[2]: the best seller.
+	 * @param args[2]: trust list
+	 * @return args[3]: the best seller.
 	 */	
 	@Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
@@ -43,24 +44,28 @@ public class evaluateOffers extends DefaultInternalAction
 		
 		Buyer buyer = Market.buyers.get(args[0].toString());
 		ListTerm offers = (ListTerm) args[1];
+		ListTerm trustList = (ListTerm) args[2];
 	
+		// Getting trust values
+		for(Term term : trustList)
+		{
+			Structure trust = (Structure) term;
+			NumberTerm trustValue = (NumberTerm) trust.getTerm(2);
+			trustMap.put(trust.getTerm(0).toString(), trustValue.solve());
+		}
+		
+		// Getting attributes value
 		for(Term term : offers)
 		{	
 			// Parsing the offer - format{offer(product(Product,_,_,_), Seller)}
 			Offer offer = Offer.parseOffer((Structure) term);
 			
-			// Getting trust value
-			String query = "trust("+ offer.getSeller() +"," + offer.getProduct().getName() + ",_)";
-			Structure trust = (Structure) ts.getAg().findBel(Literal.parseLiteral(query), un);
-			NumberTerm trustValue = (NumberTerm) trust.getTerm(2);
-			
 			// Updating maps
-			trustMap.put(offer.getSeller(), trustValue.solve());
 			priceMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.PRICE));
 			qualityMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.QUALITY));
 			deliveryMap.put(offer.getSeller(), offer.getProduct().getAttribute(CriteriaType.DELIVERY));
 		}		
-		return un.unifies(classify(buyer, trustMap, priceMap, qualityMap, deliveryMap), args[2]);
+		return un.unifies(classify(buyer, trustMap, priceMap, qualityMap, deliveryMap), args[3]);
     }
 	
 	/**
@@ -91,6 +96,8 @@ public class evaluateOffers extends DefaultInternalAction
 			// Normalization and computation of the ratings (based on weighted average)
 			for(String sellerName : trustMap.keySet())
 			{
+				System.out.println("--------------------- [TEST] name: " + sellerName + "; value: " + trustMap.get(sellerName) + "; max: " + maxTrust);
+				
 				if(trustMap.get(sellerName) >= buyer.getMinTrustBound())
 				{
 					double score = 0.0;
@@ -104,9 +111,14 @@ public class evaluateOffers extends DefaultInternalAction
 				}
 			}
 			
-			// Getting best offer according with buyer preferences
-			Map.Entry<String, Double> bestScore = getMaxValue(ratings);
-			return new Atom(Literal.parseLiteral(bestScore.getKey()));
+			if(ratings.isEmpty())
+				return new Atom(Literal.parseLiteral("none"));
+			else 
+			{
+				// Getting best offer according with buyer preferences
+				Map.Entry<String, Double> bestScore = getMaxValue(ratings);
+				return new Atom(Literal.parseLiteral(bestScore.getKey()));				
+			}
 		}
 		else
 		{

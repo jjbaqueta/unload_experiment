@@ -45,6 +45,10 @@ getTrustOf(Trust, Provider, Skill)
 		trust(Provider, Skill, Value)[source(self)],
 		Trust).
 
+// Get the trust value of all agents that play the role defined by informed skill
+getTrustBySkill(List, Skill)
+	:-	.findall(trust(Agent, Skill, Value), trust(Agent, Skill, Value), List).
+
 // Get candidates able to perform a task
 getCandidatesFor(Skill, Candidates)
 	:-	.findall(trust(Provider, Value),
@@ -151,8 +155,7 @@ getAvailabilityOf(Availability, Provider, Skill)
 .
 
 +!computeAvailability(Agent, Skill, Availability): not availability(Agent, Skill,_,_)
-	<- .print("------------ AVAILABILITY NOT FOUND FOR AGENT: ", Agent, " AND SKILL: ", Skill, "; CREATING RECORD...");
-		+availability(Agent, Skill, 1, 1);
+	<- 	+availability(Agent, Skill, 1, 1);
 		Availability = 1;
 .
 
@@ -217,30 +220,8 @@ getAvailabilityOf(Availability, Provider, Skill)
 +!computeTrust(Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust)		
 	<-	.my_name(Requester);
 		trustModel.repAndImg.actions.computeTrust(Requester, Provider, Skill, Image, Reputation, Reference, Availability, EdgesValues, Trust);
-		.print("[IMPRESSIONS] AGENT:", Provider, ", Image: ", Image, ", Reputation: ", Reputation, ", Reference: ", Reference);
 .
 
-/** 
- * Find the most trustworthy candidate for a given task. 
- */
-+!getBestCandidate(Skill): getCandidatesFor(Skill, Candidates)
-	<-	!theMostTrustworthy(Candidates, MaxValue, BestProvider);
-		.print("Candidates for the task: ", Candidates);
-		.print("The best provider: ", BestProvider, ", and the best value: ", MaxValue).
-
-+!theMostTrustworthy([], MaxValue, BestProvider).
-
-+!theMostTrustworthy([trust(Provider, Value)|T], MaxValue, BestProvider): T == []
-	<-	MaxValue = Value;
-		BestProvider = Provider.
-
-+!theMostTrustworthy([trust(Provider, Value)|T], MaxValue, BestProvider): T \== []
-	<-	!theMostTrustworthy(T, MaxValue, BestProvider);
-		if (MaxValue < Value)
-		{
-			MaxValue = Value;
-			BestProvider = Provider;
-		}.
 /**
  * Spread your own image to others
  * @param Appraised: evaluated agent

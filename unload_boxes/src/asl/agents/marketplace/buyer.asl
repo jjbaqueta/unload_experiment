@@ -67,11 +67,25 @@ request_counter(0).
 		?request_counter(Requisitions)
 		Req = Requisitions + 1;
 		-+request_counter(Req);
-		.print("[NEW REQUEST]: CNPId: ", CNPId ,"; product: ", Product, "; Request number: ", Req);
 		!call(CNPId, buy(Product), participant, Sellers);
 		!bid(CNPId, Sellers);
 		!contract(CNPId);
 .
+
+/*
+ * Based on the offers sent, it generates a list of the trust degree of each provider.
+ * @param Skill: role played by the agents
+ * @param Offers: list of offers
+ * @return List: Old trust value from the agents.
+ */
++!getTrustList(Skill, [offer(_, Agent)|T], List): getTrustOf(Trust, Agent, Skill)
+	<-	
+		!getTrustList(Skill, T, List1);
+		.concat(Trust, List1, List);
+.
+
++!getTrustList(_, [], List)
+	<-	List = [].
 
 /**
  * Attempt of contracting a seller for a task.
@@ -88,11 +102,13 @@ request_counter(0).
 	<-	if(Offers \== [])
 		{
 			!updateTrust(Offers);
-			scenario_Marketplace.actions.buyer.evaluateOffers(Me, Offers, Winner);
+			!getTrustList(Product, Offers, Trust_list);
+			scenario_Marketplace.actions.buyer.evaluateOffers(Me, Offers, Trust_list, Winner);
+			
+			.print("-------------------- [WINNER]: ", Winner);
 			
 			if(Winner \== none)
 			{
-				.print("[PRODUCT: ", Product ,"] The best seller: ", Winner);
 				-+cnp_state(CNPId, contract);
 				!result(CNPId, Offers, Winner);
 			}
@@ -152,6 +168,7 @@ request_counter(0).
 
 +!updateTrust([]).
 
+
 /** 
  * Check if there is a trust belief for a seller.
  * If there is no a trust belief a new trust belief is created with value 0.5 
@@ -173,11 +190,7 @@ request_counter(0).
 		scenario_Marketplace.actions.buyer.applyPreferences(Me, My_image, Seller_reputation, Seller_reference, tuple(Image, Reputation, Knowhow));
       
 		!computeTrust(Seller, Skill, Image, Reputation, Knowhow, Availability, EdgesValues, trust(_,_, Value));
-		
-		.print("[TRUST] AGENT:", Seller ,", Own_imps: ", Own_imps,", Other_imps, ", Other_imps, ", Num_references: ", Num_references, 
-			", Self_confident: ", Self_confident, ", Urgency: ", Urgency, ", Availability: ", Availability, 
-			", Edges: ", EdgesValues, ", trust: ", Value);
-		
+				
 		-trust(Seller, Skill,_);
 		+trust(Seller, Skill, Value);
 .

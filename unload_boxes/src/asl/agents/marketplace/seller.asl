@@ -44,13 +44,11 @@ find_product(Product, Products)
 			{
 				.nth(0, Products, Offer);
 		      	+my_proposal(CNPId, Offer);
-				.print("I have the product ", Product, ". Sending my proposal: ", Offer);
 		      	!sendMyknowHow(Product, Buyer);		
 		      	.send(Buyer, tell, proposal(CNPId, Offer));
 			}
 			else
 			{
-				.print("Missing product ", Product, ". I refused the call.");
 	    		.send(Buyer, tell, missing(CNPId, Product));
 	    		.wait(50);
 	    		.send(Buyer, tell, refuse(CNPId));
@@ -59,7 +57,6 @@ find_product(Product, Products)
 	    }
 	    else
 	    {
-	    	.print("I don't have the product ", Product, ". I refused the call.");
 	    	.send(Buyer, tell, refuse(CNPId));
 	    }
 	    -cfp(CNPId,_)[source(Buyer)];
@@ -80,8 +77,7 @@ find_product(Product, Products)
 +accept_proposal(CNPId, Requisition)[source(Buyer)]
 	: 	getMyName(Me) & 
 		my_proposal(CNPId, product(Product,_,_,_))
-	<-	.print("I won CNP: ", CNPId, ". I'm going to delive the product.");
-		!countMadeSale;
+	<-	!countMadeSale;
 		!delivery(CNPId, Buyer);
 		
 		// Saving data for analysis	

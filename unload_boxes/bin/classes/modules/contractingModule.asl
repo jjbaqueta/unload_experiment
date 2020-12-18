@@ -39,10 +39,8 @@ all_proposals_received(CNPId, NP)
  * @return Plist (list of participants of calling) 
  */  
 +!call(CNPId, Task, Ptype, Plist)
-	<-	.print("Waiting for participants: ", Task, "...");
-		.wait(2000);
+	<-	.wait(2000);
 		.df_search(Ptype, Plist);
-		.print("Sending call for proposal to ", Plist);
 		.send(Plist, tell, cfp(CNPId, Task)).
 
 /**
@@ -54,7 +52,7 @@ all_proposals_received(CNPId, NP)
 +!bid(CNPId, Plist)
 	<-	.length(Plist, Size);
 		.wait(all_proposals_received(CNPId, Size), 4000,_);
-		.print("Participants: ", Plist).
+.
 
 /**
  * Show the winner of the calling
